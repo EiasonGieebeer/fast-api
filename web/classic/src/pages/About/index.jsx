@@ -62,23 +62,23 @@ const About = () => {
   const customDescription = (
     <div style={{ textAlign: 'center' }}>
       <p>{t('可在设置页面设置关于内容，支持 HTML & Markdown')}</p>
-      {t('Fast API项目仓库地址：')}
+      {t('New API项目仓库地址：')}
       <a
-        href='https://github.com/QuantumNous/fast-api'
+        href='https://github.com/QuantumNous/new-api'
         target='_blank'
         rel='noopener noreferrer'
         className='!text-semi-color-primary'
       >
-        https://github.com/QuantumNous/fast-api
+        https://github.com/QuantumNous/new-api
       </a>
       <p>
         <a
-          href='https://github.com/QuantumNous/fast-api'
+          href='https://github.com/QuantumNous/new-api'
           target='_blank'
           rel='noopener noreferrer'
           className='!text-semi-color-primary'
         >
-          FastAPI
+          New API
         </a>{' '}
         {t('© {{currentYear}}', { currentYear })}{' '}
         <a
@@ -111,12 +111,12 @@ const About = () => {
       <p>
         {t('本项目根据')}
         <a
-          href='https://github.com/songquanpeng/one-api/blob/v0.5.4/LICENSE'
+          href='https://github.com/QuantumNous/new-api/blob/main/LICENSE'
           target='_blank'
           rel='noopener noreferrer'
           className='!text-semi-color-primary'
         >
-          {t('MIT许可证')}
+          {t('AGPL v3.0许可证')}
         </a>
         {t('授权，需在遵守')}
         <a

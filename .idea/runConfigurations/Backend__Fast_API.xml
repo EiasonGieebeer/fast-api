@@ -1,8 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Backend: Fast API" type="GoApplicationRunConfiguration" factoryName="Go Application">
+    <module name="fast-api" />
     <working_directory value="$PROJECT_DIR$" />
-    <kind value="FILE" />
-    <filePath value="$PROJECT_DIR$/main.go" />
     <envs>
       <env name="PORT" value="3000" />
       <env name="TZ" value="Asia/Shanghai" />
@@ -11,6 +10,8 @@
       <env name="SQLITE_PATH" value="$PROJECT_DIR$/fast-api-dev.db?_busy_timeout=30000" />
       <env name="GIN_MODE" value="debug" />
     </envs>
+    <kind value="FILE" />
+    <filePath value="$PROJECT_DIR$/main.go" />
     <method v="2" />
   </configuration>
 </component>

@@ -1,10 +1,12 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Frontend: npm run dev" type="js.build_tools.npm" factoryName="npm">
+  <configuration default="false" name="Frontend: npm run dev" type="js.build_tools.npm">
     <package-json value="$PROJECT_DIR$/web/default/package.json" />
     <command value="run" />
     <scripts>
       <script value="dev" />
     </scripts>
+    <node-interpreter value="project" />
+    <package-manager value="npm" />
     <envs>
       <env name="VITE_REACT_APP_SERVER_URL" value="http://localhost:3000" />
       <env name="VITE_REACT_APP_BASE_PATH" value="/" />

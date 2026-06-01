@@ -15,6 +15,8 @@ on:
   push:
     branches:
       - main
+      - my-custom
+  workflow_dispatch:
 
 concurrency:
   group: deploy-fast-api

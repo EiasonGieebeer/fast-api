@@ -6,13 +6,13 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/dto"
-	"github.com/QuantumNous/new-api/relay/channel"
-	"github.com/QuantumNous/new-api/relay/channel/openai"
-	relaycommon "github.com/QuantumNous/new-api/relay/common"
-	"github.com/QuantumNous/new-api/relay/constant"
-	"github.com/QuantumNous/new-api/types"
+	"github.com/QuantumNous/fast-api/common"
+	"github.com/QuantumNous/fast-api/dto"
+	"github.com/QuantumNous/fast-api/relay/channel"
+	"github.com/QuantumNous/fast-api/relay/channel/openai"
+	relaycommon "github.com/QuantumNous/fast-api/relay/common"
+	"github.com/QuantumNous/fast-api/relay/constant"
+	"github.com/QuantumNous/fast-api/types"
 
 	"github.com/gin-gonic/gin"
 	"github.com/samber/lo"
@@ -110,7 +110,7 @@ func (a *Adaptor) ConvertEmbeddingRequest(c *gin.Context, info *relaycommon.Rela
 	return request, nil
 }
 
-func (a *Adaptor) DoResponse(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (usage any, err *types.NewAPIError) {
+func (a *Adaptor) DoResponse(c *gin.Context, resp *http.Response, info *relaycommon.RelayInfo) (usage any, err *types.FastAPIError) {
 	switch info.RelayMode {
 	case constant.RelayModeRerank:
 		usage, err = siliconflowRerankHandler(c, info, resp)

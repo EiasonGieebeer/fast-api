@@ -1,4 +1,6 @@
-.idea
+.idea/*
+!.idea/runConfigurations/
+!.idea/runConfigurations/*.xml
 .vscode
 .zed
 .history
@@ -14,7 +16,7 @@ web/node_modules
 web/dist
 .env
 one-api
-new-api
+fast-api
 /__debug_bin*
 .DS_Store
 tiktoken_cache
@@ -36,3 +38,4 @@ data/
 token_estimator_test.go
 skills-lock.json
 .playwright-mcp
+.deploy/

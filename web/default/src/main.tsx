@@ -48,6 +48,10 @@ import './styles/index.css'
 initializeFrontendCache()
 installBuildMetadata()
 
+const rawBasePath = import.meta.env.VITE_REACT_APP_BASE_PATH || '/'
+const routerBasePath =
+  rawBasePath === '/' ? '/' : rawBasePath.replace(/\/$/, '')
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -100,6 +104,7 @@ const queryClient = new QueryClient({
 const router = createRouter({
   routeTree,
   context: { queryClient },
+  basepath: routerBasePath,
   defaultPreload: 'intent',
   defaultPreloadStaleTime: 0,
 })

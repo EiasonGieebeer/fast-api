@@ -9,16 +9,16 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/constant"
-	"github.com/QuantumNous/new-api/dto"
-	"github.com/QuantumNous/new-api/model"
-	"github.com/QuantumNous/new-api/relay/channel"
-	"github.com/QuantumNous/new-api/relay/channel/task/taskcommon"
-	relaycommon "github.com/QuantumNous/new-api/relay/common"
-	relayconstant "github.com/QuantumNous/new-api/relay/constant"
-	"github.com/QuantumNous/new-api/relay/helper"
-	"github.com/QuantumNous/new-api/service"
+	"github.com/QuantumNous/fast-api/common"
+	"github.com/QuantumNous/fast-api/constant"
+	"github.com/QuantumNous/fast-api/dto"
+	"github.com/QuantumNous/fast-api/model"
+	"github.com/QuantumNous/fast-api/relay/channel"
+	"github.com/QuantumNous/fast-api/relay/channel/task/taskcommon"
+	relaycommon "github.com/QuantumNous/fast-api/relay/common"
+	relayconstant "github.com/QuantumNous/fast-api/relay/constant"
+	"github.com/QuantumNous/fast-api/relay/helper"
+	"github.com/QuantumNous/fast-api/service"
 	"github.com/gin-gonic/gin"
 )
 
@@ -232,7 +232,7 @@ func RelayTaskSubmit(c *gin.Context, info *relaycommon.RelayInfo) (*TaskSubmitRe
 		otherRatios = map[string]float64{}
 	}
 	ratiosJSON, _ := common.Marshal(otherRatios)
-	c.Header("X-New-Api-Other-Ratios", string(ratiosJSON))
+	c.Header("X-Fast-Api-Other-Ratios", string(ratiosJSON))
 
 	// 11. 解析响应
 	upstreamTaskID, taskData, taskErr := adaptor.DoResponse(c, resp, info)

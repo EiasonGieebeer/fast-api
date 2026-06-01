@@ -1,7 +1,7 @@
 package codex
 
 import (
-	"github.com/QuantumNous/new-api/setting/ratio_setting"
+	"github.com/QuantumNous/fast-api/setting/ratio_setting"
 	"github.com/samber/lo"
 )
 

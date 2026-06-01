@@ -12,6 +12,11 @@ export default defineConfig(({ envMode }) => {
     process.env.VITE_REACT_APP_SERVER_URL ||
     env.rawPublicVars.VITE_REACT_APP_SERVER_URL ||
     'http://localhost:3000'
+  const rawBasePath =
+    process.env.VITE_REACT_APP_BASE_PATH ||
+    env.rawPublicVars.VITE_REACT_APP_BASE_PATH ||
+    '/'
+  const basePath = rawBasePath.endsWith('/') ? rawBasePath : `${rawBasePath}/`
 
   const isProd = envMode === 'production'
   const devProxy = Object.fromEntries(
@@ -71,6 +76,7 @@ export default defineConfig(({ envMode }) => {
       // Production optimizations
       minify: isProd,
       target: 'web',
+      assetPrefix: basePath,
       distPath: {
         root: 'dist',
       },

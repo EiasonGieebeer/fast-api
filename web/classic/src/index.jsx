@@ -33,11 +33,15 @@ import { useTranslation } from 'react-i18next';
 import zh_CN from '@douyinfe/semi-ui/lib/es/locale/source/zh_CN';
 import en_GB from '@douyinfe/semi-ui/lib/es/locale/source/en_GB';
 
+const rawBasePath = import.meta.env.VITE_REACT_APP_BASE_PATH || '/';
+const routerBaseName =
+  rawBasePath === '/' ? undefined : rawBasePath.replace(/\/$/, '');
+
 // 欢迎信息（二次开发者未经允许不准将此移除）
 // Welcome message (Do not remove this without permission from the original developer)
 if (typeof window !== 'undefined') {
   console.log(
-    '%cWE ❤ NEWAPI%c Github: https://github.com/QuantumNous/new-api',
+    '%cWE ❤ FASTAPI%c Github: https://github.com/QuantumNous/fast-api',
     'color: #10b981; font-weight: bold; font-size: 24px;',
     'color: inherit; font-size: 14px;',
   );
@@ -60,6 +64,7 @@ root.render(
     <StatusProvider>
       <UserProvider>
         <BrowserRouter
+          basename={routerBaseName}
           future={{
             v7_startTransition: true,
             v7_relativeSplatPath: true,

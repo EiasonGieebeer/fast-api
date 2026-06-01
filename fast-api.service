@@ -1,0 +1,18 @@
+# File path: /etc/systemd/system/fast-api.service
+# sudo systemctl daemon-reload
+# sudo systemctl start fast-api
+# sudo systemctl enable fast-api
+# sudo systemctl status fast-api
+[Unit]
+Description=One API Service
+After=network.target
+
+[Service]
+User=ubuntu  # 注意修改用户名
+WorkingDirectory=/path/to/fast-api  # 注意修改路径
+ExecStart=/path/to/fast-api/fast-api --port 3000 --log-dir /path/to/fast-api/logs  # 注意修改路径和端口号
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

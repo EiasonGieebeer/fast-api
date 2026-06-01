@@ -10,9 +10,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/dto"
-	"github.com/QuantumNous/new-api/setting/system_setting"
+	"github.com/QuantumNous/fast-api/common"
+	"github.com/QuantumNous/fast-api/dto"
+	"github.com/QuantumNous/fast-api/setting/system_setting"
 )
 
 // WebhookPayload webhook 通知的负载数据

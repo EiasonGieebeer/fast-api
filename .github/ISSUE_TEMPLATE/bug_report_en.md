@@ -10,10 +10,10 @@ assignees: ''
 ## Read This First (Do Not Remove This Section)
 
 - Docs: https://docs.newapi.ai/
-- Usage questions first: https://deepwiki.com/QuantumNous/new-api
+- Usage questions first: https://deepwiki.com/QuantumNous/fast-api
 - Warning: issues with this template removed, section headings deleted, or content cleared may be closed directly. Repeated abusive submissions may result in a block.
 
-**Your current newapi version**
+**Your current fastapi version**
 
 Please fill this in, for example: `v1.0.0`
 

@@ -1,4 +1,4 @@
-module github.com/QuantumNous/new-api
+module github.com/QuantumNous/fast-api
 
 // +heroku goVersion go1.18
 go 1.25.1

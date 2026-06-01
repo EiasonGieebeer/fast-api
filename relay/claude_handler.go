@@ -7,21 +7,21 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/constant"
-	"github.com/QuantumNous/new-api/dto"
-	"github.com/QuantumNous/new-api/logger"
-	relaycommon "github.com/QuantumNous/new-api/relay/common"
-	"github.com/QuantumNous/new-api/relay/helper"
-	"github.com/QuantumNous/new-api/service"
-	"github.com/QuantumNous/new-api/setting/model_setting"
-	"github.com/QuantumNous/new-api/setting/reasoning"
-	"github.com/QuantumNous/new-api/types"
+	"github.com/QuantumNous/fast-api/common"
+	"github.com/QuantumNous/fast-api/constant"
+	"github.com/QuantumNous/fast-api/dto"
+	"github.com/QuantumNous/fast-api/logger"
+	relaycommon "github.com/QuantumNous/fast-api/relay/common"
+	"github.com/QuantumNous/fast-api/relay/helper"
+	"github.com/QuantumNous/fast-api/service"
+	"github.com/QuantumNous/fast-api/setting/model_setting"
+	"github.com/QuantumNous/fast-api/setting/reasoning"
+	"github.com/QuantumNous/fast-api/types"
 
 	"github.com/gin-gonic/gin"
 )
 
-func ClaudeHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *types.NewAPIError) {
+func ClaudeHelper(c *gin.Context, info *relaycommon.RelayInfo) (newAPIError *types.FastAPIError) {
 
 	info.InitChannelMeta(c)
 

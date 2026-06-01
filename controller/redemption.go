@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"unicode/utf8"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/i18n"
-	"github.com/QuantumNous/new-api/model"
-	"github.com/QuantumNous/new-api/setting/operation_setting"
+	"github.com/QuantumNous/fast-api/common"
+	"github.com/QuantumNous/fast-api/i18n"
+	"github.com/QuantumNous/fast-api/model"
+	"github.com/QuantumNous/fast-api/setting/operation_setting"
 
 	"github.com/gin-gonic/gin"
 )

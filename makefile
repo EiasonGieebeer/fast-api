@@ -3,8 +3,8 @@ FRONTEND_CLASSIC_DIR = ./web/classic
 BACKEND_DIR = .
 DEV_COMPOSE_FILE = docker-compose.dev.yml
 DEV_POSTGRES_SERVICE = postgres
-DEV_BACKEND_SERVICE = new-api
-DEV_POSTGRES_DB = new-api
+DEV_BACKEND_SERVICE = fast-api
+DEV_POSTGRES_DB = fast-api
 DEV_POSTGRES_USER = root
 DEV_SQLITE_PATH ?= one-api.db
 

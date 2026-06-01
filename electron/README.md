@@ -1,6 +1,6 @@
-# New API Electron Desktop App
+# Fast API Electron Desktop App
 
-This directory contains the Electron wrapper for New API, providing a native desktop application with system tray support for Windows, macOS, and Linux.
+This directory contains the Electron wrapper for Fast API, providing a native desktop application with system tray support for Windows, macOS, and Linux.
 
 ## Prerequisites
 
@@ -9,8 +9,8 @@ The Electron app requires the compiled Go binary to function. You have two optio
 
 **Option A: Use existing binary (without Go installed)**
 ```bash
-# If you have a pre-built binary (e.g., new-api-macos)
-cp ../new-api-macos ../new-api
+# If you have a pre-built binary (e.g., fast-api-macos)
+cp ../fast-api-macos ../fast-api
 ```
 
 **Option B: Build from source (requires Go)**
@@ -33,14 +33,14 @@ This will:
 - Start the Go backend on port 3000
 - Open an Electron window with DevTools enabled
 - Create a system tray icon (menu bar on macOS)
-- Store database in `../data/new-api.db`
+- Store database in `../data/fast-api.db`
 
 ## Building for Production
 
 ### Quick Build
 ```bash
 # Ensure Go binary exists in parent directory
-ls ../new-api  # Should exist
+ls ../fast-api  # Should exist
 
 # Build for current platform
 npm run build
@@ -66,8 +66,8 @@ const PORT = 3000; // Change to desired port
 ```
 
 ### Database Location
-- **Development**: `../data/new-api.db` (project directory)
+- **Development**: `../data/fast-api.db` (project directory)
 - **Production**:
-  - macOS: `~/Library/Application Support/New API/data/`
-  - Windows: `%APPDATA%/New API/data/`
-  - Linux: `~/.config/New API/data/`
+  - macOS: `~/Library/Application Support/Fast API/data/`
+  - Windows: `%APPDATA%/Fast API/data/`
+  - Linux: `~/.config/Fast API/data/`

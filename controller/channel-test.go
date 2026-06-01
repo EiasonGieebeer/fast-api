@@ -15,20 +15,20 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/new-api/common"
-	"github.com/QuantumNous/new-api/constant"
-	"github.com/QuantumNous/new-api/dto"
-	"github.com/QuantumNous/new-api/middleware"
-	"github.com/QuantumNous/new-api/model"
-	"github.com/QuantumNous/new-api/pkg/billingexpr"
-	"github.com/QuantumNous/new-api/relay"
-	relaycommon "github.com/QuantumNous/new-api/relay/common"
-	relayconstant "github.com/QuantumNous/new-api/relay/constant"
-	"github.com/QuantumNous/new-api/relay/helper"
-	"github.com/QuantumNous/new-api/service"
-	"github.com/QuantumNous/new-api/setting/operation_setting"
-	"github.com/QuantumNous/new-api/setting/ratio_setting"
-	"github.com/QuantumNous/new-api/types"
+	"github.com/QuantumNous/fast-api/common"
+	"github.com/QuantumNous/fast-api/constant"
+	"github.com/QuantumNous/fast-api/dto"
+	"github.com/QuantumNous/fast-api/middleware"
+	"github.com/QuantumNous/fast-api/model"
+	"github.com/QuantumNous/fast-api/pkg/billingexpr"
+	"github.com/QuantumNous/fast-api/relay"
+	relaycommon "github.com/QuantumNous/fast-api/relay/common"
+	relayconstant "github.com/QuantumNous/fast-api/relay/constant"
+	"github.com/QuantumNous/fast-api/relay/helper"
+	"github.com/QuantumNous/fast-api/service"
+	"github.com/QuantumNous/fast-api/setting/operation_setting"
+	"github.com/QuantumNous/fast-api/setting/ratio_setting"
+	"github.com/QuantumNous/fast-api/types"
 
 	"github.com/bytedance/gopkg/util/gopool"
 	"github.com/samber/lo"
@@ -40,7 +40,7 @@ import (
 type testResult struct {
 	context     *gin.Context
 	localErr    error
-	newAPIError *types.NewAPIError
+	newAPIError *types.FastAPIError
 }
 
 func normalizeChannelTestEndpoint(channel *model.Channel, modelName, endpointType string) string {
@@ -419,7 +419,7 @@ func testChannel(channel *model.Channel, testUserID int, testModel string, endpo
 				return testResult{
 					context:     c,
 					localErr:    fixedErr,
-					newAPIError: relaycommon.NewAPIErrorFromParamOverride(fixedErr),
+					newAPIError: relaycommon.FastAPIErrorFromParamOverride(fixedErr),
 				}
 			}
 			return testResult{

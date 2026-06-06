@@ -5,6 +5,9 @@ type UpstreamDTO struct {
 	Name     string `json:"name" binding:"required"`
 	BaseURL  string `json:"base_url" binding:"required"`
 	Endpoint string `json:"endpoint"`
+	// Proxy 为该上游渠道对应的代理地址（如 socks5://host:port、http://host:port）。
+	// 当通过渠道同步价格时，会自动填充为该渠道自身的代理设置，使价格同步各自走独立的代理。
+	Proxy string `json:"proxy,omitempty"`
 }
 
 type UpstreamRequest struct {

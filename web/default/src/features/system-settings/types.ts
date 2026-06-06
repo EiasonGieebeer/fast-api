@@ -368,6 +368,7 @@ export type UpstreamConfig = {
   name: string
   base_url: string
   endpoint: string
+  proxy?: string
 }
 
 export type FetchUpstreamRatiosRequest = {

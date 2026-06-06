@@ -26,6 +26,7 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/net/proxy"
 )
 
 const (
@@ -50,6 +51,75 @@ func nearlyEqual(a, b float64) bool {
 		return a-b < floatEpsilon
 	}
 	return b-a < floatEpsilon
+}
+
+// buildRatioSyncHTTPClient 为价格同步构造 HTTP 客户端。
+// proxyURL 为空时返回默认客户端（保留对 github.io 的 IPv4/IPv6 回退）；
+// 否则根据代理协议（http/https/socks5/socks5h）构造走对应代理的客户端，
+// 使不同渠道的价格同步各自走独立的代理。代理无法解析时返回 nil 由调用方回退。
+func buildRatioSyncHTTPClient(proxyURL string) *http.Client {
+	dialer := &net.Dialer{Timeout: 10 * time.Second}
+	transport := &http.Transport{
+		MaxIdleConns:          100,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 1 * time.Second,
+		ResponseHeaderTimeout: 10 * time.Second,
+	}
+	if common.TLSInsecureSkipVerify {
+		transport.TLSClientConfig = common.InsecureTLSConfig
+	}
+
+	if strings.TrimSpace(proxyURL) == "" {
+		// 默认无代理：对 github.io 优先尝试 IPv4，失败则回退 IPv6。
+		transport.DialContext = func(ctx context.Context, network, addr string) (net.Conn, error) {
+			host, _, err := net.SplitHostPort(addr)
+			if err != nil {
+				host = addr
+			}
+			if strings.HasSuffix(host, "github.io") {
+				if conn, err := dialer.DialContext(ctx, "tcp4", addr); err == nil {
+					return conn, nil
+				}
+				return dialer.DialContext(ctx, "tcp6", addr)
+			}
+			return dialer.DialContext(ctx, network, addr)
+		}
+		return &http.Client{Transport: transport}
+	}
+
+	parsedURL, err := url.Parse(proxyURL)
+	if err != nil {
+		logger.LogWarn(context.Background(), "ratio sync proxy parse failed: "+err.Error())
+		return nil
+	}
+
+	switch parsedURL.Scheme {
+	case "http", "https":
+		transport.Proxy = http.ProxyURL(parsedURL)
+		return &http.Client{Transport: transport}
+	case "socks5", "socks5h":
+		var auth *proxy.Auth
+		if parsedURL.User != nil {
+			auth = &proxy.Auth{User: parsedURL.User.Username()}
+			if password, ok := parsedURL.User.Password(); ok {
+				auth.Password = password
+			}
+		}
+		// proxy.SOCKS5 使用 tcp，所有连接（含 DNS）都走代理，等价于 socks5h。
+		socksDialer, err := proxy.SOCKS5("tcp", parsedURL.Host, auth, proxy.Direct)
+		if err != nil {
+			logger.LogWarn(context.Background(), "ratio sync socks5 dialer init failed: "+err.Error())
+			return nil
+		}
+		transport.DialContext = func(ctx context.Context, network, addr string) (net.Conn, error) {
+			return socksDialer.Dial(network, addr)
+		}
+		return &http.Client{Transport: transport}
+	default:
+		logger.LogWarn(context.Background(), "ratio sync unsupported proxy scheme: "+parsedURL.Scheme)
+		return nil
+	}
 }
 
 func valuesEqual(a, b interface{}) bool {
@@ -160,6 +230,13 @@ func FetchUpstreamRatios(c *gin.Context) {
 					u.Endpoint = defaultEndpoint
 				}
 				u.BaseURL = strings.TrimRight(u.BaseURL, "/")
+				// 前端按 upstreams 传入时通常不带 proxy，这里根据渠道 ID 自动补全
+				// 该渠道自身的代理设置，使价格同步走各自独立的代理。
+				if strings.TrimSpace(u.Proxy) == "" && u.ID != 0 {
+					if dbCh, err := model.GetChannelById(u.ID, false); err == nil && dbCh != nil {
+						u.Proxy = dbCh.GetSetting().Proxy
+					}
+				}
 				upstreams = append(upstreams, u)
 			}
 		}
@@ -181,6 +258,7 @@ func FetchUpstreamRatios(c *gin.Context) {
 					Name:     ch.Name,
 					BaseURL:  strings.TrimRight(base, "/"),
 					Endpoint: "",
+					Proxy:    ch.GetSetting().Proxy,
 				})
 			}
 		}
@@ -196,26 +274,29 @@ func FetchUpstreamRatios(c *gin.Context) {
 
 	sem := make(chan struct{}, maxConcurrentFetches)
 
-	dialer := &net.Dialer{Timeout: 10 * time.Second}
-	transport := &http.Transport{MaxIdleConns: 100, IdleConnTimeout: 90 * time.Second, TLSHandshakeTimeout: 10 * time.Second, ExpectContinueTimeout: 1 * time.Second, ResponseHeaderTimeout: 10 * time.Second}
-	if common.TLSInsecureSkipVerify {
-		transport.TLSClientConfig = common.InsecureTLSConfig
-	}
-	transport.DialContext = func(ctx context.Context, network, addr string) (net.Conn, error) {
-		host, _, err := net.SplitHostPort(addr)
-		if err != nil {
-			host = addr
+	// 默认（无代理）客户端：保留对 github.io 的 IPv4/IPv6 回退处理。
+	defaultClient := buildRatioSyncHTTPClient("")
+	// 按代理地址缓存客户端，使不同渠道走各自独立的代理，相同代理复用同一客户端。
+	proxyClients := make(map[string]*http.Client)
+	var proxyClientsLock sync.Mutex
+
+	getClientForProxy := func(proxyURL string) *http.Client {
+		if strings.TrimSpace(proxyURL) == "" {
+			return defaultClient
 		}
-		// 对 github.io 优先尝试 IPv4，失败则回退 IPv6
-		if strings.HasSuffix(host, "github.io") {
-			if conn, err := dialer.DialContext(ctx, "tcp4", addr); err == nil {
-				return conn, nil
-			}
-			return dialer.DialContext(ctx, "tcp6", addr)
+		proxyClientsLock.Lock()
+		defer proxyClientsLock.Unlock()
+		if cl, ok := proxyClients[proxyURL]; ok {
+			return cl
 		}
-		return dialer.DialContext(ctx, network, addr)
+		cl := buildRatioSyncHTTPClient(proxyURL)
+		if cl == nil {
+			// 代理配置无法解析时回退到默认客户端，避免直接失败。
+			cl = defaultClient
+		}
+		proxyClients[proxyURL] = cl
+		return cl
 	}
-	client := &http.Client{Transport: transport}
 
 	for _, chn := range upstreams {
 		wg.Add(1)
@@ -224,6 +305,9 @@ func FetchUpstreamRatios(c *gin.Context) {
 
 			sem <- struct{}{}
 			defer func() { <-sem }()
+
+			// 选择该渠道对应的客户端：有代理走代理，无代理走默认客户端。
+			client := getClientForProxy(chItem.Proxy)
 
 			isOpenRouter := chItem.Endpoint == "openrouter"
 

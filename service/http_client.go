@@ -2,17 +2,18 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"net/url"
+	"strconv"
 	"sync"
 	"time"
 
 	"github.com/QuantumNous/fast-api/common"
 	"github.com/QuantumNous/fast-api/setting/system_setting"
-
-	"golang.org/x/net/proxy"
 )
 
 var (
@@ -125,21 +126,10 @@ func NewProxyHttpClient(proxyURL string) (*http.Client, error) {
 		return client, nil
 
 	case "socks5", "socks5h":
-		// 获取认证信息
-		var auth *proxy.Auth
-		if parsedURL.User != nil {
-			auth = &proxy.Auth{
-				User:     parsedURL.User.Username(),
-				Password: "",
-			}
-			if password, ok := parsedURL.User.Password(); ok {
-				auth.Password = password
-			}
-		}
-
-		// 创建 SOCKS5 代理拨号器
-		// proxy.SOCKS5 使用 tcp 参数，所有 TCP 连接包括 DNS 查询都将通过代理进行。行为与 socks5h 相同
-		dialer, err := proxy.SOCKS5("tcp", parsedURL.Host, auth, proxy.Direct)
+		// Build a SOCKS5 dialer that sends domain names through the proxy (SOCKS5h behavior).
+		// We do NOT use golang.org/x/net/proxy.SOCKS5 because it resolves DNS locally,
+		// which breaks connectivity in environments with DNS pollution (e.g. China GFW).
+		dialer, err := newSOCKS5hDialer(parsedURL.Host, parsedURL.User)
 		if err != nil {
 			return nil, err
 		}
@@ -148,9 +138,7 @@ func NewProxyHttpClient(proxyURL string) (*http.Client, error) {
 			MaxIdleConns:        common.RelayMaxIdleConns,
 			MaxIdleConnsPerHost: common.RelayMaxIdleConnsPerHost,
 			ForceAttemptHTTP2:   true,
-			DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-				return dialer.Dial(network, addr)
-			},
+			DialContext:         dialer,
 		}
 		if common.TLSInsecureSkipVerify {
 			transport.TLSClientConfig = common.InsecureTLSConfig
@@ -166,4 +154,144 @@ func NewProxyHttpClient(proxyURL string) (*http.Client, error) {
 	default:
 		return nil, fmt.Errorf("unsupported proxy scheme: %s, must be http, https, socks5 or socks5h", parsedURL.Scheme)
 	}
+}
+
+// newSOCKS5hDialer creates a DialContext function that connects through a SOCKS5 proxy
+// and sends domain names through the proxy for DNS resolution (SOCKS5h behavior).
+// This avoids local DNS resolution which is critical in environments with DNS pollution.
+func newSOCKS5hDialer(proxyAddr string, userinfo *url.Userinfo) (func(ctx context.Context, network, addr string) (net.Conn, error), error) {
+	var username, password string
+	if userinfo != nil {
+		username = userinfo.Username()
+		password, _ = userinfo.Password()
+	}
+
+	return func(ctx context.Context, network, addr string) (net.Conn, error) {
+		if network != "tcp" && network != "tcp4" && network != "tcp6" {
+			return nil, fmt.Errorf("socks5h: unsupported network %s", network)
+		}
+
+		var d net.Dialer
+		conn, err := d.DialContext(ctx, "tcp", proxyAddr)
+		if err != nil {
+			return nil, fmt.Errorf("socks5h: connect to proxy %s: %w", proxyAddr, err)
+		}
+
+		// Handshake
+		if username != "" {
+			// Offer no-auth and username/password methods
+			if _, err := conn.Write([]byte{0x05, 0x02, 0x00, 0x02}); err != nil {
+				conn.Close()
+				return nil, err
+			}
+		} else {
+			if _, err := conn.Write([]byte{0x05, 0x01, 0x00}); err != nil {
+				conn.Close()
+				return nil, err
+			}
+		}
+
+		resp := make([]byte, 2)
+		if _, err := io.ReadFull(conn, resp); err != nil {
+			conn.Close()
+			return nil, fmt.Errorf("socks5h: handshake read: %w", err)
+		}
+		if resp[0] != 0x05 {
+			conn.Close()
+			return nil, fmt.Errorf("socks5h: unexpected version %d", resp[0])
+		}
+
+		switch resp[1] {
+		case 0x00:
+			// No authentication required
+		case 0x02:
+			// Username/password authentication
+			authMsg := make([]byte, 0, 3+len(username)+len(password))
+			authMsg = append(authMsg, 0x01, byte(len(username)))
+			authMsg = append(authMsg, []byte(username)...)
+			authMsg = append(authMsg, byte(len(password)))
+			authMsg = append(authMsg, []byte(password)...)
+			if _, err := conn.Write(authMsg); err != nil {
+				conn.Close()
+				return nil, err
+			}
+			authResp := make([]byte, 2)
+			if _, err := io.ReadFull(conn, authResp); err != nil {
+				conn.Close()
+				return nil, fmt.Errorf("socks5h: auth read: %w", err)
+			}
+			if authResp[1] != 0x00 {
+				conn.Close()
+				return nil, errors.New("socks5h: authentication failed")
+			}
+		default:
+			conn.Close()
+			return nil, fmt.Errorf("socks5h: unsupported auth method %d", resp[1])
+		}
+
+		// CONNECT with domain name (address type 0x03)
+		host, portStr, err := net.SplitHostPort(addr)
+		if err != nil {
+			conn.Close()
+			return nil, fmt.Errorf("socks5h: split host: %w", err)
+		}
+		port, err := strconv.Atoi(portStr)
+		if err != nil {
+			conn.Close()
+			return nil, fmt.Errorf("socks5h: invalid port: %w", err)
+		}
+		if len(host) > 255 {
+			conn.Close()
+			return nil, fmt.Errorf("socks5h: hostname too long: %d", len(host))
+		}
+
+		req := make([]byte, 0, 7+len(host))
+		req = append(req, 0x05, 0x01, 0x00, 0x03, byte(len(host)))
+		req = append(req, []byte(host)...)
+		req = append(req, byte(port>>8), byte(port&0xff))
+		if _, err := conn.Write(req); err != nil {
+			conn.Close()
+			return nil, err
+		}
+
+		// Read CONNECT response: first 4 bytes (ver, rep, rsv, atyp) + variable
+		// For domain name response: atyp=0x03, then 1 byte length + domain + 2 bytes port
+		// For IPv4 response: atyp=0x01, then 4 bytes IP + 2 bytes port
+		respHeader := make([]byte, 4)
+		if _, err := io.ReadFull(conn, respHeader); err != nil {
+			conn.Close()
+			return nil, fmt.Errorf("socks5h: connect response header: %w", err)
+		}
+		if respHeader[1] != 0x00 {
+			conn.Close()
+			return nil, fmt.Errorf("socks5h: connect failed, reply code %d", respHeader[1])
+		}
+
+		// Skip the remaining bind address bytes
+		var skipLen int
+		switch respHeader[3] {
+		case 0x01: // IPv4
+			skipLen = 4 + 2
+		case 0x03: // Domain name
+			lenByte := make([]byte, 1)
+			if _, err := io.ReadFull(conn, lenByte); err != nil {
+				conn.Close()
+				return nil, err
+			}
+			skipLen = int(lenByte[0]) + 2
+		case 0x04: // IPv6
+			skipLen = 16 + 2
+		default:
+			conn.Close()
+			return nil, fmt.Errorf("socks5h: unknown address type %d", respHeader[3])
+		}
+		if skipLen > 0 {
+			if _, err := io.CopyN(io.Discard, conn, int64(skipLen)); err != nil {
+				conn.Close()
+				return nil, err
+			}
+		}
+
+		return conn, nil
+	}, nil
 }

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"net"
 	"net/http"
 	"net/url"
 	"sort"
@@ -17,7 +18,6 @@ import (
 
 	"github.com/QuantumNous/fast-api/common"
 	"github.com/QuantumNous/fast-api/logger"
-	"github.com/QuantumNous/fast-api/service"
 
 	"github.com/QuantumNous/fast-api/dto"
 	"github.com/QuantumNous/fast-api/model"
@@ -181,7 +181,6 @@ func FetchUpstreamRatios(c *gin.Context) {
 					Name:     ch.Name,
 					BaseURL:  strings.TrimRight(base, "/"),
 					Endpoint: "",
-				Proxy:    ch.GetSetting().Proxy,
 				})
 			}
 		}
@@ -196,6 +195,27 @@ func FetchUpstreamRatios(c *gin.Context) {
 	ch := make(chan upstreamResult, len(upstreams))
 
 	sem := make(chan struct{}, maxConcurrentFetches)
+
+	dialer := &net.Dialer{Timeout: 10 * time.Second}
+	transport := &http.Transport{MaxIdleConns: 100, IdleConnTimeout: 90 * time.Second, TLSHandshakeTimeout: 10 * time.Second, ExpectContinueTimeout: 1 * time.Second, ResponseHeaderTimeout: 10 * time.Second}
+	if common.TLSInsecureSkipVerify {
+		transport.TLSClientConfig = common.InsecureTLSConfig
+	}
+	transport.DialContext = func(ctx context.Context, network, addr string) (net.Conn, error) {
+		host, _, err := net.SplitHostPort(addr)
+		if err != nil {
+			host = addr
+		}
+		// 对 github.io 优先尝试 IPv4，失败则回退 IPv6
+		if strings.HasSuffix(host, "github.io") {
+			if conn, err := dialer.DialContext(ctx, "tcp4", addr); err == nil {
+				return conn, nil
+			}
+			return dialer.DialContext(ctx, "tcp6", addr)
+		}
+		return dialer.DialContext(ctx, network, addr)
+	}
+	client := &http.Client{Transport: transport}
 
 	for _, chn := range upstreams {
 		wg.Add(1)
@@ -260,19 +280,11 @@ func FetchUpstreamRatios(c *gin.Context) {
 				return
 			}
 
-			// 为每个渠道创建独立的 HTTP 客户端，跟随渠道各自的代理设置
-			httpClient, proxyErr := service.GetHttpClientWithProxy(chItem.Proxy)
-			if proxyErr != nil {
-				logger.LogWarn(c.Request.Context(), "failed to create http client for "+chItem.Name+": "+proxyErr.Error())
-				ch <- upstreamResult{Name: uniqueName, Err: "failed to create http client: " + proxyErr.Error()}
-				return
-			}
-
 			// 简单重试：最多 3 次，指数退避
 			var resp *http.Response
 			var lastErr error
 			for attempt := 0; attempt < 3; attempt++ {
-				resp, lastErr = httpClient.Do(httpReq)
+				resp, lastErr = client.Do(httpReq)
 				if lastErr == nil {
 					break
 				}
@@ -1015,4 +1027,3 @@ func GetSyncableChannels(c *gin.Context) {
 		"data":    syncableChannels,
 	})
 }
-

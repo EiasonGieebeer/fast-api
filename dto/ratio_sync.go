@@ -5,7 +5,6 @@ type UpstreamDTO struct {
 	Name     string `json:"name" binding:"required"`
 	BaseURL  string `json:"base_url" binding:"required"`
 	Endpoint string `json:"endpoint"`
-	Proxy    string `json:"proxy,omitempty"`
 }
 
 type UpstreamRequest struct {

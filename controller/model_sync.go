@@ -43,10 +43,10 @@ func getUpstreamBase() string {
 func getUpstreamURLs(locale string) (modelsURL, vendorsURL string) {
 	base := strings.TrimRight(getUpstreamBase(), "/")
 	if l, ok := normalizeLocale(locale); ok && l != "" {
-		return fmt.Sprintf("%s/api/i18n/%s/fastapi/models.json", base, l),
-			fmt.Sprintf("%s/api/i18n/%s/fastapi/vendors.json", base, l)
+		return fmt.Sprintf("%s/api/i18n/%s/newapi/models.json", base, l),
+			fmt.Sprintf("%s/api/i18n/%s/newapi/vendors.json", base, l)
 	}
-	return fmt.Sprintf("%s/api/fastapi/models.json", base), fmt.Sprintf("%s/api/fastapi/vendors.json", base)
+	return fmt.Sprintf("%s/api/newapi/models.json", base), fmt.Sprintf("%s/api/newapi/vendors.json", base)
 }
 
 type upstreamEnvelope[T any] struct {

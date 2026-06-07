@@ -90,6 +90,13 @@ type syncRequest struct {
 }
 
 func newHTTPClient() *http.Client {
+	proxyURL := strings.TrimSpace(common.GetEnvOrDefaultString("SYNC_HTTP_PROXY", ""))
+	if proxyURL != "" {
+		if cl := buildRatioSyncHTTPClient(proxyURL); cl != nil {
+			return cl
+		}
+		common.SysLog(fmt.Sprintf("model_sync: invalid SYNC_HTTP_PROXY=%q, falling back to direct", proxyURL))
+	}
 	timeoutSec := common.GetEnvOrDefault("SYNC_HTTP_TIMEOUT_SECONDS", 10)
 	dialer := &net.Dialer{Timeout: time.Duration(timeoutSec) * time.Second}
 	transport := &http.Transport{

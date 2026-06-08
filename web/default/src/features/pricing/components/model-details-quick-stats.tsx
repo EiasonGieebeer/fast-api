@@ -54,17 +54,17 @@ function buildStats(
       key: 'context',
       icon: Layers,
       label: t('Context'),
-      value: formatTokenCount(metadata.context_length),
+      value: metadata.context_length || '—',
       hint: t('Maximum input window'),
     },
   ]
 
-  if (metadata.max_output_tokens > 0) {
+  if (metadata.max_output_tokens) {
     stats.push({
       key: 'max-output',
       icon: Maximize2,
       label: t('Max output'),
-      value: formatTokenCount(metadata.max_output_tokens),
+      value: metadata.max_output_tokens,
       hint: t('Maximum tokens per response'),
     })
   }

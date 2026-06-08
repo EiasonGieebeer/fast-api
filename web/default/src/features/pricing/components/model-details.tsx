@@ -966,11 +966,13 @@ export function ModelDetailsContent(props: ModelDetailsContentProps) {
 
           <ModelDetailsQuickStats metadata={metadata} />
 
-          <ModelSignalsSection
-            capabilities={metadata.capabilities}
-            input={metadata.input_modalities}
-            output={metadata.output_modalities}
-          />
+          {props.model.show_signals === 1 && (
+            <ModelSignalsSection
+              capabilities={metadata.capabilities}
+              input={metadata.input_modalities}
+              output={metadata.output_modalities}
+            />
+          )}
 
           <ModelDetailsProviderInfo model={props.model} />
         </TabsContent>

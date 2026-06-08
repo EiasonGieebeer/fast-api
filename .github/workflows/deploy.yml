@@ -54,6 +54,8 @@ jobs:
           tags: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           build-args: |
             WEB_BASE_PATH=${{ env.FAST_API_BASE_PATH }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Deploy on server
         if: ${{ success() }}
@@ -63,6 +65,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script_stop: true
+          command_timeout: 10m
           script: |
             set -Eeuo pipefail
 

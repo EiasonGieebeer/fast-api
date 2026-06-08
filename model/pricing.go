@@ -38,14 +38,15 @@ type Pricing struct {
 	PricingVersion         string                  `json:"pricing_version,omitempty"`
 
 	// Model metadata — from models table, zero values mean "not set"
-	ContextLength    int      `json:"context_length,omitempty"`
-	MaxOutputTokens  int      `json:"max_output_tokens,omitempty"`
+	ContextLength    string   `json:"context_length,omitempty"`
+	MaxOutputTokens  string   `json:"max_output_tokens,omitempty"`
 	ParameterCount   string   `json:"parameter_count,omitempty"`
 	KnowledgeCutoff  string   `json:"knowledge_cutoff,omitempty"`
 	ReleaseDate      string   `json:"release_date,omitempty"`
 	InputModalities  []string `json:"input_modalities,omitempty"`
 	OutputModalities []string `json:"output_modalities,omitempty"`
 	Capabilities     []string `json:"capabilities,omitempty"`
+	ShowSignals      int      `json:"show_signals"`
 }
 
 type PricingVendor struct {
@@ -329,6 +330,7 @@ func updatePricing() {
 		if strings.TrimSpace(meta.Capabilities) != "" {
 			_ = json.Unmarshal([]byte(meta.Capabilities), &pricing.Capabilities)
 		}
+			pricing.ShowSignals = meta.ShowSignals
 		}
 		modelPrice, findPrice := ratio_setting.GetModelPrice(model, false)
 		if findPrice {

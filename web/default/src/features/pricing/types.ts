@@ -61,14 +61,15 @@ export type PricingModel = {
    * When the backend ships these fields, the inference layer becomes a
    * fallback rather than the source of truth.
    */
-  context_length?: number
-  max_output_tokens?: number
+  context_length?: string
+  max_output_tokens?: string
   knowledge_cutoff?: string
   release_date?: string
   parameter_count?: string
   input_modalities?: Modality[]
   output_modalities?: Modality[]
   capabilities?: ModelCapability[]
+  show_signals?: number
 }
 
 /** Input/output modalities supported by a model. */

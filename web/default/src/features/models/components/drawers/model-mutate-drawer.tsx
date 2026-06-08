@@ -96,14 +96,15 @@ const extendedModelFormSchema = z.object({
   name_rule: z.number(),
   status: z.boolean(),
   sync_official: z.boolean(),
-  context_length: z.number().optional(),
-  max_output_tokens: z.number().optional(),
+  context_length: z.string().optional(),
+  max_output_tokens: z.string().optional(),
   parameter_count: z.string().optional(),
   knowledge_cutoff: z.string().optional(),
   release_date: z.string().optional(),
   input_modalities: z.string().optional(),
   output_modalities: z.string().optional(),
   capabilities: z.string().optional(),
+  show_signals: z.boolean().optional(),
   price: z.string().optional(),
   ratio: z.string().optional(),
   cacheRatio: z.string().optional(),
@@ -225,14 +226,15 @@ export function ModelMutateDrawer({
       name_rule: 0,
       status: true,
       sync_official: true,
-      context_length: undefined,
-      max_output_tokens: undefined,
+      context_length: '',
+      max_output_tokens: '',
       parameter_count: '',
       knowledge_cutoff: '',
       release_date: '',
       input_modalities: '',
       output_modalities: '',
       capabilities: '',
+      show_signals: false,
       price: '',
       ratio: '',
       cacheRatio: '',
@@ -300,6 +302,7 @@ export function ModelMutateDrawer({
         input_modalities: model.input_modalities || '',
         output_modalities: model.output_modalities || '',
         capabilities: model.capabilities || '',
+        show_signals: model.show_signals === 1,
         price: '',
         ratio: '',
         cacheRatio: '',
@@ -412,6 +415,7 @@ export function ModelMutateDrawer({
         input_modalities: '',
         output_modalities: '',
         capabilities: '',
+      show_signals: false,
         price: '',
         ratio: '',
         cacheRatio: '',
@@ -433,6 +437,7 @@ export function ModelMutateDrawer({
           tags: Array.isArray(values.tags) ? values.tags.join(',') : '',
           status: values.status ? 1 : 0,
           sync_official: values.sync_official ? 1 : 0,
+          show_signals: values.show_signals ? 1 : 0,
         }
 
         // Remove ratio fields from model data (they're stored in system settings)
@@ -937,19 +942,12 @@ export function ModelMutateDrawer({
                     <FormLabel>{t('Context Length')}</FormLabel>
                     <FormControl>
                       <Input
-                        type='number'
-                        placeholder='128000'
+                        placeholder='128K'
                         {...field}
-                        value={field.value ?? ''}
-                        onChange={(e) =>
-                          field.onChange(
-                            e.target.value ? Number(e.target.value) : undefined
-                          )
-                        }
                       />
                     </FormControl>
                     <FormDescription>
-                      {t('Maximum context window size in tokens')}
+                      {t('Maximum context window size (e.g. 128K, 1M)')}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -964,19 +962,12 @@ export function ModelMutateDrawer({
                     <FormLabel>{t('Max Output Tokens')}</FormLabel>
                     <FormControl>
                       <Input
-                        type='number'
-                        placeholder='16384'
+                        placeholder='16K'
                         {...field}
-                        value={field.value ?? ''}
-                        onChange={(e) =>
-                          field.onChange(
-                            e.target.value ? Number(e.target.value) : undefined
-                          )
-                        }
                       />
                     </FormControl>
                     <FormDescription>
-                      {t('Maximum tokens the model can generate per response')}
+                      {t('Maximum tokens the model can generate (e.g. 4K, 16K)')}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
@@ -1101,6 +1092,28 @@ export function ModelMutateDrawer({
                       {t('JSON array: function_calling, streaming, vision, reasoning, tools, json_mode, structured_output, web_search, code_interpreter, caching, embeddings, system_prompt')}
                     </FormDescription>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='show_signals'
+                render={({ field }) => (
+                  <FormItem className={sideDrawerSwitchItemClassName()}>
+                    <div className='flex flex-col gap-0.5'>
+                      <FormLabel className='text-base'>
+                        {t('Show Capabilities')}
+                      </FormLabel>
+                      <FormDescription>
+                        {t('Display the Capabilities / Supported modalities section on the model detail page.')}
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
                   </FormItem>
                 )}
               />

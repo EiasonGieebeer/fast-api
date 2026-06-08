@@ -254,6 +254,10 @@ func migrateDB() error {
 	if err := migrateTokenModelLimitsToText(); err != nil {
 		return err
 	}
+	// Migrate context_length / max_output_tokens from int to varchar
+	if err := migrateModelMetadataToString(); err != nil {
+		return err
+	}
 
 	err := DB.AutoMigrate(
 		&Channel{},
@@ -508,6 +512,50 @@ func migrateTokenModelLimitsToText() error {
 	return nil
 }
 
+
+// migrateModelMetadataToString migrates context_length and max_output_tokens
+// columns from integer to varchar(32) so admins can enter human-readable values
+// like "128K" or "1M" instead of raw token counts.
+func migrateModelMetadataToString() error {
+	tableName := "models"
+	if !DB.Migrator().HasTable(tableName) {
+		return nil
+	}
+
+	for _, col := range []struct {
+		name string
+		ddl  string
+	}{
+		{name: "context_length", ddl: "varchar(32)"},
+		{name: "max_output_tokens", ddl: "varchar(32)"},
+	} {
+		if !DB.Migrator().HasColumn(&Model{}, col.name) {
+			continue
+		}
+
+		// SQLite uses type affinity — no migration needed
+		if common.UsingSQLite {
+			continue
+		}
+
+		var alterSQL string
+		if common.UsingPostgreSQL {
+			alterSQL = fmt.Sprintf("ALTER TABLE %s ALTER COLUMN %s TYPE %s USING %s::%s",
+				tableName, col.name, col.ddl, col.name, col.ddl)
+		} else if common.UsingMySQL {
+			alterSQL = fmt.Sprintf("ALTER TABLE %s MODIFY COLUMN %s %s",
+				tableName, col.name, col.ddl)
+		}
+
+		if alterSQL != "" {
+			if err := DB.Exec(alterSQL).Error; err != nil {
+				return fmt.Errorf("failed to migrate %s.%s to varchar: %w", tableName, col.name, err)
+			}
+			common.SysLog(fmt.Sprintf("Successfully migrated %s.%s to varchar(32)", tableName, col.name))
+		}
+	}
+	return nil
+}
 // migrateSubscriptionPlanPriceAmount migrates price_amount column from float/double to decimal(10,6)
 // This is safe to run multiple times - it checks the column type first
 func migrateSubscriptionPlanPriceAmount() {

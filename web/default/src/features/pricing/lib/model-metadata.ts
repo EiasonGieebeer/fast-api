@@ -229,23 +229,23 @@ function ordered(modalities: Set<Modality>): Modality[] {
 
 function inferContextAndOutputs(
   endpoints: string[]
-): { context: number; maxOutput: number } {
+): { context: string; maxOutput: string } {
   if (endpoints.includes('embeddings') || endpoints.includes('jina-rerank')) {
-    return { context: 8_192, maxOutput: 0 }
+    return { context: '8K', maxOutput: '' }
   }
   if (
     endpoints.includes('image-generation') ||
     endpoints.includes('openai-video')
   ) {
-    return { context: 4_096, maxOutput: 0 }
+    return { context: '4K', maxOutput: '' }
   }
-  // Return zero when we cannot infer — real value comes from backend metadata.
-  return { context: 0, maxOutput: 0 }
+  // Return empty when we cannot infer — real value comes from backend metadata.
+  return { context: '', maxOutput: '' }
 }
 
 export type ModelMetadata = {
-  context_length: number
-  max_output_tokens: number
+  context_length: string
+  max_output_tokens: string
   knowledge_cutoff: string
   release_date: string
   parameter_count: string
@@ -487,8 +487,7 @@ export function inferApiInfo(model: PricingModel): ApiInfo {
   const vendor = detectVendor(model.model_name || '')
   const tk = inferTokenizer(model, vendor)
   const license = LICENSE_BY_VENDOR[vendor]
-  const rand = seededRandom(hashStringToSeed(`${model.model_name}:api`))
-  const retention = vendor === 'openai' ? 30 : Math.round(rand() * 90)
+  const retention = vendor === 'openai' ? 30 : 90
   return {
     vendor,
     vendor_label: VENDOR_LABELS[vendor],

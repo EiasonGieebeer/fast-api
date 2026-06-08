@@ -52,6 +52,15 @@ export interface Model {
   quota_types?: number[]
   matched_models?: string[]
   matched_count?: number
+  // Model metadata (admin-maintained, zero/empty means not set)
+  context_length?: number
+  max_output_tokens?: number
+  parameter_count?: string
+  knowledge_cutoff?: string
+  release_date?: string
+  input_modalities?: string
+  output_modalities?: string
+  capabilities?: string
 }
 
 /**
@@ -238,6 +247,14 @@ export const modelFormSchema = z.object({
   name_rule: z.number().min(0).max(3).default(0),
   status: z.boolean().default(true),
   sync_official: z.boolean().default(true),
+  context_length: z.number().optional(),
+  max_output_tokens: z.number().optional(),
+  parameter_count: z.string().default(''),
+  knowledge_cutoff: z.string().default(''),
+  release_date: z.string().default(''),
+  input_modalities: z.string().default(''),
+  output_modalities: z.string().default(''),
+  capabilities: z.string().default(''),
 })
 
 export type ModelFormValues = z.infer<typeof modelFormSchema>

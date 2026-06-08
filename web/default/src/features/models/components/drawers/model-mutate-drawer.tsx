@@ -96,6 +96,14 @@ const extendedModelFormSchema = z.object({
   name_rule: z.number(),
   status: z.boolean(),
   sync_official: z.boolean(),
+  context_length: z.number().optional(),
+  max_output_tokens: z.number().optional(),
+  parameter_count: z.string().optional(),
+  knowledge_cutoff: z.string().optional(),
+  release_date: z.string().optional(),
+  input_modalities: z.string().optional(),
+  output_modalities: z.string().optional(),
+  capabilities: z.string().optional(),
   price: z.string().optional(),
   ratio: z.string().optional(),
   cacheRatio: z.string().optional(),
@@ -217,6 +225,14 @@ export function ModelMutateDrawer({
       name_rule: 0,
       status: true,
       sync_official: true,
+      context_length: undefined,
+      max_output_tokens: undefined,
+      parameter_count: '',
+      knowledge_cutoff: '',
+      release_date: '',
+      input_modalities: '',
+      output_modalities: '',
+      capabilities: '',
       price: '',
       ratio: '',
       cacheRatio: '',
@@ -276,6 +292,14 @@ export function ModelMutateDrawer({
         name_rule: model.name_rule || 0,
         status: model.status === 1,
         sync_official: model.sync_official === 1,
+        context_length: model.context_length,
+        max_output_tokens: model.max_output_tokens,
+        parameter_count: model.parameter_count || '',
+        knowledge_cutoff: model.knowledge_cutoff || '',
+        release_date: model.release_date || '',
+        input_modalities: model.input_modalities || '',
+        output_modalities: model.output_modalities || '',
+        capabilities: model.capabilities || '',
         price: '',
         ratio: '',
         cacheRatio: '',
@@ -380,6 +404,14 @@ export function ModelMutateDrawer({
         name_rule: 0,
         status: true,
         sync_official: true,
+        context_length: undefined,
+        max_output_tokens: undefined,
+        parameter_count: '',
+        knowledge_cutoff: '',
+        release_date: '',
+        input_modalities: '',
+        output_modalities: '',
+        capabilities: '',
         price: '',
         ratio: '',
         cacheRatio: '',
@@ -881,6 +913,192 @@ export function ModelMutateDrawer({
                     </FormControl>
                     <FormDescription>
                       {t('Define API endpoints for this model (JSON format)')}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </SideDrawerSection>
+
+            {/* Model Metadata */}
+            <SideDrawerSection>
+              <h3 className='text-sm font-semibold'>
+                {t('Model Metadata')}
+              </h3>
+              <p className='text-muted-foreground text-xs'>
+                {t('Optional specs shown on the model details page. Leave empty to use automatic inference.')}
+              </p>
+
+              <FormField
+                control={form.control}
+                name='context_length'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Context Length')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type='number'
+                        placeholder='128000'
+                        {...field}
+                        value={field.value ?? ''}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value ? Number(e.target.value) : undefined
+                          )
+                        }
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t('Maximum context window size in tokens')}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='max_output_tokens'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Max Output Tokens')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type='number'
+                        placeholder='16384'
+                        {...field}
+                        value={field.value ?? ''}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value ? Number(e.target.value) : undefined
+                          )
+                        }
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t('Maximum tokens the model can generate per response')}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='parameter_count'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Parameter Count')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='405B'
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t('e.g. 7B, 405B, 1.7T')}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className='grid grid-cols-2 gap-4'>
+                <FormField
+                  control={form.control}
+                  name='knowledge_cutoff'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Knowledge Cutoff')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder='2025-04'
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription className='text-xs'>
+                        {t('e.g. 2025-04')}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name='release_date'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Release Date')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder='2025-06-15'
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormDescription className='text-xs'>
+                        {t('e.g. 2025-06-15')}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name='input_modalities'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Input Modalities')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='["text","image"]'
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t('JSON array: text, image, audio, video, file')}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='output_modalities'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Output Modalities')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='["text"]'
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t('JSON array: text, image, audio, video')}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='capabilities'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Capabilities')}</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='["function_calling","streaming","vision"]'
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t('JSON array: function_calling, streaming, vision, reasoning, tools, json_mode, structured_output, web_search, code_interpreter, caching, embeddings, system_prompt')}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

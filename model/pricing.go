@@ -36,6 +36,16 @@ type Pricing struct {
 	BillingMode            string                  `json:"billing_mode,omitempty"`
 	BillingExpr            string                  `json:"billing_expr,omitempty"`
 	PricingVersion         string                  `json:"pricing_version,omitempty"`
+
+	// Model metadata — from models table, zero values mean "not set"
+	ContextLength    int      `json:"context_length,omitempty"`
+	MaxOutputTokens  int      `json:"max_output_tokens,omitempty"`
+	ParameterCount   string   `json:"parameter_count,omitempty"`
+	KnowledgeCutoff  string   `json:"knowledge_cutoff,omitempty"`
+	ReleaseDate      string   `json:"release_date,omitempty"`
+	InputModalities  []string `json:"input_modalities,omitempty"`
+	OutputModalities []string `json:"output_modalities,omitempty"`
+	Capabilities     []string `json:"capabilities,omitempty"`
 }
 
 type PricingVendor struct {
@@ -303,6 +313,22 @@ func updatePricing() {
 			pricing.Icon = meta.Icon
 			pricing.Tags = meta.Tags
 			pricing.VendorID = meta.VendorID
+
+		// model metadata (admin-maintained; zero means not set)
+		pricing.ContextLength = meta.ContextLength
+		pricing.MaxOutputTokens = meta.MaxOutputTokens
+		pricing.ParameterCount = meta.ParameterCount
+		pricing.KnowledgeCutoff = meta.KnowledgeCutoff
+		pricing.ReleaseDate = meta.ReleaseDate
+		if strings.TrimSpace(meta.InputModalities) != "" {
+			_ = json.Unmarshal([]byte(meta.InputModalities), &pricing.InputModalities)
+		}
+		if strings.TrimSpace(meta.OutputModalities) != "" {
+			_ = json.Unmarshal([]byte(meta.OutputModalities), &pricing.OutputModalities)
+		}
+		if strings.TrimSpace(meta.Capabilities) != "" {
+			_ = json.Unmarshal([]byte(meta.Capabilities), &pricing.Capabilities)
+		}
 		}
 		modelPrice, findPrice := ratio_setting.GetModelPrice(model, false)
 		if findPrice {

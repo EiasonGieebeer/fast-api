@@ -17,21 +17,20 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import type { Modality, ModelCapability, PricingModel } from '../types'
-import { hashStringToSeed, seededRandom } from './seed'
 
 // ----------------------------------------------------------------------------
 // Model metadata inference
 // ----------------------------------------------------------------------------
 //
-// The backend does not currently return `context_length`, `max_output_tokens`,
-// `knowledge_cutoff`, `release_date`, `parameter_count`, or modality/capability
-// flags for a model. Until it does, we infer reasonable values client-side
-// from the data we already have (endpoint types, ratios, tags, model name)
-// and fall back to a deterministic mock seeded from the model name so that
-// every render of the same model shows the same numbers.
+// The backend may return `context_length`, `max_output_tokens`,
+// `knowledge_cutoff`, `release_date`, `parameter_count`, modality and
+// capability flags for a model. When these are not set (zero / empty) we
+// infer reasonable values client-side from the data we already have
+// (endpoint types, ratios, tags, model name).
 //
-// When the backend starts returning these fields, callers should prefer the
-// explicit values on `model.*` and only fall back to the inferred ones.
+// Random bucket sampling has been removed — if the backend does not provide
+// a value and it cannot be inferred from the model name, it is left as
+// zero / empty rather than showing made-up data.
 
 const TEXT_INPUT_ENDPOINTS = new Set([
   'openai',
@@ -90,23 +89,6 @@ const KNOWLEDGE_CUTOFFS = [
   '2025-08',
 ]
 
-const PARAM_BUCKETS = [
-  '1.5B',
-  '3B',
-  '7B',
-  '8B',
-  '14B',
-  '32B',
-  '70B',
-  '120B',
-  '405B',
-]
-
-const CONTEXT_BUCKETS = [
-  8_192, 16_384, 32_768, 65_536, 128_000, 200_000, 1_000_000,
-]
-const MAX_OUTPUT_BUCKETS = [2_048, 4_096, 8_192, 16_384, 32_768, 65_536]
-
 const TAG_TO_CAPABILITY: Record<string, ModelCapability> = {
   vision: 'vision',
   multimodal: 'vision',
@@ -131,10 +113,6 @@ const TAG_TO_MODALITY: Record<string, Modality> = {
   file: 'file',
   document: 'file',
   pdf: 'file',
-}
-
-function pickFromBuckets<T>(buckets: T[], rand: () => number): T {
-  return buckets[Math.floor(rand() * buckets.length)]
 }
 
 function parseModelTags(tagsString?: string): string[] {
@@ -250,8 +228,6 @@ function ordered(modalities: Set<Modality>): Modality[] {
 }
 
 function inferContextAndOutputs(
-  name: string,
-  rand: () => number,
   endpoints: string[]
 ): { context: number; maxOutput: number } {
   if (endpoints.includes('embeddings') || endpoints.includes('jina-rerank')) {
@@ -263,48 +239,8 @@ function inferContextAndOutputs(
   ) {
     return { context: 4_096, maxOutput: 0 }
   }
-
-  const lower = name.toLowerCase()
-  if (lower.includes('1m') || lower.includes('-long')) {
-    return { context: 1_000_000, maxOutput: 65_536 }
-  }
-  if (/claude.*(?:4|opus|sonnet)/.test(lower)) {
-    return { context: 1_000_000, maxOutput: 65_536 }
-  }
-  if (
-    lower.includes('200k') ||
-    lower.includes('claude-3') ||
-    lower.includes('claude-4')
-  ) {
-    return { context: 200_000, maxOutput: 16_384 }
-  }
-  if (lower.includes('128k') || /gpt-4o|gpt-4\.1|gpt-5|o1|o3|o4/.test(lower)) {
-    return { context: 128_000, maxOutput: 16_384 }
-  }
-  if (/gemini.*-2|gemini.*pro|gemini.*flash/.test(lower)) {
-    return { context: 1_000_000, maxOutput: 8_192 }
-  }
-  if (/gpt-3\.5|claude-2/.test(lower)) {
-    return { context: 16_384, maxOutput: 4_096 }
-  }
-
-  const context = pickFromBuckets(CONTEXT_BUCKETS, rand)
-  const maxOutput = Math.min(context, pickFromBuckets(MAX_OUTPUT_BUCKETS, rand))
-  return { context, maxOutput }
-}
-
-function inferReleaseAndCutoff(rand: () => number): {
-  release: string
-  cutoff: string
-} {
-  const cutoff = pickFromBuckets(KNOWLEDGE_CUTOFFS, rand)
-  const [year, month] = cutoff.split('-').map(Number)
-  const offsetMonths = 4 + Math.floor(rand() * 6)
-  const releaseMonth = month + offsetMonths
-  const releaseYear = year + Math.floor((releaseMonth - 1) / 12)
-  const finalMonth = ((releaseMonth - 1) % 12) + 1
-  const release = `${releaseYear}-${String(finalMonth).padStart(2, '0')}-15`
-  return { release, cutoff }
+  // Return zero when we cannot infer — real value comes from backend metadata.
+  return { context: 0, maxOutput: 0 }
 }
 
 export type ModelMetadata = {
@@ -319,12 +255,12 @@ export type ModelMetadata = {
 }
 
 /**
- * Infer / mock model metadata. Prefers explicit fields on `model.*` and
- * falls back to inference + a deterministic seed otherwise.
+ * Infer model metadata. Prefers explicit fields from backend (`model.*`) and
+ * falls back to name-based inference when backend provides no value.
+ * No longer generates random mock data — zero / empty means unknown.
  */
 export function inferModelMetadata(model: PricingModel): ModelMetadata {
   const name = model.model_name || ''
-  const rand = seededRandom(hashStringToSeed(name))
   const tags = parseModelTags(model.tags)
   const endpoints = model.supported_endpoint_types || []
 
@@ -336,16 +272,14 @@ export function inferModelMetadata(model: PricingModel): ModelMetadata {
     model.capabilities ??
     inferCapabilities(model, tags, endpoints, name, outputs, inputs)
 
-  const fallback = inferContextAndOutputs(name, rand, endpoints)
-  const cutoffAndRelease = inferReleaseAndCutoff(rand)
+  const fallback = inferContextAndOutputs(endpoints)
 
   return {
     context_length: model.context_length ?? fallback.context,
     max_output_tokens: model.max_output_tokens ?? fallback.maxOutput,
-    knowledge_cutoff: model.knowledge_cutoff ?? cutoffAndRelease.cutoff,
-    release_date: model.release_date ?? cutoffAndRelease.release,
-    parameter_count:
-      model.parameter_count ?? pickFromBuckets(PARAM_BUCKETS, rand),
+    knowledge_cutoff: model.knowledge_cutoff ?? '',
+    release_date: model.release_date ?? '',
+    parameter_count: model.parameter_count ?? '',
     input_modalities: inputs,
     output_modalities: outputs,
     capabilities,

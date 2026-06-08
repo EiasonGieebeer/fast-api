@@ -42,6 +42,17 @@ type Model struct {
 
 	MatchedModels []string `json:"matched_models,omitempty" gorm:"-"`
 	MatchedCount  int      `json:"matched_count,omitempty" gorm:"-"`
+
+	// Model metadata — admin-maintained model specs for the pricing page.
+	// Zero/default values mean "not set" and the frontend falls back to heuristic inference.
+	ContextLength    int    `json:"context_length" gorm:"default:0"`
+	MaxOutputTokens  int    `json:"max_output_tokens" gorm:"default:0"`
+	ParameterCount   string `json:"parameter_count,omitempty" gorm:"type:varchar(64)"`
+	KnowledgeCutoff  string `json:"knowledge_cutoff,omitempty" gorm:"type:varchar(16)"`
+	ReleaseDate      string `json:"release_date,omitempty" gorm:"type:varchar(16)"`
+	InputModalities  string `json:"input_modalities,omitempty" gorm:"type:varchar(128)"`
+	OutputModalities string `json:"output_modalities,omitempty" gorm:"type:varchar(128)"`
+	Capabilities     string `json:"capabilities,omitempty" gorm:"type:varchar(255)"`
 }
 
 func (mi *Model) Insert() error {
@@ -78,7 +89,9 @@ func (mi *Model) Update() error {
 	mi.UpdatedTime = common.GetTimestamp()
 	// 使用 Select 强制更新所有字段，包括零值
 	return DB.Model(&Model{}).Where("id = ?", mi.Id).
-		Select("model_name", "description", "icon", "tags", "vendor_id", "endpoints", "status", "sync_official", "name_rule", "updated_time").
+		Select("model_name", "description", "icon", "tags", "vendor_id", "endpoints", "status", "sync_official", "name_rule", "updated_time",
+			"context_length", "max_output_tokens", "parameter_count", "knowledge_cutoff", "release_date",
+			"input_modalities", "output_modalities", "capabilities").
 		Updates(mi).Error
 }
 

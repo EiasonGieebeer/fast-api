@@ -85,8 +85,8 @@ export function getEndpointTypeLabels(
 ): Record<EndpointTypeOption, string> {
   return {
     [ENDPOINT_TYPES.ALL]: t('All Types'),
-    [ENDPOINT_TYPES.OPENAI]: 'Chat',
-    [ENDPOINT_TYPES.OPENAI_RESPONSE]: 'Response',
+    [ENDPOINT_TYPES.OPENAI]: 'OpenAI',
+    [ENDPOINT_TYPES.OPENAI_RESPONSE]: 'OpenAI Response',
     [ENDPOINT_TYPES.ANTHROPIC]: 'Anthropic',
     [ENDPOINT_TYPES.GEMINI]: 'Gemini',
     [ENDPOINT_TYPES.JINA_RERANK]: 'Rerank',
@@ -94,6 +94,26 @@ export function getEndpointTypeLabels(
     [ENDPOINT_TYPES.EMBEDDINGS]: t('Embeddings'),
     [ENDPOINT_TYPES.OPENAI_VIDEO]: t('Video'),
   }
+}
+
+/**
+ * Get a human-readable label for any endpoint type string.
+ * Falls back to the raw value for endpoint types not in the known set
+ * (e.g. custom endpoints defined in the models table).
+ */
+export function getEndpointLabel(value: string, t: TFunction): string {
+  const known: Record<string, string> = {
+    [ENDPOINT_TYPES.ALL]: t('All Types'),
+    [ENDPOINT_TYPES.OPENAI]: 'OpenAI',
+    [ENDPOINT_TYPES.OPENAI_RESPONSE]: 'OpenAI Response',
+    [ENDPOINT_TYPES.ANTHROPIC]: 'Anthropic',
+    [ENDPOINT_TYPES.GEMINI]: 'Gemini',
+    [ENDPOINT_TYPES.JINA_RERANK]: 'Rerank',
+    [ENDPOINT_TYPES.IMAGE_GENERATION]: t('Image'),
+    [ENDPOINT_TYPES.EMBEDDINGS]: t('Embeddings'),
+    [ENDPOINT_TYPES.OPENAI_VIDEO]: t('Video'),
+  }
+  return known[value] ?? value
 }
 
 /** Filter section keys */

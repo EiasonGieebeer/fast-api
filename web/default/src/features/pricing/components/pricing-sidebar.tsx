@@ -16,7 +16,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import type { ReactNode } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import { ChevronDown, RotateCcw } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { getLobeIcon } from '@/lib/lobe-icon'
@@ -32,7 +32,7 @@ import {
   ENDPOINT_TYPES,
   FILTER_ALL,
   QUOTA_TYPES,
-  getEndpointTypeLabels,
+  getEndpointLabel,
   getQuotaTypeLabels,
 } from '../constants'
 import { parseTags } from '../lib/filters'
@@ -87,6 +87,23 @@ function formatGroupRatio(ratio: number | undefined): string | undefined {
     ? ratio.toString()
     : ratio.toFixed(3).replace(/0+$/, '').replace(/\.$/, '')
   return `x${formatted}`
+}
+
+/** Sort filter options: OpenAI-first, then English A-Z, then Chinese A-Z */
+function sortOptions<T extends { label: string }>(options: T[]): T[] {
+  return options.sort((a, b) => {
+    const aOpenAI = a.label.toLowerCase().includes('openai')
+    const bOpenAI = b.label.toLowerCase().includes('openai')
+    if (aOpenAI && !bOpenAI) return -1
+    if (!aOpenAI && bOpenAI) return 1
+
+    const aIsAscii = /^[A-Za-z]/.test(a.label)
+    const bIsAscii = /^[A-Za-z]/.test(b.label)
+    if (aIsAscii && !bIsAscii) return -1
+    if (!aIsAscii && bIsAscii) return 1
+
+    return a.label.localeCompare(b.label)
+  })
 }
 
 function FilterChip(props: {
@@ -157,7 +174,6 @@ function FilterSection(props: FilterSectionProps) {
 export function PricingSidebar(props: PricingSidebarProps) {
   const { t } = useTranslation()
   const quotaTypeLabels = getQuotaTypeLabels(t)
-  const endpointTypeLabels = getEndpointTypeLabels(t)
 
   const vendorOptions: FilterOption[] = [
     {
@@ -165,17 +181,19 @@ export function PricingSidebar(props: PricingSidebarProps) {
       label: t('All Vendors'),
       count: props.models.length,
     },
-    ...props.vendors
-      .map((vendor) => ({
-        value: vendor.name,
-        label: vendor.name,
-        count: countBy(
-          props.models,
-          (model) => model.vendor_name === vendor.name
-        ),
-        icon: vendor.icon ? getLobeIcon(vendor.icon, 14) : undefined,
-      }))
-      .filter((vendor) => vendor.count > 0),
+    ...sortOptions(
+      props.vendors
+        .map((vendor) => ({
+          value: vendor.name,
+          label: vendor.name,
+          count: countBy(
+            props.models,
+            (model) => model.vendor_name === vendor.name
+          ),
+          icon: vendor.icon ? getLobeIcon(vendor.icon, 14) : undefined,
+        }))
+        .filter((vendor) => vendor.count > 0)
+    ),
   ]
 
   const groupOptions: FilterOption[] = [
@@ -214,33 +232,45 @@ export function PricingSidebar(props: PricingSidebarProps) {
       label: t('All Tags'),
       count: props.models.length,
     },
-    ...props.tags.map((tag) => ({
-      value: tag,
-      label: tag,
-      count: countBy(props.models, (model) =>
-        parseTags(model.tags)
-          .map((item) => item.toLowerCase())
-          .includes(tag.toLowerCase())
-      ),
-    })),
+    ...sortOptions(
+      props.tags.map((tag) => ({
+        value: tag,
+        label: tag,
+        count: countBy(props.models, (model) =>
+          parseTags(model.tags)
+            .map((item) => item.toLowerCase())
+            .includes(tag.toLowerCase())
+        ),
+      }))
+    ),
   ]
+
+  // Build endpoint filter options from the endpoint types that actually
+  // appear in the current models, rather than a hardcoded list.
+  const usedEndpointTypes = useMemo(() => {
+    const types = new Set<string>()
+    props.models.forEach((model) => {
+      model.supported_endpoint_types?.forEach((et) => types.add(et))
+    })
+    return Array.from(types)
+  }, [props.models])
 
   const endpointOptions: FilterOption[] = [
     {
       value: ENDPOINT_TYPES.ALL,
-      label: endpointTypeLabels[ENDPOINT_TYPES.ALL],
+      label: getEndpointLabel(ENDPOINT_TYPES.ALL, t),
       count: props.models.length,
     },
-    ...Object.entries(endpointTypeLabels)
-      .filter(([value]) => value !== ENDPOINT_TYPES.ALL)
-      .map(([value, label]) => ({
+    ...sortOptions(
+      usedEndpointTypes.map((value) => ({
         value,
-        label,
+        label: getEndpointLabel(value, t),
         count: countBy(
           props.models,
           (model) => model.supported_endpoint_types?.includes(value) ?? false
         ),
-      })),
+      }))
+    ),
   ]
 
   return (

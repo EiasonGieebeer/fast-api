@@ -109,7 +109,7 @@ export function RechargeFormCard({
   onWaffoMethodSelect,
   enableWaffoPancakeTopup,
 }: RechargeFormCardProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [localAmount, setLocalAmount] = useState(topupAmount.toString())
 
   useEffect(() => {
@@ -251,7 +251,14 @@ export function RechargeFormCard({
                             </div>
                             {hasDiscount && (
                               <div className='text-xs font-medium text-green-600'>
-                                {getDiscountLabel(discount)}
+                                {i18n.language === 'zh'
+                                  ? (() => {
+                                      const zheNum = Math.round(discount * 100)
+                                      const zhe = zheNum % 10 === 0 ? zheNum / 10 : zheNum
+                                      return `${zhe}${t('% off')}`
+                                    })()
+                                  : `${Math.round((1 - discount) * 100)}${t('% off')}`
+                                }
                               </div>
                             )}
                           </div>
@@ -260,7 +267,7 @@ export function RechargeFormCard({
                             {hasDiscount && savedAmount > 0 && (
                               <span className='text-green-600'>
                                 {' '}
-                                • {t('Save')} {formatCurrency(savedAmount)}
+                                • {t('save_money')} {formatCurrency(savedAmount)} {t('currency_unit')}
                               </span>
                             )}
                           </div>

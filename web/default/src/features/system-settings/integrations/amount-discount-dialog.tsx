@@ -75,7 +75,7 @@ export function AmountDiscountDialog({
   onSave,
   editData,
 }: AmountDiscountDialogProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const isEditMode = !!editData
   const amountDiscountDialogSchema = createAmountDiscountDialogSchema(t)
 
@@ -93,6 +93,16 @@ export function AmountDiscountDialog({
     if (!discountRate || discountRate >= 1) return 0
     return Math.round((1 - discountRate) * 100)
   }, [discountRate])
+
+  const discountDisplay = useMemo(() => {
+    if (!discountRate || discountRate >= 1 || discountRate <= 0) return ''
+    if (i18n.language === 'zh') {
+      const zheNum = Math.round(discountRate * 100)
+      const zhe = zheNum % 10 === 0 ? zheNum / 10 : zheNum
+      return `${discountPercentage}% = ${zhe}${t('% off')}`
+    }
+    return `${discountPercentage}${t('% off')}`
+  }, [discountRate, discountPercentage, i18n.language, t])
 
   useEffect(() => {
     if (editData) {
@@ -182,14 +192,12 @@ export function AmountDiscountDialog({
                     />
                   </FormControl>
                   <FormDescription>
-                    {t('Final price multiplier (0.95 = 5% discount')}
-                    {discountPercentage > 0 && (
+                    {t('Final price multiplier')}: {discountRate?.toFixed(2) || '1.00'}
+                    {discountDisplay && (
                       <span className='ml-1 font-medium text-green-600 dark:text-green-400'>
-                        = {discountPercentage}
-                        {t('% off')}
+                        = {discountDisplay}
                       </span>
                     )}
-                    )
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

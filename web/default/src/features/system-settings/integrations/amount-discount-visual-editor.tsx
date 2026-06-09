@@ -45,7 +45,7 @@ export function AmountDiscountVisualEditor({
   value,
   onChange,
 }: AmountDiscountVisualEditorProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editData, setEditData] = useState<AmountDiscountData | null>(null)
 
@@ -111,10 +111,15 @@ export function AmountDiscountVisualEditor({
     setDialogOpen(true)
   }
 
-  const formatPercentage = (rate: number) => {
-    if (rate >= 1) return '0%'
-    const discount = Math.round((1 - rate) * 100)
-    return `${discount}%`
+  const getDiscountDisplay = (rate: number): string => {
+    if (rate >= 1) return `0${t('% off')}`
+    if (i18n.language === 'zh') {
+      const zheNum = Math.round(rate * 100)
+      const zhe = zheNum % 10 === 0 ? zheNum / 10 : zheNum
+      return `${zhe}${t('% off')}`
+    }
+    const pct = Math.round((1 - rate) * 100)
+    return `${pct}${t('% off')}`
   }
 
   return (
@@ -176,7 +181,7 @@ export function AmountDiscountVisualEditor({
                         className='font-mono'
                         copyable={false}
                       >
-                        {formatPercentage(discount.discountRate)} {t('off')}
+                        {getDiscountDisplay(discount.discountRate)}
                       </StatusBadge>
                     </TableCell>
                     <TableCell className='text-right'>
@@ -227,7 +232,7 @@ export function AmountDiscountVisualEditor({
                       className='font-mono'
                       copyable={false}
                     >
-                      {formatPercentage(discount.discountRate)} {t('off')}
+                      {getDiscountDisplay(discount.discountRate)}
                     </StatusBadge>
                   </div>
                   <div className='flex gap-1'>

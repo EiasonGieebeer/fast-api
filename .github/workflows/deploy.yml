@@ -3,8 +3,8 @@
 #   SERVER_USER      SSH user, for example root.
 #   SERVER_SSH_KEY   Complete PEM private key authorized on the server.
 #
-# The image is pushed to GitHub Container Registry (ghcr.io) — no Docker Hub needed.
-# The default GITHUB_TOKEN has packages:write permission for the current repository.
+# The image is built on GitHub Actions, compressed, and transferred to the
+# server via SCP — no external registry pull needed.
 #
 # Optional GitHub repository variables:
 #   FAST_API_HOST_PORT  Host loopback port exposed by the container. Default: 3001.
@@ -24,46 +24,46 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  IMAGE_TAG: latest
   FAST_API_HOST_PORT: ${{ vars.FAST_API_HOST_PORT || '3001' }}
   FAST_API_BASE_PATH: ${{ vars.FAST_API_BASE_PATH || '/fast-api/' }}
 
 jobs:
   build-push-deploy:
-    name: Build, push and deploy
+    name: Build, transfer and deploy
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
 
     steps:
-      - name: Set image name
-        run: |
-          OWNER_LOWER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')
-          echo "IMAGE_NAME=ghcr.io/${OWNER_LOWER}/fast-api" >> "$GITHUB_ENV"
-          echo "Image: ghcr.io/${OWNER_LOWER}/fast-api"
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push Docker image
+      - name: Build Docker image (no push)
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: true
-          tags: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          push: false
+          load: true
+          tags: fast-api:deploy
           build-args: |
             WEB_BASE_PATH=${{ env.FAST_API_BASE_PATH }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Save and compress image
+        run: |
+          docker save fast-api:deploy | gzip > fast-api.tar.gz
+          ls -lh fast-api.tar.gz
+
+      - name: Copy image to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: fast-api.tar.gz
+          target: /tmp/
 
       - name: Deploy on server
         if: ${{ success() }}
@@ -73,11 +73,10 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script_stop: true
-          command_timeout: 30m
+          command_timeout: 5m
           script: |
             set -Eeuo pipefail
 
-            IMAGE="${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}"
             CONTAINER_NAME="fast-api"
             DATA_DIR="/data/fast-api"
             HOST_PORT="${{ env.FAST_API_HOST_PORT }}"
@@ -100,9 +99,8 @@ jobs:
               exit 1
             fi
 
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
-            docker pull "$IMAGE"
-            docker logout ghcr.io
+            docker load -i /tmp/fast-api.tar.gz
+            rm -f /tmp/fast-api.tar.gz
             docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
             docker run -d \
               --name "$CONTAINER_NAME" \
@@ -110,6 +108,6 @@ jobs:
               --env-file "$DATA_DIR/.env" \
               -p "127.0.0.1:${HOST_PORT}:3000" \
               -v "$DATA_DIR:/data" \
-              "$IMAGE"
+              fast-api:deploy
 
             docker ps --filter "name=${CONTAINER_NAME}"

@@ -1,0 +1,63 @@
+# ============================================================================
+# Epay Gateway Configuration
+# 桥接 epay 协议与支付宝官方 API
+# ============================================================================
+
+server:
+  host: "0.0.0.0"   # 监听地址
+  port: 8080          # 监听端口
+
+epay:
+  partner_id: "10001"              # 商户ID — 填写到 fast-api 后台的 Epay merchant ID
+  key: "your-md5-secret-key-here"  # 签名密钥 — 填写到 fast-api 后台的 Epay secret key
+                                    # 请生成一个随机字符串替换此处
+
+alipay:
+  # -------------------------------------------------------------------------
+  # 沙箱环境（测试用）
+  # 1. 访问 https://openhome.alipay.com/develop/sandbox/app 获取沙箱 APPID
+  # 2. 使用支付宝密钥工具生成 RSA2 密钥对
+  # 3. 上传公钥到沙箱环境，获得支付宝公钥
+  # 4. is_production: false
+  # -------------------------------------------------------------------------
+  # 正式环境
+  # 1. 访问 https://open.alipay.com/ 登录
+  # 2. 进入「我的应用」→ 选择网页应用
+  # 3. 在「开发设置」→「接口加签方式」中配置密钥
+  # 4. is_production: true
+  # -------------------------------------------------------------------------
+
+  app_id: "2021XXXXXXXXXXXX"       # 支付宝应用 APPID
+  is_production: false             # false=沙箱环境, true=正式环境
+
+  # 商户私钥 — PKCS1 格式 (-----BEGIN RSA PRIVATE KEY-----)
+  # 注意：支付宝要求 PKCS1 格式！如果密钥是 PKCS8 格式 (-----BEGIN PRIVATE KEY-----)
+  # 请用命令转换：openssl rsa -in pkcs8.key -out pkcs1.key
+  private_key: |
+    -----BEGIN RSA PRIVATE KEY-----
+    YOUR_PRIVATE_KEY_HERE
+    -----END RSA PRIVATE KEY-----
+
+  # 支付宝公钥 — 从支付宝开放平台获取
+  alipay_public_key: |
+    -----BEGIN PUBLIC KEY-----
+    YOUR_ALIPAY_PUBLIC_KEY_HERE
+    -----END PUBLIC KEY-----
+
+  # 本服务的公网地址（支付宝会回调这些地址）
+  notify_url: "https://pay.jetbrains.top/alipay/notify"
+  return_url: "https://pay.jetbrains.top/alipay/return"
+
+# ============================================================================
+# WeChat Pay (微信支付) — 可选，不填则不启用
+# 申请地址：https://pay.weixin.qq.com
+# ============================================================================
+wechat:
+  mch_id: ""                        # 微信商户号
+  api_v3_key: ""                    # APIv3 密钥（32位，在商户平台设置）
+  serial_no: ""                     # 商户证书序列号
+  private_key: |                    # 商户私钥（PKCS8 格式）
+    -----BEGIN PRIVATE KEY-----
+    YOUR_WECHAT_PRIVATE_KEY_HERE
+    -----END PRIVATE KEY-----
+  notify_url: "https://pay.jetbrains.top/wechat/notify"  # 微信异步通知地址

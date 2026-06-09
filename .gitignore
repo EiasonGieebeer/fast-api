@@ -8,6 +8,7 @@ upload
 *.exe
 *.db
 build
+cmd/epay-gateway/epay-gateway
 *.db-journal
 logs
 web/default/dist

@@ -1026,6 +1026,7 @@
     "Cross-group retry": "Cross-group retry",
     "Currency": "Currency",
     "Currency & Display": "Currency & Display",
+    "currency_unit": "",
     "Current Balance": "Current Balance",
     "Current Billing": "Current Billing",
     "Current Cache Size": "Current Cache Size",

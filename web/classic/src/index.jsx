@@ -33,7 +33,7 @@ import { useTranslation } from 'react-i18next';
 import zh_CN from '@douyinfe/semi-ui/lib/es/locale/source/zh_CN';
 import en_GB from '@douyinfe/semi-ui/lib/es/locale/source/en_GB';
 
-const rawBasePath = import.meta.env.VITE_REACT_APP_BASE_PATH || '/';
+const rawBasePath = import.meta.env.VITE_REACT_APP_ROUTER_BASE_PATH || '/';
 const routerBaseName =
   rawBasePath === '/' ? undefined : rawBasePath.replace(/\/$/, '');
 

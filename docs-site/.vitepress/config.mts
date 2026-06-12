@@ -37,10 +37,6 @@ const zhTheme: DefaultTheme.Config = {
     },
   ],
   outline: { level: [2, 3], label: '本页目录' },
-  editLink: {
-    pattern: `${repository}/edit/my-custom/docs-site/:path`,
-    text: '在 GitHub 上编辑此页',
-  },
   lastUpdated: {
     text: '最后更新',
     formatOptions: { dateStyle: 'medium', timeStyle: 'short' },
@@ -88,10 +84,6 @@ const enTheme: DefaultTheme.Config = {
     },
   ],
   outline: { level: [2, 3], label: 'On this page' },
-  editLink: {
-    pattern: `${repository}/edit/my-custom/docs-site/:path`,
-    text: 'Edit this page on GitHub',
-  },
   lastUpdated: {
     text: 'Last updated',
     formatOptions: { dateStyle: 'medium', timeStyle: 'short' },

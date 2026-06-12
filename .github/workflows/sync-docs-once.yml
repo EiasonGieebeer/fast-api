@@ -498,9 +498,10 @@ jobs:
           PATCH
           sed 's/^          //' /tmp/docs.patch.gz.b64 | base64 -d | gzip -d > /tmp/docs.patch
           git apply /tmp/docs.patch
-          rm -f .github/workflows/sync-docs-once.yml
+          git restore .github/workflows/deploy.yml
+          rm -f .github/workflows/docs.yml
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add .github/workflows/deploy.yml .github/workflows/docs.yml docs-site .github/workflows/sync-docs-once.yml
+          git add docs-site
           git commit -m "docs: add concise VitePress user guide"
           git push origin HEAD:my-custom

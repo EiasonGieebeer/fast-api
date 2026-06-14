@@ -49,21 +49,13 @@ const channelActionConfig = (
 export type CodexOAuthStartResponse = {
   success: boolean
   message?: string
-  data?: {
-    authorize_url?: string
-  }
+  data?: { authorize_url?: string }
 }
 
 export type CodexOAuthCompleteResponse = {
   success: boolean
   message?: string
-  data?: {
-    key?: string
-    account_id?: string
-    email?: string
-    expires_at?: string
-    last_refresh?: string
-  }
+  data?: { key?: string }
 }
 
 export type CodexUsageResponse = {

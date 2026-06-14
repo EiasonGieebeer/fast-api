@@ -1227,11 +1227,6 @@ const EditChannelModal = (props) => {
     }
   };
 
-  const handleCodexOAuthGenerated = (key) => {
-    handleInputChange('key', key);
-    formatJsonField('key');
-  };
-
   const handleRefreshCodexCredential = async () => {
     if (!isEdit) return;
 
@@ -1251,6 +1246,11 @@ const EditChannelModal = (props) => {
     } finally {
       setCodexCredentialRefreshing(false);
     }
+  };
+
+  const handleCodexOAuthGenerated = (key) => {
+    handleInputChange('key', key);
+    formatJsonField('key');
   };
 
   useEffect(() => {
@@ -2897,7 +2897,6 @@ const EditChannelModal = (props) => {
                               autosize
                               showClear
                             />
-
                             <CodexOAuthModal
                               visible={codexOAuthModalVisible}
                               onCancel={() => setCodexOAuthModalVisible(false)}

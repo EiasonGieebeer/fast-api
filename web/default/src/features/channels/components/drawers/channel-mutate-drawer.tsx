@@ -24,7 +24,7 @@ import {
   useCallback,
   useRef,
 } from 'react'
-import { useForm } from 'react-hook-form'
+import { type SubmitErrorHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import {
@@ -140,6 +140,7 @@ import {
   hasModelConfigChanged,
   findMissingModelsInMapping,
   validateModelMappingJson,
+  hasAdvancedSettingsErrors,
 } from '../../lib'
 import {
   collectInvalidStatusCodeEntries,
@@ -204,7 +205,6 @@ function readAdvancedSettingsPreference(): boolean {
 
 function hasAdvancedSettingsValues(values: ChannelFormValues): boolean {
   return Boolean(
-    values.model_mapping?.trim() ||
     values.param_override?.trim() ||
     values.header_override?.trim() ||
     values.status_code_mapping?.trim() ||
@@ -373,6 +373,7 @@ export function ChannelMutateDrawer({
   const currentName = form.watch('name')
   const currentModelMapping = form.watch('model_mapping')
   const awsKeyType = form.watch('aws_key_type')
+  const vertexKeyType = form.watch('vertex_key_type')
   const upstreamModelUpdateCheckEnabled = form.watch(
     'upstream_model_update_check_enabled'
   )
@@ -399,6 +400,15 @@ export function ChannelMutateDrawer({
   const isBatchMode =
     multiKeyMode === 'batch' || multiKeyMode === 'multi_to_single'
   const isChannelDetailLoading = isEditing && isChannelLoading
+  const supportsMultiKeyAddMode =
+    currentType !== 57 && !(currentType === 41 && vertexKeyType === 'api_key')
+  const addModeOptions = useMemo(
+    () =>
+      supportsMultiKeyAddMode
+        ? ADD_MODE_OPTIONS
+        : ADD_MODE_OPTIONS.filter((option) => option.value === 'single'),
+    [supportsMultiKeyAddMode]
+  )
 
   // Get all models list
   const allModelsList = useMemo(
@@ -621,6 +631,25 @@ export function ChannelMutateDrawer({
       }
     }
   }, [currentType, isEditing, form])
+
+  useEffect(() => {
+    if (currentType !== 45 || currentBaseUrl !== 'doubao-coding-plan') return
+
+    form.setValue('base_url', 'https://ark.cn-beijing.volces.com', {
+      shouldDirty: false,
+      shouldValidate: true,
+    })
+  }, [currentBaseUrl, currentType, form])
+
+  useEffect(() => {
+    if (isEditing || supportsMultiKeyAddMode) return
+    if (multiKeyMode && multiKeyMode !== 'single') {
+      form.setValue('multi_key_mode', 'single', {
+        shouldDirty: true,
+        shouldValidate: true,
+      })
+    }
+  }, [form, isEditing, multiKeyMode, supportsMultiKeyAddMode])
 
   // Validate base_url - warn if it ends with /v1
   useEffect(() => {
@@ -1008,6 +1037,26 @@ export function ChannelMutateDrawer({
     ]
   )
 
+  const handleAdvancedSettingsOpenChange = useCallback((nextOpen: boolean) => {
+    setAdvancedSettingsOpen(nextOpen)
+    if (typeof window !== 'undefined') {
+      window.localStorage.setItem(
+        ADVANCED_SETTINGS_EXPANDED_KEY,
+        String(nextOpen)
+      )
+    }
+  }, [])
+
+  const onInvalid: SubmitErrorHandler<ChannelFormValues> = useCallback(
+    (errors) => {
+      if (hasAdvancedSettingsErrors(errors)) {
+        handleAdvancedSettingsOpenChange(true)
+      }
+      toast.error(t('Please fix the highlighted fields before saving'))
+    },
+    [handleAdvancedSettingsOpenChange, t]
+  )
+
   // Handle drawer close
   const handleOpenChange = useCallback(
     (v: boolean) => {
@@ -1019,16 +1068,6 @@ export function ChannelMutateDrawer({
     },
     [onOpenChange, form]
   )
-
-  const handleAdvancedSettingsOpenChange = useCallback((nextOpen: boolean) => {
-    setAdvancedSettingsOpen(nextOpen)
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem(
-        ADVANCED_SETTINGS_EXPANDED_KEY,
-        String(nextOpen)
-      )
-    }
-  }, [])
 
   return (
     <>
@@ -1060,7 +1099,7 @@ export function ChannelMutateDrawer({
           <Form {...form}>
             <form
               id='channel-form'
-              onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={form.handleSubmit(onSubmit, onInvalid)}
               className={sideDrawerFormClassName('gap-5')}
             >
               {isChannelDetailLoading ? (
@@ -1540,7 +1579,7 @@ export function ChannelMutateDrawer({
                             </FormItem>
                           )}
                         />
-                        {form.watch('vertex_key_type') === 'json' && (
+                        {vertexKeyType === 'json' && (
                           <FormItem>
                             <FormLabel>
                               {t('Service account JSON file(s)')}
@@ -1672,15 +1711,13 @@ export function ChannelMutateDrawer({
                                     'https://ark.ap-southeast.bytepluses.com'
                                   ),
                                 },
-                                {
-                                  value: 'doubao-coding-plan',
-                                  label: t('Doubao Coding Plan'),
-                                },
                               ]}
                               onValueChange={field.onChange}
                               value={
-                                field.value ||
-                                'https://ark.cn-beijing.volces.com'
+                                field.value === 'doubao-coding-plan'
+                                  ? 'https://ark.cn-beijing.volces.com'
+                                  : field.value ||
+                                    'https://ark.cn-beijing.volces.com'
                               }
                             >
                               <FormControl>
@@ -1697,9 +1734,6 @@ export function ChannelMutateDrawer({
                                     {t(
                                       'https://ark.ap-southeast.bytepluses.com'
                                     )}
-                                  </SelectItem>
-                                  <SelectItem value='doubao-coding-plan'>
-                                    {t('Doubao Coding Plan')}
                                   </SelectItem>
                                 </SelectGroup>
                               </SelectContent>
@@ -1796,7 +1830,7 @@ export function ChannelMutateDrawer({
                               <FormLabel>{t('Add Mode')}</FormLabel>
                               <Select
                                 items={[
-                                  ...ADD_MODE_OPTIONS.map((option) => ({
+                                  ...addModeOptions.map((option) => ({
                                     value: option.value,
                                     label: t(option.label),
                                   })),
@@ -1811,7 +1845,7 @@ export function ChannelMutateDrawer({
                                 </FormControl>
                                 <SelectContent alignItemWithTrigger={false}>
                                   <SelectGroup>
-                                    {ADD_MODE_OPTIONS.map((option) => (
+                                    {addModeOptions.map((option) => (
                                       <SelectItem
                                         key={option.value}
                                         value={option.value}
@@ -1823,7 +1857,11 @@ export function ChannelMutateDrawer({
                                 </SelectContent>
                               </Select>
                               <FormDescription>
-                                {t(FIELD_DESCRIPTIONS.BATCH_ADD)}
+                                {t(
+                                  supportsMultiKeyAddMode
+                                    ? FIELD_DESCRIPTIONS.BATCH_ADD
+                                    : FIELD_DESCRIPTIONS.KEY
+                                )}
                               </FormDescription>
                               <FormMessage />
                             </FormItem>
@@ -1978,15 +2016,10 @@ export function ChannelMutateDrawer({
                       {currentType === 57 && (
                         <div className='border-border/60 flex flex-col gap-3 border-y py-4'>
                           <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
-                            <div className='flex flex-col gap-0.5'>
-                              <div className='text-sm font-semibold'>
-                                {t('Codex Authorization')}
-                              </div>
-                              <div className='text-muted-foreground text-xs'>
-                                {t(
-                                  'Codex channels use an OAuth JSON credential as the key.'
-                                )}
-                              </div>
+                            <div className='text-muted-foreground text-xs'>
+                              {t(
+                                'Codex channels use an OAuth JSON credential as the key.'
+                              )}
                             </div>
                             <div className='flex flex-wrap items-center gap-2'>
                               <Button
@@ -2018,10 +2051,10 @@ export function ChannelMutateDrawer({
                               )}
                             </div>
                           </div>
-                          <Alert>
+                          <Alert className='border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-50'>
                             <AlertDescription>
                               {t(
-                                'If authorization succeeds, the generated JSON will be inserted into the key field. You still need to save the channel to persist it.'
+                                "Disclaimer: Personal use only. Do not distribute or share any credentials. This channel has prerequisites and requires prior setup; use it only if you understand the flow and risks, and comply with OpenAI's terms and policies. Credentials and configuration are for Codex CLI integration only, and are not intended for any other client, platform, or channel."
                               )}
                             </AlertDescription>
                           </Alert>

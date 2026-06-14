@@ -7,6 +7,7 @@ import (
 
 	"github.com/QuantumNous/fast-api/common"
 	"github.com/QuantumNous/fast-api/i18n"
+	"github.com/QuantumNous/fast-api/logger"
 	"github.com/QuantumNous/fast-api/model"
 	"github.com/QuantumNous/fast-api/setting/operation_setting"
 
@@ -110,6 +111,11 @@ func AddRedemption(c *gin.Context) {
 		}
 		keys = append(keys, key)
 	}
+	recordManageAudit(c, "redemption.create", map[string]interface{}{
+		"name":  redemption.Name,
+		"count": redemption.Count,
+		"quota": logger.LogQuota(redemption.Quota),
+	})
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",

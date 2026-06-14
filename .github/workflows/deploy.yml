@@ -15,7 +15,6 @@ name: Deploy Fast API
 on:
   push:
     branches:
-      - main
       - my-custom
     paths-ignore:
       - docs-site/**

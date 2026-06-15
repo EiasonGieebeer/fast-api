@@ -27,15 +27,20 @@ type DataTableRowProps<TData> = {
   getColumnClassName?: DataTableColumnClassName
 } & Omit<React.ComponentProps<typeof TableRow>, 'children'>
 
+type DataTableRowInnerProps<TData> = DataTableRowProps<TData> & {
+  isSelected: boolean
+}
+
 function DataTableRowInner<TData>({
   row,
+  isSelected,
   className,
   getColumnClassName,
   ...rowProps
-}: DataTableRowProps<TData>) {
+}: DataTableRowInnerProps<TData>) {
   return (
     <TableRow
-      data-state={row.getIsSelected() ? 'selected' : undefined}
+      data-state={isSelected ? 'selected' : undefined}
       className={className}
       {...rowProps}
     >
@@ -51,13 +56,21 @@ function DataTableRowInner<TData>({
   )
 }
 
-export const DataTableRow = React.memo(DataTableRowInner, (prev, next) => {
+const MemoizedDataTableRow = React.memo(DataTableRowInner, (prev, next) => {
   // Skip re-render when only the getColumnClassName reference changed but the
-  // row identity and selection state are the same — callers rarely stabilize
-  // this callback, so excluding it from comparison avoids unnecessary renders.
+  // row identity and captured selection state are the same. Callers rarely
+  // stabilize this callback, so excluding it from comparison avoids unnecessary
+  // renders. Do not read row.getIsSelected() here: TanStack row objects may keep
+  // a stable reference while their selection state changes.
   return (
     prev.row === next.row &&
     prev.className === next.className &&
-    prev.row.getIsSelected() === next.row.getIsSelected()
+    prev.isSelected === next.isSelected
   )
 }) as typeof DataTableRowInner
+
+export function DataTableRow<TData>(props: DataTableRowProps<TData>) {
+  return (
+    <MemoizedDataTableRow {...props} isSelected={props.row.getIsSelected()} />
+  )
+}

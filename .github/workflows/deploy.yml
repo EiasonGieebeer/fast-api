@@ -9,6 +9,7 @@
 # Optional GitHub repository variables:
 #   FAST_API_HOST_PORT  Host loopback port exposed by the container. Default: 3001.
 #   FAST_API_BASE_PATH  Public frontend base path. Default: /fast-api/.
+#   FAST_API_DOCKER_NETWORK  Docker network attached to the container. Default: ai-internal.
 
 name: Deploy Fast API
 
@@ -28,6 +29,7 @@ concurrency:
 env:
   FAST_API_HOST_PORT: ${{ vars.FAST_API_HOST_PORT || '3001' }}
   FAST_API_BASE_PATH: ${{ vars.FAST_API_BASE_PATH || '/fast-api/' }}
+  FAST_API_DOCKER_NETWORK: ${{ vars.FAST_API_DOCKER_NETWORK || 'ai-internal' }}
 
 jobs:
   build-push-deploy:
@@ -82,6 +84,7 @@ jobs:
             CONTAINER_NAME="fast-api"
             DATA_DIR="/data/fast-api"
             HOST_PORT="${{ env.FAST_API_HOST_PORT }}"
+            DOCKER_NETWORK="${{ env.FAST_API_DOCKER_NETWORK }}"
 
             mkdir -p "$DATA_DIR"
             if [ ! -f "$DATA_DIR/.env" ]; then
@@ -104,10 +107,12 @@ jobs:
 
             docker load -i /tmp/fast-api.tar.gz
             rm -f /tmp/fast-api.tar.gz
+            docker network inspect "$DOCKER_NETWORK" >/dev/null 2>&1 || docker network create "$DOCKER_NETWORK"
             docker rm -f "$CONTAINER_NAME" 2>/dev/null || true
             docker run -d \
               --name "$CONTAINER_NAME" \
               --restart always \
+              --network "$DOCKER_NETWORK" \
               --env-file "$DATA_DIR/.env" \
               -p "127.0.0.1:${HOST_PORT}:3000" \
               -v "$DATA_DIR:/data" \

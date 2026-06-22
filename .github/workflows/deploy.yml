@@ -112,10 +112,12 @@ jobs:
             docker run -d \
               --name "$CONTAINER_NAME" \
               --restart always \
-              --network "$DOCKER_NETWORK" \
+              --network bridge \
               --env-file "$DATA_DIR/.env" \
               -p "127.0.0.1:${HOST_PORT}:3000" \
               -v "$DATA_DIR:/data" \
               fast-api:deploy
+
+            docker network connect --alias "$CONTAINER_NAME" "$DOCKER_NETWORK" "$CONTAINER_NAME"
 
             docker ps --filter "name=${CONTAINER_NAME}"

@@ -1,6 +1,6 @@
 import { defineConfig, type DefaultTheme } from 'vitepress'
 
-const logo = 'https://www.jetbrains.top/fast-api/logo.png'
+const logo = 'https://newapi.fastapi.cool/fast-api/logo.png'
 const repository = 'https://github.com/EiasonGieebeer/fast-api'
 
 const sharedTheme: Pick<DefaultTheme.Config, 'logo' | 'socialLinks'> = {
@@ -14,8 +14,8 @@ const zhTheme: DefaultTheme.Config = {
   nav: [
     { text: '快速开始', link: '/guide/getting-started' },
     { text: 'API 调用', link: '/guide/api' },
-    { text: '控制台', link: 'https://www.jetbrains.top/dashboard' },
-    { text: '模型广场', link: 'https://www.jetbrains.top/pricing' },
+    { text: '控制台', link: 'https://newapi.fastapi.cool/dashboard' },
+    { text: '模型广场', link: 'https://newapi.fastapi.cool/pricing' },
   ],
   sidebar: [
     {
@@ -50,7 +50,7 @@ const zhTheme: DefaultTheme.Config = {
   langMenuLabel: '切换语言',
   skipToContentLabel: '跳到正文',
   footer: {
-    message: '请妥善保管 API 密钥，并遵守适用法律法规。',
+    message: '请妥善保管 API 密钥，并遵守适用法律法规。 · <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">苏ICP备2024120285号-2</a>',
     copyright: '© 2026 Fast API',
   },
 }
@@ -61,8 +61,8 @@ const enTheme: DefaultTheme.Config = {
   nav: [
     { text: 'Quick Start', link: '/en/guide/getting-started' },
     { text: 'API Usage', link: '/en/guide/api' },
-    { text: 'Console', link: 'https://www.jetbrains.top/dashboard' },
-    { text: 'Models', link: 'https://www.jetbrains.top/pricing' },
+    { text: 'Console', link: 'https://newapi.fastapi.cool/dashboard' },
+    { text: 'Models', link: 'https://newapi.fastapi.cool/pricing' },
   ],
   sidebar: [
     {
@@ -97,7 +97,7 @@ const enTheme: DefaultTheme.Config = {
   langMenuLabel: 'Change language',
   skipToContentLabel: 'Skip to content',
   footer: {
-    message: 'Keep your API keys secure and comply with applicable laws.',
+    message: 'Keep your API keys secure and comply with applicable laws. · <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">苏ICP备2024120285号-2</a>',
     copyright: '© 2026 Fast API',
   },
 }

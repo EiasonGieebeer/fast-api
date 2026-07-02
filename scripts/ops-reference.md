@@ -89,6 +89,6 @@ ss -tlnp | grep -E '3001|8083|80|443|3306'
 free -h
 
 # HTTP 响应检查
-curl -s -o /dev/null -w '%{http_code}' https://www.jetbrains.top/
-curl -s -o /dev/null -w '%{http_code}' https://www.jetbrains.top/jetact/login
+curl -s -o /dev/null -w '%{http_code}' https://newapi.fastapi.cool/
+curl -s -o /dev/null -w '%{http_code}' https://jetact.fastapi.cool/login
 ```

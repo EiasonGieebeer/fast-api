@@ -6,7 +6,7 @@ hero:
   text: 一个地址，连接常用 AI 模型
   tagline: 使用 OpenAI 兼容接口快速接入，统一管理密钥、额度和调用记录。
   image:
-    src: https://www.jetbrains.top/fast-api/logo.png
+    src: https://newapi.fastapi.cool/fast-api/logo.png
     alt: Fast API
   actions:
     - theme: brand
@@ -14,10 +14,10 @@ hero:
       link: /guide/getting-started
     - theme: alt
       text: 查看模型
-      link: https://www.jetbrains.top/pricing
+      link: https://newapi.fastapi.cool/pricing
     - theme: alt
       text: 进入控制台
-      link: https://www.jetbrains.top/dashboard
+      link: https://newapi.fastapi.cool/dashboard
 
 features:
   - title: OpenAI 兼容
@@ -32,8 +32,8 @@ features:
 
 | 项目 | 内容 |
 | --- | --- |
-| API 地址 | `https://www.jetbrains.top` |
-| OpenAI Base URL | `https://www.jetbrains.top/v1` |
+| API 地址 | `https://newapi.fastapi.cool` |
+| OpenAI Base URL | `https://newapi.fastapi.cool/v1` |
 | API 密钥 | 在控制台的「API 密钥」页面创建 |
 | 模型名称 | 以「模型广场」当前显示为准 |
 

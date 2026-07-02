@@ -5,8 +5,8 @@
 | 配置项 | 填写内容 |
 | --- | --- |
 | API Key | 控制台创建的 API 密钥 |
-| OpenAI Base URL | `https://www.jetbrains.top/v1` |
-| Anthropic Base URL | `https://www.jetbrains.top` |
+| OpenAI Base URL | `https://newapi.fastapi.cool/v1` |
+| Anthropic Base URL | `https://newapi.fastapi.cool` |
 | Model | 模型广场中的模型名称 |
 
 以下教程按客户端英文名称排序。
@@ -18,7 +18,7 @@
 1. 打开 CC Switch，切换到需要配置的应用。
 2. 点击「添加供应商」，选择自定义配置。
 3. 名称填写 `Fast API`，填入 API 密钥和模型名称。
-4. Claude Code 使用 `https://www.jetbrains.top`；Codex、OpenCode 和 OpenClaw 使用 `https://www.jetbrains.top/v1`。
+4. Claude Code 使用 `https://newapi.fastapi.cool`；Codex、OpenCode 和 OpenClaw 使用 `https://newapi.fastapi.cool/v1`。
 5. 保存后选择 `Fast API`，点击「启用」。
 
 切换后建议重启对应的终端工具；Claude Code 通常可以直接生效。
@@ -29,7 +29,7 @@
 2. API Host / Base URL 填写：
 
 ```text
-https://www.jetbrains.top/v1
+https://newapi.fastapi.cool/v1
 ```
 
 3. 填入 API 密钥和模型名称，保存后发送一条测试消息。
@@ -38,7 +38,7 @@ https://www.jetbrains.top/v1
 
 1. 打开「设置 → 模型服务」。
 2. 添加 OpenAI 兼容服务。
-3. API 地址填写 `https://www.jetbrains.top/v1`。
+3. API 地址填写 `https://newapi.fastapi.cool/v1`。
 4. 填入 API 密钥，手动添加模型名称。
 5. 点击连通性测试，成功后即可使用。
 
@@ -49,14 +49,14 @@ https://www.jetbrains.top/v1
 ::: code-group
 
 ```bash [macOS / Linux]
-export ANTHROPIC_BASE_URL="https://www.jetbrains.top"
+export ANTHROPIC_BASE_URL="https://newapi.fastapi.cool"
 export ANTHROPIC_AUTH_TOKEN="YOUR_API_KEY"
 export ANTHROPIC_MODEL="YOUR_MODEL"
 claude
 ```
 
 ```powershell [Windows PowerShell]
-$env:ANTHROPIC_BASE_URL="https://www.jetbrains.top"
+$env:ANTHROPIC_BASE_URL="https://newapi.fastapi.cool"
 $env:ANTHROPIC_AUTH_TOKEN="YOUR_API_KEY"
 $env:ANTHROPIC_MODEL="YOUR_MODEL"
 claude
@@ -69,7 +69,7 @@ claude
 ```json
 {
   "env": {
-    "ANTHROPIC_BASE_URL": "https://www.jetbrains.top",
+    "ANTHROPIC_BASE_URL": "https://newapi.fastapi.cool",
     "ANTHROPIC_AUTH_TOKEN": "YOUR_API_KEY",
     "ANTHROPIC_MODEL": "YOUR_MODEL"
   }
@@ -93,7 +93,7 @@ CodeBuddy 目前使用 OpenAI 接口格式，并要求填写完整的 Chat Compl
       "name": "Fast API Model",
       "vendor": "OpenAI",
       "apiKey": "${FAST_API_KEY}",
-      "url": "https://www.jetbrains.top/v1/chat/completions",
+      "url": "https://newapi.fastapi.cool/v1/chat/completions",
       "supportsToolCall": true
     }
   ],
@@ -129,7 +129,7 @@ model_provider = "fast_api"
 
 [model_providers.fast_api]
 name = "Fast API"
-base_url = "https://www.jetbrains.top/v1"
+base_url = "https://newapi.fastapi.cool/v1"
 env_key = "FAST_API_KEY"
 wire_api = "responses"
 ```
@@ -157,7 +157,7 @@ codex
 1. 打开「Cursor Settings → Models」。
 2. 展开 API Keys，填入 OpenAI API Key。
 3. 开启「Override OpenAI Base URL」。
-4. Base URL 填写 `https://www.jetbrains.top/v1`。
+4. Base URL 填写 `https://newapi.fastapi.cool/v1`。
 5. 添加或选择对应模型，点击 Verify 后进行文本对话测试。
 
 ::: warning 当前兼容性
@@ -181,7 +181,7 @@ Cursor 的自定义 Base URL 由客户端自身控制。部分版本的 Agent、
     "mode": "merge",
     "providers": {
       "fast-api": {
-        "baseUrl": "https://www.jetbrains.top/v1",
+        "baseUrl": "https://newapi.fastapi.cool/v1",
         "apiKey": "${FAST_API_KEY}",
         "api": "openai-completions",
         "models": [
@@ -210,7 +210,7 @@ Cursor 的自定义 Base URL 由客户端自身控制。部分版本的 Agent、
       "npm": "@ai-sdk/openai-compatible",
       "name": "Fast API",
       "options": {
-        "baseURL": "https://www.jetbrains.top/v1",
+        "baseURL": "https://newapi.fastapi.cool/v1",
         "apiKey": "{env:FAST_API_KEY}"
       },
       "models": {

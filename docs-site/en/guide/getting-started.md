@@ -2,11 +2,11 @@
 
 ## 1. Register and sign in
 
-Open [Fast API](https://www.jetbrains.top), create an account, and complete email verification.
+Open [Fast API](https://newapi.fastapi.cool), create an account, and complete email verification.
 
 ## 2. Create an API key
 
-Open the [API Keys](https://www.jetbrains.top/keys) page in the console:
+Open the [API Keys](https://newapi.fastapi.cool/keys) page in the console:
 
 1. Click **Create key**.
 2. Enter a recognizable name.
@@ -19,14 +19,14 @@ An API key grants access to your account quota. Never publish it on a website, i
 
 ## 3. Choose a model
 
-Open the [model catalog](https://www.jetbrains.top/pricing) to review currently available models and pricing, then copy the model name.
+Open the [model catalog](https://newapi.fastapi.cool/pricing) to review currently available models and pricing, then copy the model name.
 
 ## 4. Send your first request
 
 Replace `YOUR_API_KEY` and `MODEL_ID` with your actual values:
 
 ```bash
-curl https://www.jetbrains.top/v1/chat/completions \
+curl https://newapi.fastapi.cool/v1/chat/completions \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{

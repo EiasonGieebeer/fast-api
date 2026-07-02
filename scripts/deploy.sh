@@ -56,8 +56,8 @@ ssh "$SERVER" <<'REMOTE'
     echo "--- 容器日志 ---"
     docker logs --tail 5 fast-api
     echo "--- 健康检查 ---"
-    curl -s -o /dev/null -w "首页: %{http_code}\n" -m 5 https://www.jetbrains.top/
-    curl -s -o /dev/null -w "About: %{http_code}\n" -m 5 https://www.jetbrains.top/about
+    curl -s -o /dev/null -w "首页: %{http_code}\n" -m 5 https://newapi.fastapi.cool/
+    curl -s -o /dev/null -w "About: %{http_code}\n" -m 5 https://newapi.fastapi.cool/about
 REMOTE
 
 echo ""

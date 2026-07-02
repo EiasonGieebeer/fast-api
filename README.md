@@ -116,7 +116,7 @@ Deployment runs only after the image build and push steps succeed.
 
 Use `nginx/fast-api.conf` as the reference reverse proxy. It proxies:
 
-- `https://www.jetbrains.top/fast-api/` to the Fast API web UI
+- `https://newapi.fastapi.cool/fast-api/` to the Fast API web UI
 - `/api/`, `/v1/`, `/mj/`, `/pg/`, and `/assets/` to the same container
 
 The config includes WebSocket/SSE-friendly settings such as `proxy_buffering off` and `X-Accel-Buffering no`.

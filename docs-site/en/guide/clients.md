@@ -5,8 +5,8 @@ Most clients require only an API key, endpoint, and model name. Create an API ke
 | Setting | Value |
 | --- | --- |
 | API Key | An API key created in the console |
-| OpenAI Base URL | `https://www.jetbrains.top/v1` |
-| Anthropic Base URL | `https://www.jetbrains.top` |
+| OpenAI Base URL | `https://newapi.fastapi.cool/v1` |
+| Anthropic Base URL | `https://newapi.fastapi.cool` |
 | Model | A model name from the model catalog |
 
 The clients below are listed alphabetically.
@@ -18,7 +18,7 @@ The clients below are listed alphabetically.
 1. Open CC Switch and select the application you want to configure.
 2. Click **Add Provider** and choose a custom configuration.
 3. Enter `Fast API` as the name, then provide your API key and model name.
-4. Use `https://www.jetbrains.top` for Claude Code. Use `https://www.jetbrains.top/v1` for Codex, OpenCode, and OpenClaw.
+4. Use `https://newapi.fastapi.cool` for Claude Code. Use `https://newapi.fastapi.cool/v1` for Codex, OpenCode, and OpenClaw.
 5. Save the provider, select `Fast API`, and click **Enable**.
 
 Restart the relevant terminal tool after switching providers. Claude Code usually applies the change immediately.
@@ -29,7 +29,7 @@ Restart the relevant terminal tool after switching providers. Claude Code usuall
 2. Set API Host / Base URL to:
 
 ```text
-https://www.jetbrains.top/v1
+https://newapi.fastapi.cool/v1
 ```
 
 3. Enter your API key and model name, save, and send a test message.
@@ -38,7 +38,7 @@ https://www.jetbrains.top/v1
 
 1. Open **Settings → Model Providers**.
 2. Add an OpenAI-compatible provider.
-3. Set the API endpoint to `https://www.jetbrains.top/v1`.
+3. Set the API endpoint to `https://newapi.fastapi.cool/v1`.
 4. Enter your API key and add the model name manually.
 5. Run the connection test before using the provider.
 
@@ -49,14 +49,14 @@ Set the following environment variables:
 ::: code-group
 
 ```bash [macOS / Linux]
-export ANTHROPIC_BASE_URL="https://www.jetbrains.top"
+export ANTHROPIC_BASE_URL="https://newapi.fastapi.cool"
 export ANTHROPIC_AUTH_TOKEN="YOUR_API_KEY"
 export ANTHROPIC_MODEL="YOUR_MODEL"
 claude
 ```
 
 ```powershell [Windows PowerShell]
-$env:ANTHROPIC_BASE_URL="https://www.jetbrains.top"
+$env:ANTHROPIC_BASE_URL="https://newapi.fastapi.cool"
 $env:ANTHROPIC_AUTH_TOKEN="YOUR_API_KEY"
 $env:ANTHROPIC_MODEL="YOUR_MODEL"
 claude
@@ -69,7 +69,7 @@ For persistent settings, add the variables to `~/.claude/settings.json`:
 ```json
 {
   "env": {
-    "ANTHROPIC_BASE_URL": "https://www.jetbrains.top",
+    "ANTHROPIC_BASE_URL": "https://newapi.fastapi.cool",
     "ANTHROPIC_AUTH_TOKEN": "YOUR_API_KEY",
     "ANTHROPIC_MODEL": "YOUR_MODEL"
   }
@@ -93,7 +93,7 @@ CodeBuddy currently uses the OpenAI API format and requires the complete Chat Co
       "name": "Fast API Model",
       "vendor": "OpenAI",
       "apiKey": "${FAST_API_KEY}",
-      "url": "https://www.jetbrains.top/v1/chat/completions",
+      "url": "https://newapi.fastapi.cool/v1/chat/completions",
       "supportsToolCall": true
     }
   ],
@@ -129,7 +129,7 @@ model_provider = "fast_api"
 
 [model_providers.fast_api]
 name = "Fast API"
-base_url = "https://www.jetbrains.top/v1"
+base_url = "https://newapi.fastapi.cool/v1"
 env_key = "FAST_API_KEY"
 wire_api = "responses"
 ```
@@ -157,7 +157,7 @@ If the selected model supports only Chat Completions and not the Responses API, 
 1. Open **Cursor Settings → Models**.
 2. Expand API Keys and enter your OpenAI API key.
 3. Enable **Override OpenAI Base URL**.
-4. Set the Base URL to `https://www.jetbrains.top/v1`.
+4. Set the Base URL to `https://newapi.fastapi.cool/v1`.
 5. Add or select the model, click **Verify**, and test a text-only conversation.
 
 ::: warning Current compatibility
@@ -181,7 +181,7 @@ Edit `~/.openclaw/openclaw.json` and add an OpenAI-compatible provider:
     "mode": "merge",
     "providers": {
       "fast-api": {
-        "baseUrl": "https://www.jetbrains.top/v1",
+        "baseUrl": "https://newapi.fastapi.cool/v1",
         "apiKey": "${FAST_API_KEY}",
         "api": "openai-completions",
         "models": [
@@ -210,7 +210,7 @@ Create `opencode.json` in the project root, or edit the user configuration at `~
       "npm": "@ai-sdk/openai-compatible",
       "name": "Fast API",
       "options": {
-        "baseURL": "https://www.jetbrains.top/v1",
+        "baseURL": "https://newapi.fastapi.cool/v1",
         "apiKey": "{env:FAST_API_KEY}"
       },
       "models": {

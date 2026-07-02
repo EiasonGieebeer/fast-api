@@ -4,7 +4,7 @@ layout: home
 hero:
   name: Fast API
   text: 一个地址，连接常用 AI 模型
-  tagline: 使用 OpenAI 兼容接口快速接入，统一管理密钥、额度和调用记录。
+  tagline: 重要警示｜根据中国大陆的法律法规限制，本站不为来自中国大陆的用户提供任何 OpenAI 相关的服务，请来自中国大陆的用户自觉停止访问本站。
   image:
     src: https://newapi.fastapi.cool/fast-api/logo.png
     alt: Fast API
@@ -27,6 +27,10 @@ features:
   - title: 用量透明
     details: 在控制台查看余额、请求记录、模型消耗和错误信息。
 ---
+
+::: danger 重要警示
+根据中国大陆的法律法规限制，本站不为来自中国大陆的用户提供任何 OpenAI 相关的服务，请来自中国大陆的用户自觉停止访问本站。
+:::
 
 ## 接入信息
 

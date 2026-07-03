@@ -57,7 +57,7 @@ export function UpdateCheckerSection({
     setChecking(true)
     try {
       const response = await fetch(
-        'https://api.github.com/repos/Calcium-Ion/fast-api/releases/latest',
+        'https://api.github.com/repos/QuantumNous/new-api/releases/latest',
         {
           headers: {
             Accept: 'application/vnd.github+json',
@@ -67,7 +67,9 @@ export function UpdateCheckerSection({
       )
 
       if (!response.ok) {
-        throw new Error(t('Failed to contact GitHub releases API'))
+        throw new Error(
+          `${t('Failed to contact GitHub releases API')} (HTTP ${response.status})`
+        )
       }
 
       const data = (await response.json()) as ReleaseInfo

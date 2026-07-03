@@ -243,8 +243,8 @@ const OtherSetting = () => {
       // );
 
       // Option 2: Use the JSON proxy approach which often works better with GitHub API
-      const res = await fetch(
-        'https://api.github.com/repos/Calcium-Ion/fast-api/releases/latest',
+      const response = await fetch(
+        'https://api.github.com/repos/QuantumNous/new-api/releases/latest',
         {
           headers: {
             Accept: 'application/json',
@@ -253,7 +253,12 @@ const OtherSetting = () => {
             'User-Agent': 'fast-api-update-checker',
           },
         },
-      ).then((response) => response.json());
+      );
+
+      if (!response.ok) {
+        throw new Error(`GitHub Releases API returned HTTP ${response.status}`);
+      }
+      const res = await response.json();
 
       // Option 3: Use a local proxy endpoint
       // Create a cached version of the response to avoid frequent GitHub API calls

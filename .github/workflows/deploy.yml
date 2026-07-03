@@ -61,11 +61,25 @@ jobs:
           ls -lh fast-api.tar.gz
 
       - name: Copy image to server
+        id: copy_image
+        continue-on-error: true
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
+          command_timeout: 5m
+          source: fast-api.tar.gz
+          target: /tmp/
+
+      - name: Retry image copy
+        if: ${{ steps.copy_image.outcome == 'failure' }}
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          command_timeout: 5m
           source: fast-api.tar.gz
           target: /tmp/
 

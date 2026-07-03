@@ -24,6 +24,7 @@ import { toast } from 'sonner'
 import { Dialog } from '@/components/dialog'
 import { Button } from '@/components/ui/button'
 import { Markdown } from '@/components/ui/markdown'
+import { api } from '@/lib/api'
 import { formatTimestamp, formatTimestampToDate } from '@/lib/format'
 
 import { SettingsSection } from '../components/settings-section'
@@ -56,23 +57,10 @@ export function UpdateCheckerSection({
   const handleCheckUpdates = async () => {
     setChecking(true)
     try {
-      const response = await fetch(
-        'https://api.github.com/repos/QuantumNous/new-api/releases/latest',
-        {
-          headers: {
-            Accept: 'application/vnd.github+json',
-            'User-Agent': 'fast-api-dashboard',
-          },
-        }
-      )
-
-      if (!response.ok) {
-        throw new Error(
-          `${t('Failed to contact GitHub releases API')} (HTTP ${response.status})`
-        )
-      }
-
-      const data = (await response.json()) as ReleaseInfo
+      const response = await api.get('/api/system-info/releases/latest', {
+        skipErrorHandler: true,
+      })
+      const data = response.data?.data as ReleaseInfo
       if (!data?.tag_name) {
         throw new Error(t('Unexpected release payload'))
       }
@@ -89,10 +77,13 @@ export function UpdateCheckerSection({
       setRelease(data)
       setDialogOpen(true)
     } catch (error) {
+      const apiMessage = (
+        error as { response?: { data?: { message?: string } } }
+      )?.response?.data?.message
       const message =
-        error instanceof Error
+        apiMessage || (error instanceof Error
           ? error.message
-          : t('Failed to check for updates')
+          : t('Failed to check for updates'))
       toast.error(message)
     } finally {
       setChecking(false)

@@ -243,22 +243,10 @@ const OtherSetting = () => {
       // );
 
       // Option 2: Use the JSON proxy approach which often works better with GitHub API
-      const response = await fetch(
-        'https://api.github.com/repos/QuantumNous/new-api/releases/latest',
-        {
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            // Adding User-Agent which is often required by GitHub API
-            'User-Agent': 'fast-api-update-checker',
-          },
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(`GitHub Releases API returned HTTP ${response.status}`);
-      }
-      const res = await response.json();
+      const response = await API.get('/api/system-info/releases/latest', {
+        skipErrorHandler: true,
+      });
+      const res = response.data?.data;
 
       // Option 3: Use a local proxy endpoint
       // Create a cached version of the response to avoid frequent GitHub API calls
@@ -276,7 +264,9 @@ const OtherSetting = () => {
       }
     } catch (error) {
       console.error('Failed to check for updates:', error);
-      showError('检查更新失败，请稍后再试');
+      showError(
+        error?.response?.data?.message || '检查更新失败，请稍后再试',
+      );
     } finally {
       setLoadingInput((loadingInput) => ({
         ...loadingInput,

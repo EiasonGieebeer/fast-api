@@ -286,6 +286,7 @@ func SetApiRouter(router *gin.Engine) {
 		systemInfoRoute.Use(middleware.RootAuth())
 		{
 			systemInfoRoute.GET("/instances", controller.ListSystemInstances)
+			systemInfoRoute.GET("/releases/latest", controller.GetLatestUpstreamRelease)
 		}
 
 		dataRoute := apiRouter.Group("/data")

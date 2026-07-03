@@ -6,7 +6,7 @@ Each request is charged according to the model price, input and output usage, an
 
 ## View pricing
 
-The [model catalog](https://newapi.fastapi.cool/pricing) lists currently available models and prices. Models may be billed by tokens, requests, images, or audio duration.
+The [model catalog](https://www.fastapi.cool/pricing) lists currently available models and prices. Models may be billed by tokens, requests, images, or audio duration.
 
 ## Top-ups and subscriptions
 

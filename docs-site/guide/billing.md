@@ -6,7 +6,7 @@
 
 ## 查看价格
 
-[模型广场](https://newapi.fastapi.cool/pricing) 展示当前可用模型及价格。不同模型可能按 Token、请求次数、图片或音频时长计费。
+[模型广场](https://www.fastapi.cool/pricing) 展示当前可用模型及价格。不同模型可能按 Token、请求次数、图片或音频时长计费。
 
 ## 充值与订阅
 

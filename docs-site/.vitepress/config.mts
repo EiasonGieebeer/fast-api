@@ -1,6 +1,6 @@
 import { defineConfig, type DefaultTheme } from 'vitepress'
 
-const logo = 'https://newapi.fastapi.cool/fast-api/logo.png'
+const logo = 'https://www.fastapi.cool/fast-api/logo.png'
 const repository = 'https://github.com/EiasonGieebeer/fast-api'
 
 const sharedTheme: Pick<DefaultTheme.Config, 'logo' | 'socialLinks'> = {
@@ -14,8 +14,8 @@ const zhTheme: DefaultTheme.Config = {
   nav: [
     { text: '快速开始', link: '/guide/getting-started' },
     { text: 'API 调用', link: '/guide/api' },
-    { text: '控制台', link: 'https://newapi.fastapi.cool/dashboard' },
-    { text: '模型广场', link: 'https://newapi.fastapi.cool/pricing' },
+    { text: '控制台', link: 'https://www.fastapi.cool/dashboard' },
+    { text: '模型广场', link: 'https://www.fastapi.cool/pricing' },
   ],
   sidebar: [
     {
@@ -62,8 +62,8 @@ const enTheme: DefaultTheme.Config = {
   nav: [
     { text: 'Quick Start', link: '/en/guide/getting-started' },
     { text: 'API Usage', link: '/en/guide/api' },
-    { text: 'Console', link: 'https://newapi.fastapi.cool/dashboard' },
-    { text: 'Models', link: 'https://newapi.fastapi.cool/pricing' },
+    { text: 'Console', link: 'https://www.fastapi.cool/dashboard' },
+    { text: 'Models', link: 'https://www.fastapi.cool/pricing' },
   ],
   sidebar: [
     {

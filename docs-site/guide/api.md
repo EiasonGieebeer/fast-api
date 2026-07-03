@@ -9,7 +9,7 @@ from openai import OpenAI
 
 client = OpenAI(
     api_key="YOUR_API_KEY",
-    base_url="https://newapi.fastapi.cool/v1",
+    base_url="https://www.fastapi.cool/v1",
 )
 
 response = client.chat.completions.create(
@@ -27,7 +27,7 @@ import OpenAI from "openai";
 
 const client = new OpenAI({
   apiKey: "YOUR_API_KEY",
-  baseURL: "https://newapi.fastapi.cool/v1",
+  baseURL: "https://www.fastapi.cool/v1",
 });
 
 const response = await client.chat.completions.create({

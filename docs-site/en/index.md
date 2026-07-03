@@ -6,7 +6,7 @@ hero:
   text: One endpoint for popular AI models
   tagline: Connect through an OpenAI-compatible API and manage keys, quota, and usage in one place.
   image:
-    src: https://newapi.fastapi.cool/fast-api/logo.png
+    src: https://www.fastapi.cool/fast-api/logo.png
     alt: Fast API
   actions:
     - theme: brand
@@ -14,10 +14,10 @@ hero:
       link: /en/guide/getting-started
     - theme: alt
       text: View models
-      link: https://newapi.fastapi.cool/pricing
+      link: https://www.fastapi.cool/pricing
     - theme: alt
       text: Open console
-      link: https://newapi.fastapi.cool/dashboard
+      link: https://www.fastapi.cool/dashboard
 
 features:
   - title: OpenAI compatible
@@ -32,8 +32,8 @@ features:
 
 | Item | Value |
 | --- | --- |
-| API endpoint | `https://newapi.fastapi.cool` |
-| OpenAI Base URL | `https://newapi.fastapi.cool/v1` |
+| API endpoint | `https://www.fastapi.cool` |
+| OpenAI Base URL | `https://www.fastapi.cool/v1` |
 | API key | Create one on the API Keys page in the console |
 | Model name | Use the current name shown in the model catalog |
 

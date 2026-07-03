@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/QuantumNous/fast-api/common"
+	"github.com/QuantumNous/new-api/common"
 )
 
 type OpenAIError struct {
@@ -26,7 +26,7 @@ type ClaudeError struct {
 type ErrorType string
 
 const (
-	ErrorTypeFastAPIError     ErrorType = "new_api_error"
+	ErrorTypeFastAPIError    ErrorType = "new_api_error"
 	ErrorTypeOpenAIError     ErrorType = "openai_error"
 	ErrorTypeClaudeError     ErrorType = "claude_error"
 	ErrorTypeMidjourneyError ErrorType = "midjourney_error"
@@ -97,6 +97,9 @@ type FastAPIError struct {
 	StatusCode     int
 	Metadata       json.RawMessage
 }
+
+// NewAPIError keeps upstream integrations source-compatible with the branded type.
+type NewAPIError = FastAPIError
 
 // Unwrap enables errors.Is / errors.As to work with FastAPIError by exposing the underlying error.
 func (e *FastAPIError) Unwrap() error {

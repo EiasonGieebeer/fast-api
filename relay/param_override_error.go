@@ -1,8 +1,8 @@
 package relay
 
 import (
-	relaycommon "github.com/QuantumNous/fast-api/relay/common"
-	"github.com/QuantumNous/fast-api/types"
+	relaycommon "github.com/QuantumNous/new-api/relay/common"
+	"github.com/QuantumNous/new-api/types"
 )
 
 func newAPIErrorFromParamOverride(err error) *types.FastAPIError {

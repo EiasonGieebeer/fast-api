@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/fast-api/common"
-	"github.com/QuantumNous/fast-api/constant"
-	"github.com/QuantumNous/fast-api/setting/billing_setting"
-	"github.com/QuantumNous/fast-api/setting/ratio_setting"
-	"github.com/QuantumNous/fast-api/types"
+	"github.com/QuantumNous/new-api/common"
+	"github.com/QuantumNous/new-api/constant"
+	"github.com/QuantumNous/new-api/setting/billing_setting"
+	"github.com/QuantumNous/new-api/setting/ratio_setting"
+	"github.com/QuantumNous/new-api/types"
 )
 
 type Pricing struct {
@@ -315,21 +315,21 @@ func updatePricing() {
 			pricing.Tags = meta.Tags
 			pricing.VendorID = meta.VendorID
 
-		// model metadata (admin-maintained; zero means not set)
-		pricing.ContextLength = meta.ContextLength
-		pricing.MaxOutputTokens = meta.MaxOutputTokens
-		pricing.ParameterCount = meta.ParameterCount
-		pricing.KnowledgeCutoff = meta.KnowledgeCutoff
-		pricing.ReleaseDate = meta.ReleaseDate
-		if strings.TrimSpace(meta.InputModalities) != "" {
-			_ = json.Unmarshal([]byte(meta.InputModalities), &pricing.InputModalities)
-		}
-		if strings.TrimSpace(meta.OutputModalities) != "" {
-			_ = json.Unmarshal([]byte(meta.OutputModalities), &pricing.OutputModalities)
-		}
-		if strings.TrimSpace(meta.Capabilities) != "" {
-			_ = json.Unmarshal([]byte(meta.Capabilities), &pricing.Capabilities)
-		}
+			// model metadata (admin-maintained; zero means not set)
+			pricing.ContextLength = meta.ContextLength
+			pricing.MaxOutputTokens = meta.MaxOutputTokens
+			pricing.ParameterCount = meta.ParameterCount
+			pricing.KnowledgeCutoff = meta.KnowledgeCutoff
+			pricing.ReleaseDate = meta.ReleaseDate
+			if strings.TrimSpace(meta.InputModalities) != "" {
+				_ = json.Unmarshal([]byte(meta.InputModalities), &pricing.InputModalities)
+			}
+			if strings.TrimSpace(meta.OutputModalities) != "" {
+				_ = json.Unmarshal([]byte(meta.OutputModalities), &pricing.OutputModalities)
+			}
+			if strings.TrimSpace(meta.Capabilities) != "" {
+				_ = json.Unmarshal([]byte(meta.Capabilities), &pricing.Capabilities)
+			}
 			pricing.ShowSignals = meta.ShowSignals
 		}
 		modelPrice, findPrice := ratio_setting.GetModelPrice(model, false)

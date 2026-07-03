@@ -6,7 +6,7 @@ import (
 	"math"
 	"sync"
 
-	"github.com/QuantumNous/fast-api/common"
+	"github.com/QuantumNous/new-api/common"
 )
 
 var ModelRequestRateLimitEnabled = false

@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/QuantumNous/fast-api/common"
-	"github.com/QuantumNous/fast-api/model"
-	"github.com/QuantumNous/fast-api/service"
-	"github.com/QuantumNous/fast-api/setting/ratio_setting"
+	"github.com/QuantumNous/new-api/common"
+	"github.com/QuantumNous/new-api/model"
+	"github.com/QuantumNous/new-api/service"
+	"github.com/QuantumNous/new-api/setting/ratio_setting"
 	"github.com/joho/godotenv"
 )
 

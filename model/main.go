@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/QuantumNous/fast-api/common"
-	"github.com/QuantumNous/fast-api/constant"
+	"github.com/QuantumNous/new-api/common"
+	"github.com/QuantumNous/new-api/constant"
 
 	"github.com/glebarez/sqlite"
 	"gorm.io/driver/clickhouse"
@@ -625,7 +625,6 @@ func migrateTokenModelLimitsToText() error {
 	return nil
 }
 
-
 // migrateModelMetadataToString migrates context_length and max_output_tokens
 // columns from integer to varchar(32) so admins can enter human-readable values
 // like "128K" or "1M" instead of raw token counts.
@@ -647,15 +646,15 @@ func migrateModelMetadataToString() error {
 		}
 
 		// SQLite uses type affinity — no migration needed
-		if common.UsingSQLite {
+		if common.UsingMainDatabase(common.DatabaseTypeSQLite) {
 			continue
 		}
 
 		var alterSQL string
-		if common.UsingPostgreSQL {
+		if common.UsingMainDatabase(common.DatabaseTypePostgreSQL) {
 			alterSQL = fmt.Sprintf("ALTER TABLE %s ALTER COLUMN %s TYPE %s USING %s::%s",
 				tableName, col.name, col.ddl, col.name, col.ddl)
-		} else if common.UsingMySQL {
+		} else if common.UsingMainDatabase(common.DatabaseTypeMySQL) {
 			alterSQL = fmt.Sprintf("ALTER TABLE %s MODIFY COLUMN %s %s",
 				tableName, col.name, col.ddl)
 		}
@@ -669,6 +668,7 @@ func migrateModelMetadataToString() error {
 	}
 	return nil
 }
+
 // migrateSubscriptionPlanPriceAmount migrates price_amount column from float/double to decimal(10,6)
 // This is safe to run multiple times - it checks the column type first
 func migrateSubscriptionPlanPriceAmount() {

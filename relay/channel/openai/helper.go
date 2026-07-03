@@ -3,14 +3,14 @@ package openai
 import (
 	"strings"
 
-	"github.com/QuantumNous/fast-api/common"
-	"github.com/QuantumNous/fast-api/dto"
-	"github.com/QuantumNous/fast-api/logger"
-	relaycommon "github.com/QuantumNous/fast-api/relay/common"
-	relayconstant "github.com/QuantumNous/fast-api/relay/constant"
-	"github.com/QuantumNous/fast-api/relay/helper"
-	"github.com/QuantumNous/fast-api/service"
-	"github.com/QuantumNous/fast-api/types"
+	"github.com/QuantumNous/new-api/common"
+	"github.com/QuantumNous/new-api/dto"
+	"github.com/QuantumNous/new-api/logger"
+	relaycommon "github.com/QuantumNous/new-api/relay/common"
+	relayconstant "github.com/QuantumNous/new-api/relay/constant"
+	"github.com/QuantumNous/new-api/relay/helper"
+	"github.com/QuantumNous/new-api/service"
+	"github.com/QuantumNous/new-api/types"
 
 	"github.com/samber/lo"
 

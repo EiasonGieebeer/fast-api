@@ -6,11 +6,11 @@ import (
 	"reflect"
 	"testing"
 
-	common2 "github.com/QuantumNous/fast-api/common"
-	"github.com/QuantumNous/fast-api/types"
+	common2 "github.com/QuantumNous/new-api/common"
+	"github.com/QuantumNous/new-api/types"
 
-	"github.com/QuantumNous/fast-api/dto"
-	"github.com/QuantumNous/fast-api/setting/model_setting"
+	"github.com/QuantumNous/new-api/dto"
+	"github.com/QuantumNous/new-api/setting/model_setting"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 )

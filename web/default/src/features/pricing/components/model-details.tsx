@@ -118,7 +118,8 @@ const TOKEN_FORMAT = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 1,
 })
 
-function formatCatalogTokenCount(tokens: number): string {
+function formatCatalogTokenCount(tokens: number | string): string {
+  if (typeof tokens === 'string') return tokens.trim()
   if (!Number.isFinite(tokens) || tokens <= 0) return ''
   if (tokens >= 1_000_000) {
     return `${TOKEN_FORMAT.format(tokens / 1_000_000)}M`
@@ -127,6 +128,12 @@ function formatCatalogTokenCount(tokens: number): string {
     return `${TOKEN_FORMAT.format(tokens / 1_000)}K`
   }
   return TOKEN_FORMAT.format(tokens)
+}
+
+function hasCatalogTokenCount(
+  value: number | string | undefined
+): value is number | string {
+  return typeof value === 'number' ? value > 0 : Boolean(value?.trim())
 }
 
 function formatCatalogYearMonth(value?: string): string {
@@ -282,8 +289,8 @@ function ModelBackendQuickStats(props: { model: PricingModel }) {
   const model = props.model
   const inputModalities = normalizeCatalogItems(model.input_modalities)
   const outputModalities = normalizeCatalogItems(model.output_modalities)
-  const contextLength = model.context_length ?? 0
-  const maxOutput = model.max_output_tokens ?? 0
+  const contextLength = model.context_length
+  const maxOutput = model.max_output_tokens
   const knowledgeCutoff = formatCatalogYearMonth(model.knowledge_cutoff)
   const releaseDate = formatCatalogYearMonth(model.release_date)
 
@@ -295,7 +302,7 @@ function ModelBackendQuickStats(props: { model: PricingModel }) {
     hint?: string
   }[] = []
 
-  if (contextLength > 0) {
+  if (hasCatalogTokenCount(contextLength)) {
     stats.push({
       key: 'context',
       icon: Layers,
@@ -305,7 +312,7 @@ function ModelBackendQuickStats(props: { model: PricingModel }) {
     })
   }
 
-  if (maxOutput > 0) {
+  if (hasCatalogTokenCount(maxOutput)) {
     stats.push({
       key: 'max-output',
       icon: Maximize2,

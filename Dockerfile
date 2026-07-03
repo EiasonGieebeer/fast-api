@@ -26,11 +26,7 @@ ARG NPM_CONFIG_REGISTRY=
 COPY web/package.json web/bun.lock ./
 COPY web/default/package.json ./default/package.json
 COPY web/classic/package.json ./classic/package.json
-RUN if [ -n "$NPM_CONFIG_REGISTRY" ]; then \
-      bun install --frozen-lockfile --registry "$NPM_CONFIG_REGISTRY"; \
-    else \
-      bun install --frozen-lockfile; \
-    fi
+RUN bun install --filter ./classic --frozen-lockfile
 COPY ./web/classic ./classic
 COPY ./VERSION /build/VERSION
 RUN cd classic && VITE_REACT_APP_VERSION=$(cat /build/VERSION) \

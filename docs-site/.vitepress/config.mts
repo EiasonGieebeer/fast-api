@@ -32,7 +32,8 @@ const zhTheme: DefaultTheme.Config = {
       items: [
         { text: '额度与计费', link: '/guide/billing' },
         { text: '常见问题', link: '/guide/faq' },
-        { text: '服务说明', link: '/legal/terms' },
+        { text: '服务条款', link: '/legal/terms' },
+        { text: '隐私政策', link: '/legal/privacy' },
       ],
     },
   ],

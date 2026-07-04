@@ -1,6 +1,6 @@
 import { defineConfig, type DefaultTheme } from 'vitepress'
 
-const logo = 'https://www.fastapi.cool/fast-api/logo.png'
+const logo = '/logo.svg'
 const repository = 'https://github.com/EiasonGieebeer/fast-api'
 
 const sharedTheme: Pick<DefaultTheme.Config, 'logo' | 'socialLinks'> = {

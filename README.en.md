@@ -1,6 +1,6 @@
 <div align="center">
 
-![fast-api](/web/default/public/logo.png)
+![fast-api](/web/default/public/logo.svg)
 
 # Fast API
 

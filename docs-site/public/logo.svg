@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" role="img" aria-label="FastAPI lightning icon">
+  <defs>
+    <linearGradient id="brand-gradient" x1="180" y1="100" x2="820" y2="900" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ff7900"/>
+      <stop offset="0.48" stop-color="#ff4234"/>
+      <stop offset="1" stop-color="#ff006f"/>
+    </linearGradient>
+    <linearGradient id="highlight" x1="250" y1="120" x2="690" y2="740" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.16"/>
+      <stop offset="0.55" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- One continuous silhouette: the central F is formed by the concave negative space. -->
+  <path fill="url(#brand-gradient)" d="
+    M 82 526
+    L 694 22
+    L 607 269
+    L 912 448
+    L 220 978
+    L 356 600
+    C 386 600 423 603 447 595
+    C 482 584 503 557 512 523
+    L 397 523
+    C 399 476 416 437 448 417
+    C 473 401 503 404 529 404
+    C 552 404 566 391 574 370
+    C 581 352 585 334 588 318
+    C 527 314 470 312 426 328
+    C 371 348 338 392 318 449
+    L 292 526
+    Z"/>
+
+  <path fill="url(#highlight)" d="
+    M 82 526 L 694 22 L 607 269 L 912 448
+    C 733 390 585 337 426 328
+    C 371 348 338 392 318 449 L 292 526 Z"/>
+</svg>

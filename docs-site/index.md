@@ -6,7 +6,7 @@ hero:
   text: 一个地址，连接常用 AI 模型
   tagline: 使用 OpenAI 兼容接口快速接入，统一管理密钥、额度和调用记录。
   image:
-    src: https://www.fastapi.cool/fast-api/logo.png
+    src: /logo.svg
     alt: Fast API
   actions:
     - theme: brand

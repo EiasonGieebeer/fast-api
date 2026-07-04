@@ -6,7 +6,7 @@ hero:
   text: One endpoint for popular AI models
   tagline: Connect through an OpenAI-compatible API and manage keys, quota, and usage in one place.
   image:
-    src: https://www.fastapi.cool/fast-api/logo.png
+    src: /logo.svg
     alt: Fast API
   actions:
     - theme: brand

@@ -193,6 +193,14 @@ const FooterBar = () => {
             <Typography.Text className='text-sm !text-semi-color-text-1'>
               © {currentYear} {systemName}. {t('版权所有')}
             </Typography.Text>
+            <a
+              href='https://beian.mps.gov.cn/#/query/webSearch?code=32128302002088'
+              target='_blank'
+              rel='noreferrer'
+              className='text-sm !text-semi-color-text-1 hover:!text-semi-color-text-0'
+            >
+              苏公网安备32128302002088号
+            </a>
           </div>
 
           <div className='text-sm'>
@@ -227,6 +235,14 @@ const FooterBar = () => {
               className='custom-footer na-cb6feafeb3990c78 text-sm !text-semi-color-text-1'
               dangerouslySetInnerHTML={{ __html: footer }}
             ></div>
+            <a
+              href='https://beian.mps.gov.cn/#/query/webSearch?code=32128302002088'
+              target='_blank'
+              rel='noreferrer'
+              className='text-sm flex-shrink-0 !text-semi-color-text-1 hover:!text-semi-color-text-0'
+            >
+              苏公网安备32128302002088号
+            </a>
             <div className='text-sm flex-shrink-0'>
               <span className='!text-semi-color-text-1'>
                 {t('设计与开发由')}{' '}

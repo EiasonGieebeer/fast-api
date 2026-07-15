@@ -31,6 +31,10 @@
   word-break: break-word;
 }
 
+.VPFooter .message {
+  white-space: nowrap;
+}
+
 @media (max-width: 640px) {
   .VPHomeHero .image {
     margin-top: 12px;

@@ -51,8 +51,7 @@ const zhTheme: DefaultTheme.Config = {
   langMenuLabel: '切换语言',
   skipToContentLabel: '跳到正文',
   footer: {
-    message: '请妥善保管 API 密钥，并遵守适用法律法规。 · <span style="white-space: nowrap"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">苏ICP备2024120285号-2</a> · <a href="https://beian.mps.gov.cn/#/query/webSearch?code=32128302002088" target="_blank" rel="noreferrer">苏公网安备32128302002088号</a></span>',
-    copyright: '© 2026 Fast API',
+    message: '© 2026 Fast API · <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">苏ICP备2024120285号-2</a> · <a href="https://beian.mps.gov.cn/#/query/webSearch?code=32128302002088" target="_blank" rel="noreferrer">苏公网安备32128302002088号</a>',
   },
 }
 
@@ -98,8 +97,7 @@ const enTheme: DefaultTheme.Config = {
   langMenuLabel: 'Change language',
   skipToContentLabel: 'Skip to content',
   footer: {
-    message: 'Keep your API keys secure and comply with applicable laws. · <span style="white-space: nowrap"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">苏ICP备2024120285号-2</a> · <a href="https://beian.mps.gov.cn/#/query/webSearch?code=32128302002088" target="_blank" rel="noreferrer">苏公网安备32128302002088号</a></span>',
-    copyright: '© 2026 Fast API',
+    message: '© 2026 Fast API · <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">苏ICP备2024120285号-2</a> · <a href="https://beian.mps.gov.cn/#/query/webSearch?code=32128302002088" target="_blank" rel="noreferrer">苏公网安备32128302002088号</a>',
   },
 }
 

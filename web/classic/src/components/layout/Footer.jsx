@@ -189,26 +189,10 @@ const FooterBar = () => {
         )}
 
         <div className='flex flex-col md:flex-row items-center justify-between w-full max-w-[1110px] gap-6'>
-          <div className='flex flex-nowrap items-center gap-2 whitespace-nowrap'>
+          <div className='flex flex-wrap items-center gap-2'>
             <Typography.Text className='text-sm !text-semi-color-text-1'>
               © {currentYear} {systemName}. {t('版权所有')}
             </Typography.Text>
-            <a
-              href='https://beian.miit.gov.cn/'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='text-sm !text-semi-color-text-1 hover:!text-semi-color-text-0'
-            >
-              苏ICP备2024120285号-2
-            </a>
-            <a
-              href='https://beian.mps.gov.cn/#/query/webSearch?code=32128302002088'
-              target='_blank'
-              rel='noreferrer'
-              className='text-sm !text-semi-color-text-1 hover:!text-semi-color-text-0'
-            >
-              苏公网安备32128302002088号
-            </a>
           </div>
 
           <div className='text-sm'>
@@ -239,20 +223,10 @@ const FooterBar = () => {
       {footer ? (
         <footer className='relative h-auto py-4 px-6 md:px-24 w-full flex items-center justify-center overflow-hidden'>
           <div className='flex flex-col md:flex-row items-center justify-between w-full max-w-[1110px] gap-4'>
-            <div className='flex flex-nowrap items-center gap-2 whitespace-nowrap'>
-              <div
-                className='custom-footer na-cb6feafeb3990c78 text-sm !text-semi-color-text-1'
-                dangerouslySetInnerHTML={{ __html: footer }}
-              ></div>
-              <a
-                href='https://beian.mps.gov.cn/#/query/webSearch?code=32128302002088'
-                target='_blank'
-                rel='noreferrer'
-                className='text-sm flex-shrink-0 !text-semi-color-text-1 hover:!text-semi-color-text-0'
-              >
-                苏公网安备32128302002088号
-              </a>
-            </div>
+            <div
+              className='custom-footer na-cb6feafeb3990c78 text-sm !text-semi-color-text-1'
+              dangerouslySetInnerHTML={{ __html: footer }}
+            ></div>
             <div className='text-sm flex-shrink-0'>
               <span className='!text-semi-color-text-1'>
                 {t('设计与开发由')}{' '}

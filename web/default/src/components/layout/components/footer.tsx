@@ -233,6 +233,7 @@ export function Footer(props: FooterProps) {
   )
 
   const displayColumns = props.columns ?? fallbackColumns
+  const inlineFooterHtml = footerHtml?.replace(/<br\s*\/?\s*>/gi, ' · ') ?? ''
 
   if (footerHtml) {
     return (
@@ -247,7 +248,7 @@ export function Footer(props: FooterProps) {
             <div className='flex flex-nowrap items-center gap-x-2 whitespace-nowrap'>
               <div
                 className='custom-footer text-muted-foreground text-center text-sm sm:text-left'
-                dangerouslySetInnerHTML={{ __html: footerHtml }}
+                dangerouslySetInnerHTML={{ __html: inlineFooterHtml }}
               />
               <PublicSecurityFiling />
             </div>

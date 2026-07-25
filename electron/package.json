@@ -21,7 +21,7 @@
   "author": "QuantumNous",
   "repository": {
     "type": "git",
-    "url": "https://github.com/QuantumNous/fast-api"
+    "url": "https://github.com/QuantumNous/new-api"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
@@ -59,10 +59,6 @@
         {
           "from": "../fast-api",
           "to": "bin/fast-api"
-        },
-        {
-          "from": "../web/dist",
-          "to": "web/dist"
         },
         {
           "from": "../LICENSE",

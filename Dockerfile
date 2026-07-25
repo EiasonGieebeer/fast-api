@@ -4,32 +4,15 @@ WORKDIR /build/web
 ARG WEB_BASE_PATH=/
 ARG NPM_CONFIG_REGISTRY=
 COPY web/package.json web/bun.lock ./
-COPY web/default/package.json ./default/package.json
-COPY web/classic/package.json ./classic/package.json
 RUN if [ -n "$NPM_CONFIG_REGISTRY" ]; then \
       bun install --frozen-lockfile --registry "$NPM_CONFIG_REGISTRY"; \
     else \
       bun install --frozen-lockfile; \
     fi
-COPY ./web/default ./default
+COPY ./web ./
 COPY ./VERSION /build/VERSION
-RUN cd default && DISABLE_ESLINT_PLUGIN='true' \
+RUN DISABLE_ESLINT_PLUGIN='true' \
     VITE_REACT_APP_VERSION=$(cat /build/VERSION) \
-    VITE_REACT_APP_BASE_PATH="${WEB_BASE_PATH}" \
-    bun run build
-
-FROM oven/bun:1@sha256:0733e50325078969732ebe3b15ce4c4be5082f18c4ac1a0f0ca4839c2e4e42a7 AS builder-classic
-
-WORKDIR /build/web
-ARG WEB_BASE_PATH=/
-ARG NPM_CONFIG_REGISTRY=
-COPY web/package.json web/bun.lock ./
-COPY web/default/package.json ./default/package.json
-COPY web/classic/package.json ./classic/package.json
-RUN bun install --filter ./classic --frozen-lockfile
-COPY ./web/classic ./classic
-COPY ./VERSION /build/VERSION
-RUN cd classic && VITE_REACT_APP_VERSION=$(cat /build/VERSION) \
     VITE_REACT_APP_BASE_PATH="${WEB_BASE_PATH}" \
     bun run build
 
@@ -49,8 +32,7 @@ ADD go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-COPY --from=builder /build/web/default/dist ./web/default/dist
-COPY --from=builder-classic /build/web/classic/dist ./web/classic/dist
+COPY --from=builder /build/web/dist ./web/dist
 RUN go build -ldflags "-s -w -X 'github.com/QuantumNous/new-api/common.Version=$(cat VERSION)'" -o fast-api
 
 FROM debian:bookworm-slim@sha256:f06537653ac770703bc45b4b113475bd402f451e85223f0f2837acbf89ab020a

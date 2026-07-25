@@ -1,8 +1,8 @@
 <div align="center">
 
-![fast-api](/web/default/public/logo.svg)
+![new-api](/web/public/logo.png)
 
-# Fast API
+# New API
 
 🍥 **Next-Generation Large Model Gateway and AI Asset Management System**
 
@@ -14,26 +14,33 @@
 </p>
 
 <p align="center">
-  <a href="https://raw.githubusercontent.com/Calcium-Ion/fast-api/main/LICENSE">
-    <img src="https://img.shields.io/github/license/Calcium-Ion/fast-api?color=brightgreen" alt="license">
+  <a href="https://raw.githubusercontent.com/Calcium-Ion/new-api/main/LICENSE">
+    <img src="https://img.shields.io/github/license/Calcium-Ion/new-api?color=brightgreen" alt="license">
   </a>
-  <a href="https://github.com/Calcium-Ion/fast-api/releases/latest">
-    <img src="https://img.shields.io/github/v/release/Calcium-Ion/fast-api?color=brightgreen&include_prereleases" alt="release">
+  <a href="https://github.com/Calcium-Ion/new-api/releases/latest">
+    <img src="https://img.shields.io/github/v/release/Calcium-Ion/new-api?color=brightgreen&include_prereleases" alt="release">
   </a>
-  <a href="https://github.com/users/Calcium-Ion/packages/container/package/fast-api">
+  <a href="https://github.com/users/Calcium-Ion/packages/container/package/new-api">
     <img src="https://img.shields.io/badge/docker-ghcr.io-blue" alt="docker">
   </a>
-  <a href="https://hub.docker.com/r/CalciumIon/fast-api">
+  <a href="https://hub.docker.com/r/CalciumIon/new-api">
     <img src="https://img.shields.io/badge/docker-dockerHub-blue" alt="docker">
   </a>
-  <a href="https://goreportcard.com/report/github.com/Calcium-Ion/fast-api">
-    <img src="https://goreportcard.com/badge/github.com/Calcium-Ion/fast-api" alt="GoReportCard">
+  <a href="https://atomgit.com/QuantumNous/new-api" target="_blank">
+    <img alt="AtomGit G-Star" src="https://atomgit.com/QuantumNous/new-api/star/badge.svg"/>
   </a>
 </p>
 
 <p align="center">
-  <a href="https://trendshift.io/repositories/8227" target="_blank">
-    <img src="https://trendshift.io/api/badge/repositories/8227" alt="Calcium-Ion%2Ffast-api | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>
+  <a href="https://trendshift.io/repositories/20180" target="_blank">
+    <img src="https://trendshift.io/api/badge/repositories/20180" alt="QuantumNous%2Fnew-api | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/>
+  </a>
+  <br>
+  <a href="https://hellogithub.com/repository/QuantumNous/new-api" target="_blank">
+    <img src="https://api.hellogithub.com/v1/widgets/recommend.svg?rid=539ac4217e69431684ad4a0bab768811&claim_uid=tbFPfKIDHpc4TzR" alt="Featured｜HelloGitHub" style="width: 250px; height: 54px;" width="250" height="54" />
+  </a>
+  <a href="https://atomgit.com/QuantumNous/new-api" target="_blank">
+    <img alt="AtomGit G-Star" src="https://atomgit.com/QuantumNous/new-api/star/new_badge.svg" width="250" height="55" />
   </a>
 </p>
 
@@ -73,7 +80,7 @@
   <a href="https://bda.pku.edu.cn/" target="_blank">
     <img src="./docs/images/pku.png" alt="Peking University" height="80" />
   </a>
-  <a href="https://www.compshare.cn/?ytag=GPU_yy_gh_fastapi" target="_blank">
+  <a href="https://www.compshare.cn/?ytag=GPU_yy_gh_newapi" target="_blank">
     <img src="./docs/images/ucloud.png" alt="UCloud" height="80" />
   </a>
   <a href="https://www.aliyun.com/" target="_blank">
@@ -89,13 +96,13 @@
 ## 🙏 Special Thanks
 
 <p align="center">
-  <a href="https://www.jetbrains.com/?from=fast-api" target="_blank">
+  <a href="https://www.jetbrains.com/?from=new-api" target="_blank">
     <img src="https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png" alt="JetBrains Logo" width="120" />
   </a>
 </p>
 
 <p align="center">
-  <strong>Thanks to <a href="https://www.jetbrains.com/?from=fast-api">JetBrains</a> for providing free open-source development license for this project</strong>
+  <strong>Thanks to <a href="https://www.jetbrains.com/?from=new-api">JetBrains</a> for providing free open-source development license for this project</strong>
 </p>
 
 ---
@@ -106,8 +113,8 @@
 
 ```bash
 # Clone the project
-git clone https://github.com/QuantumNous/fast-api.git
-cd fast-api
+git clone https://github.com/QuantumNous/new-api.git
+cd new-api
 
 # Edit docker-compose.yml configuration
 nano docker-compose.yml
@@ -121,22 +128,22 @@ docker-compose up -d
 
 ```bash
 # Pull the latest image
-docker pull calciumion/fast-api:latest
+docker pull calciumion/new-api:latest
 
 # Using SQLite (default)
-docker run --name fast-api -d --restart always \
+docker run --name new-api -d --restart always \
   -p 3000:3000 \
   -e TZ=Asia/Shanghai \
   -v ./data:/data \
-  calciumion/fast-api:latest
+  calciumion/new-api:latest
 
 # Using MySQL
-docker run --name fast-api -d --restart always \
+docker run --name new-api -d --restart always \
   -p 3000:3000 \
   -e SQL_DSN="root:123456@tcp(localhost:3306)/oneapi" \
   -e TZ=Asia/Shanghai \
   -v ./data:/data \
-  calciumion/fast-api:latest
+  calciumion/new-api:latest
 ```
 
 > **💡 Tip:** `-v ./data:/data` will save data in the `data` folder of the current directory, you can also change it to an absolute path like `-v /your/custom/path:/data`
@@ -158,7 +165,7 @@ docker run --name fast-api -d --restart always \
 
 <div align="center">
 
-### 📖 [Official Documentation](https://docs.newapi.pro/en/docs) | [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/QuantumNous/fast-api)
+### 📖 [Official Documentation](https://docs.newapi.pro/en/docs) | [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/QuantumNous/new-api)
 
 </div>
 
@@ -288,7 +295,7 @@ docker run --name fast-api -d --restart always \
 ## 🚢 Deployment
 
 > [!TIP]
-> **Latest Docker image:** `calciumion/fast-api:latest`
+> **Latest Docker image:** `calciumion/new-api:latest`
 
 ### 📋 Deployment Requirements
 
@@ -306,8 +313,16 @@ docker run --name fast-api -d --restart always \
 
 | Variable Name | Description | Default Value |
 |--------|------|--------|
-| `SESSION_SECRET` | Session secret (required for multi-machine deployment) | - |
-| `CRYPTO_SECRET` | Encryption secret (required for Redis) | - |
+| `SESSION_SECRET` | Authentication signing secret; must be identical on every node | - |
+| `SESSION_COOKIE_SECURE` | `false`/unset disables the refresh/logout OriginGuard for local HTTP dev proxies; `true` enables the Secure cookie and strict Origin checks | `false` |
+| `SESSION_COOKIE_TRUSTED_URL` | Required with Secure mode: comma-separated exact HTTPS Origins allowed to call refresh/logout; not a relay CORS allowlist | - |
+| `TRUSTED_PROXIES` | Unset/blank trusts loopback, RFC 1918 and IPv6 ULA with a startup warning; `none` trusts no proxies; an explicit proxy IP/CIDR list replaces the defaults | `127.0.0.0/8, ::1, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, fc00::/7` |
+| `USER_SESSION_ACTIVE_LIMIT` | Maximum active login Sessions per user | `50` |
+| `USER_SESSION_ISSUANCE_LIMIT` | Maximum Sessions created per user within the issuance window, including revoked Sessions | `100` |
+| `USER_SESSION_ISSUANCE_WINDOW_SECONDS` | Per-user Session issuance window; clamped to the revoked retention period when configured higher | `86400` |
+| `USER_SESSION_REVOKED_RETENTION_DAYS` | Days to retain revoked Session rows for audit and issuance accounting | `7` |
+| `USER_SESSION_HOURLY_ALERT_THRESHOLD` | Global Sessions created per hour that triggers an alert only; it never blocks login | `5000` |
+| `CRYPTO_SECRET` | HMAC secret for cache keys; nodes sharing Redis must use the same effective value | Defaults to `SESSION_SECRET` |
 | `SQL_DSN` | Database connection string | - |
 | `REDIS_CONN_STRING` | Redis connection string | - |
 | `STREAMING_TIMEOUT` | Streaming timeout (seconds) | `300` |
@@ -316,12 +331,12 @@ docker run --name fast-api -d --restart always \
 | `AZURE_DEFAULT_API_VERSION` | Azure API version | `2025-04-01-preview` |
 | `ERROR_LOG_ENABLED` | Error log switch | `false` |
 | `PYROSCOPE_URL` | Pyroscope server address | - |
-| `PYROSCOPE_APP_NAME` | Pyroscope application name | `fast-api` |
+| `PYROSCOPE_APP_NAME` | Pyroscope application name | `new-api` |
 | `PYROSCOPE_BASIC_AUTH_USER` | Pyroscope basic auth user | - |
 | `PYROSCOPE_BASIC_AUTH_PASSWORD` | Pyroscope basic auth password | - |
 | `PYROSCOPE_MUTEX_RATE` | Pyroscope mutex sampling rate | `5` |
 | `PYROSCOPE_BLOCK_RATE` | Pyroscope block sampling rate | `5` |
-| `HOSTNAME` | Hostname tag for Pyroscope | `fast-api` |
+| `HOSTNAME` | Hostname tag for Pyroscope | `new-api` |
 
 📖 **Complete configuration:** [Environment Variables Documentation](https://docs.newapi.pro/en/docs/installation/config-maintenance/environment-variables)
 
@@ -334,8 +349,8 @@ docker run --name fast-api -d --restart always \
 
 ```bash
 # Clone the project
-git clone https://github.com/QuantumNous/fast-api.git
-cd fast-api
+git clone https://github.com/QuantumNous/new-api.git
+cd new-api
 
 # Edit configuration
 nano docker-compose.yml
@@ -351,21 +366,21 @@ docker-compose up -d
 
 **Using SQLite:**
 ```bash
-docker run --name fast-api -d --restart always \
+docker run --name new-api -d --restart always \
   -p 3000:3000 \
   -e TZ=Asia/Shanghai \
   -v ./data:/data \
-  calciumion/fast-api:latest
+  calciumion/new-api:latest
 ```
 
 **Using MySQL:**
 ```bash
-docker run --name fast-api -d --restart always \
+docker run --name new-api -d --restart always \
   -p 3000:3000 \
   -e SQL_DSN="root:123456@tcp(localhost:3306)/oneapi" \
   -e TZ=Asia/Shanghai \
   -v ./data:/data \
-  calciumion/fast-api:latest
+  calciumion/new-api:latest
 ```
 
 > **💡 Path explanation:** 
@@ -378,7 +393,7 @@ docker run --name fast-api -d --restart always \
 <summary><strong>Method 3: BaoTa Panel</strong></summary>
 
 1. Install BaoTa Panel (≥ 9.2.0 version)
-2. Search for **Fast-API** in the application store
+2. Search for **New-API** in the application store
 3. One-click installation
 
 📖 [Tutorial with images](./docs/BT.md)
@@ -388,8 +403,20 @@ docker run --name fast-api -d --restart always \
 ### ⚠️ Multi-machine Deployment Considerations
 
 > [!WARNING]
-> - **Must set** `SESSION_SECRET` - Otherwise login status inconsistent
-> - **Shared Redis must set** `CRYPTO_SECRET` - Otherwise data cannot be decrypted
+> - All nodes must use the same primary database and the same `SESSION_SECRET`; otherwise Access Tokens, refresh sessions, and temporary authentication flows cannot be verified consistently.
+> - Nodes connected to the same Redis must also use the same `CRYPTO_SECRET`, or their cache-key digests will differ and shared entries cannot be reused consistently.
+
+The database is authoritative for login Sessions and for the per-user active/issuance limits. Redis Session entries are short-lived caches whose TTL follows `SYNC_FREQUENCY` (60 seconds by default) and never exceeds the Session's remaining lifetime.
+
+| Redis topology | Session propagation | Rate limiting |
+| --- | --- | --- |
+| Shared Redis | Revocations and version publications normally propagate immediately | Redis limits are shared across nodes |
+| Independent Redis per node | Nodes converge from the database within the effective `SYNC_FREQUENCY`; a newly rotated token may receive a temporary 401 on a node with stale cache | Each node has its own allowance, so aggregate capacity can reach roughly the configured limit multiplied by the node count |
+| No Redis | Every Session validation reads the database | In-memory limits are independent per node |
+
+A shorter `SYNC_FREQUENCY` reduces the independent-Redis staleness window but causes one additional primary-key Session lookup per active SID, per node, per TTL. These guarantees make Session authentication bounded-stale across the supported topologies; rate limits and other Redis-backed control-plane caches remain topology-dependent.
+
+See [User authentication and login sessions](./docs/authentication.md) for the token, Origin-check and PAT contracts.
 
 ### 🔄 Channel Retry and Cache
 
@@ -414,8 +441,8 @@ docker run --name fast-api -d --restart always \
 
 | Project | Description |
 |------|------|
-| [fast-api-key-tool](https://github.com/Calcium-Ion/fast-api-key-tool) | Key quota query tool |
-| [fast-api-horizon](https://github.com/Calcium-Ion/fast-api-horizon) | Fast API high-performance optimized version |
+| [new-api-key-tool](https://github.com/Calcium-Ion/new-api-key-tool) | Key quota query tool |
+| [new-api-horizon](https://github.com/Calcium-Ion/new-api-horizon) | New API high-performance optimized version |
 
 ---
 
@@ -445,7 +472,7 @@ Welcome all forms of contribution!
 
 <div align="center">
 
-[![Star History Chart](https://api.star-history.com/svg?repos=Calcium-Ion/fast-api&type=Date)](https://star-history.com/#Calcium-Ion/fast-api&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=Calcium-Ion/new-api&type=Date)](https://star-history.com/#Calcium-Ion/new-api&Date)
 
 </div>
 
@@ -453,11 +480,11 @@ Welcome all forms of contribution!
 
 <div align="center">
 
-### 💖 Thank you for using Fast API
+### 💖 Thank you for using New API
 
 If this project is helpful to you, welcome to give us a ⭐️ Star！
 
-**[Official Documentation](https://docs.newapi.pro/en/docs)** • **[Issue Feedback](https://github.com/Calcium-Ion/fast-api/issues)** • **[Latest Release](https://github.com/Calcium-Ion/fast-api/releases)**
+**[Official Documentation](https://docs.newapi.pro/en/docs)** • **[Issue Feedback](https://github.com/Calcium-Ion/new-api/issues)** • **[Latest Release](https://github.com/Calcium-Ion/new-api/releases)**
 
 <sub>Built with ❤️ by QuantumNous</sub>
 

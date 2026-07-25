@@ -5,10 +5,14 @@
 .zed
 .history
 .deploy
+*.md
+docs
+docs-site
 node_modules
-web/**/node_modules
-web/default/dist
-web/classic/dist
+**/node_modules
+**/dist
+/web/node_modules
+/web/dist
 electron/node_modules
 electron/dist
 data
@@ -22,3 +26,4 @@ upload
 .gomodcache
 __debug_bin*
 *.exe
+!THIRD-PARTY-LICENSES.md

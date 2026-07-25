@@ -13,24 +13,22 @@ CONTAINER="fast-api"
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 BUILD_DIR="/tmp/fast-api-deploy"
 
-echo "=== 1. 构建前端 (default) ==="
-cd "$PROJECT_DIR/web/default"
-npm run build
+mkdir -p "$BUILD_DIR"
 
 echo ""
-echo "=== 2. 构建前端 (classic) ==="
-cd "$PROJECT_DIR/web/classic"
-npm run build
+echo "=== 1. 构建前端 ==="
+cd "$PROJECT_DIR/web"
+bun run build
 
 echo ""
-echo "=== 3. 编译 Go 二进制（Linux amd64）==="
+echo "=== 2. 编译 Go 二进制（Linux amd64）==="
 cd "$PROJECT_DIR"
 GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
-  go build -ldflags "-s -w -X 'github.com/QuantumNous/fast-api/common.Version=$(cat VERSION)'" \
+  go build -ldflags "-s -w -X 'github.com/QuantumNous/new-api/common.Version=$(cat VERSION)'" \
   -o "$BUILD_DIR/fast-api" .
 
 echo ""
-echo "=== 4. 检查构建产物 ==="
+echo "=== 3. 检查构建产物 ==="
 ls -lh "$BUILD_DIR/fast-api"
 
 if [ "$1" = "build-only" ]; then
@@ -41,11 +39,11 @@ if [ "$1" = "build-only" ]; then
 fi
 
 echo ""
-echo "=== 5. 上传到服务器 ==="
+echo "=== 4. 上传到服务器 ==="
 MSYS_NO_PATHCONV=1 scp "$BUILD_DIR/fast-api" "${SERVER}:/tmp/fast-api-new"
 
 echo ""
-echo "=== 6. 替换容器内二进制并重启 ==="
+echo "=== 5. 替换容器内二进制并重启 ==="
 ssh "$SERVER" <<'REMOTE'
     set -e
     chmod +x /tmp/fast-api-new

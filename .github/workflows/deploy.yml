@@ -108,6 +108,7 @@ jobs:
             SESSION_SECRET=<CHANGE_TO_A_LONG_RANDOM_STRING>
             CRYPTO_SECRET=<CHANGE_TO_A_LONG_RANDOM_STRING>
             SESSION_COOKIE_SECURE=true
+            SESSION_COOKIE_TRUSTED_URL=https://www.fastapi.cool,https://newapi.fastapi.cool
             SQLITE_PATH=/data/fast-api.db?_busy_timeout=30000
             NODE_NAME=fast-api-node-1
             MEMORY_CACHE_ENABLED=false

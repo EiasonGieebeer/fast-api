@@ -46,6 +46,8 @@ jobs:
         shell: bash
         run: |
           set -Eeuo pipefail
+          git fetch --quiet --force https://github.com/QuantumNous/new-api.git \
+            '+refs/tags/*:refs/tags/*'
           UPSTREAM_VERSION="$(git describe --tags --abbrev=0 --match 'v[0-9]*')"
           SHORT_SHA="${GITHUB_SHA::9}"
           BUILD_VERSION="${UPSTREAM_VERSION}+my-custom.${SHORT_SHA}"

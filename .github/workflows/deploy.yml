@@ -39,6 +39,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve build version
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          UPSTREAM_VERSION="$(git describe --tags --abbrev=0 --match 'v[0-9]*')"
+          SHORT_SHA="${GITHUB_SHA::9}"
+          BUILD_VERSION="${UPSTREAM_VERSION}+my-custom.${SHORT_SHA}"
+          echo "${BUILD_VERSION}" > VERSION
+          echo "Building ${BUILD_VERSION}"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

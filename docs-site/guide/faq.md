@@ -14,7 +14,7 @@ Authorization: Bearer YOUR_API_KEY
 
 ## 404：接口不存在
 
-检查 Base URL 和请求路径，常见错误是重复添加 `/v1`。
+检查 Base URL、请求路径和模型支持的协议。常见错误是重复添加 `/v1`，或对只支持 Chat Completions 的模型调用 Responses API。
 
 ## 429：请求过多或额度不足
 
@@ -30,4 +30,22 @@ Authorization: Bearer YOUR_API_KEY
 
 ## 密钥泄露怎么办
 
-立即在控制台停用或删除旧密钥，再创建新密钥。不要继续使用已经公开过的密钥。
+立即在 [API 密钥](https://www.fastapi.cool/keys) 页面停用或删除旧密钥，再创建新密钥。不要继续使用已经公开过的密钥。
+
+## 新版控制台入口在哪里
+
+登录后从左侧导航进入各页面。常用入口包括：
+
+- 概览：`/dashboard/overview`
+- API 密钥：`/keys`
+- 使用日志：`/usage-logs/common`
+- 任务日志：`/usage-logs/task`
+- 钱包：`/wallet`
+- 个人资料：`/profile`
+- 游乐场：`/playground`
+
+旧 `/console/...` 地址通常会跳转到新版页面，建议更新收藏夹。完整映射见 [新版控制台流程](/guide/console)。
+
+## 为什么看不到某个菜单
+
+菜单可能因账号角色、权限或管理员配置而隐藏。例如渠道、模型管理、用户和系统设置仅向相应管理员开放；充值、订阅或排行榜也可能被站点关闭。

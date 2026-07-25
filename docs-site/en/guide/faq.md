@@ -14,7 +14,7 @@ The key may not be allowed to use the selected model, or your account group may 
 
 ## 404: Endpoint not found
 
-Check the Base URL and request path. A common mistake is adding `/v1` twice.
+Check the Base URL, request path, and protocol supported by the model. Common mistakes include adding `/v1` twice or calling the Responses API with a Chat-Completions-only model.
 
 ## 429: Too many requests or insufficient quota
 
@@ -30,4 +30,22 @@ Cost can vary with input length, output length, caching, image count, audio dura
 
 ## What should I do if a key is exposed?
 
-Disable or delete the old key immediately and create a replacement. Never continue using a key that has been made public.
+Disable or delete the old key on [API Keys](https://www.fastapi.cool/keys) immediately and create a replacement. Never continue using a key that has been made public.
+
+## Where are the new console pages?
+
+After signing in, use the sidebar. Common destinations are:
+
+- Overview: `/dashboard/overview`
+- API Keys: `/keys`
+- Usage Logs: `/usage-logs/common`
+- Task Logs: `/usage-logs/task`
+- Wallet: `/wallet`
+- Profile: `/profile`
+- Playground: `/playground`
+
+Old `/console/...` paths normally redirect, but bookmarks should be updated. See [New Console Workflow](/en/guide/console) for the complete map.
+
+## Why is a menu item missing?
+
+Menus can be hidden by account role, permissions, or administrator configuration. Channels, model management, users, and system settings require the corresponding administrative role. Top-ups, subscriptions, and rankings can also be disabled site-wide.

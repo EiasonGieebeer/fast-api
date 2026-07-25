@@ -1,5 +1,20 @@
 # API Usage
 
+## Choose the model protocol first
+
+The new homepage and model gateway support several compatible protocols. Check the model name and capabilities in the [model catalog](https://www.fastapi.cool/pricing), then use the matching endpoint.
+
+| Protocol | Base URL | Request path | Authentication |
+| --- | --- | --- | --- |
+| OpenAI Chat Completions | `https://www.fastapi.cool/v1` | `/chat/completions` | `Authorization: Bearer` |
+| OpenAI Responses | `https://www.fastapi.cool/v1` | `/responses` | `Authorization: Bearer` |
+| Claude Messages | `https://www.fastapi.cool` | `/v1/messages` | `x-api-key` |
+| Gemini | `https://www.fastapi.cool` | `/v1beta/models/{model}:generateContent` | `x-goog-api-key` |
+
+::: warning
+Not every model supports all four protocols. A correct model name used with an incompatible endpoint may return a 404 or protocol-conversion error.
+:::
+
 ## OpenAI SDK
 
 ### Python
@@ -38,6 +53,47 @@ const response = await client.chat.completions.create({
 console.log(response.choices[0].message.content);
 ```
 
+## Responses API
+
+```bash
+curl https://www.fastapi.cool/v1/responses \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "MODEL_ID",
+    "input": "Introduce yourself in one sentence."
+  }'
+```
+
+## Claude Messages
+
+```bash
+curl https://www.fastapi.cool/v1/messages \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "MODEL_ID",
+    "max_tokens": 256,
+    "messages": [
+      {"role": "user", "content": "Hello"}
+    ]
+  }'
+```
+
+## Gemini
+
+```bash
+curl "https://www.fastapi.cool/v1beta/models/MODEL_ID:generateContent" \
+  -H "x-goog-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "contents": [
+      {"parts": [{"text": "Hello"}]}
+    ]
+  }'
+```
+
 ## Common endpoints
 
 | Purpose | Path |
@@ -51,7 +107,7 @@ console.log(response.choices[0].message.content);
 | Speech to text | `/v1/audio/transcriptions` |
 | Gemini | `/v1beta/models/{model}:generateContent` |
 
-Supported endpoints and parameters vary by model. Refer to the model catalog and the official API specification for that model.
+Supported endpoints and parameters vary by model. Refer to the model catalog and the official API specification for that model. Test a model in [Playground](https://www.fastapi.cool/playground), then review the request in [Usage Logs](https://www.fastapi.cool/usage-logs/common).
 
 ## Streaming
 
@@ -70,3 +126,5 @@ OpenAI-compatible endpoints use a Bearer token:
 ```http
 Authorization: Bearer YOUR_API_KEY
 ```
+
+The native Claude and Gemini compatible endpoints use `x-api-key` and `x-goog-api-key`, respectively, as shown above.

@@ -6,17 +6,24 @@ Each request is charged according to the model price, input and output usage, an
 
 ## View pricing
 
-The [model catalog](https://www.fastapi.cool/pricing) lists currently available models and prices. Models may be billed by tokens, requests, images, or audio duration.
+The [model catalog](https://www.fastapi.cool/pricing) lists available models, capabilities, protocols, and prices. Models may be billed by tokens, requests, images, audio duration, or dynamic rules.
 
-## Top-ups and subscriptions
+## Wallet, top-ups, and subscriptions
 
-- Top-up balance can be used for pay-as-you-go requests.
-- Subscription plans may have expiration dates, model restrictions, or separate quotas.
-- The purchase page shows the scope that applies to each product.
+The new console combines related features in [Wallet](https://www.fastapi.cool/wallet):
+
+- current balance and account quota;
+- supported top-up methods;
+- subscription plans;
+- redemption codes;
+- billing and top-up history;
+- referral rewards and eligible balance transfers.
+
+Some cards may be hidden by site configuration. A subscription can have an expiration date, model restrictions, or a separate quota; the Wallet page shows the applicable terms.
 
 ## Quota display
 
-The frontend displays balance in US dollars by default. Internally, the platform uses smaller quota units for precise settlement, so users normally do not need to convert them manually.
+The frontend may display quota as USD, CNY, or tokens depending on site settings. Internally, the platform uses smaller quota units for precise settlement, so users normally do not need to convert them manually.
 
 ## Control costs
 
@@ -28,3 +35,7 @@ When creating an API key, consider setting:
 - An IP allowlist when required by your application
 
 If you notice unexpected usage, disable or delete the affected key immediately and review the usage logs.
+
+## Verify a charge
+
+The final charge in [Usage Logs](https://www.fastapi.cool/usage-logs/common) is authoritative. Logs include model, request time, input and output usage, latency, quota consumption, and errors. For image, video, and other asynchronous jobs, also review [Task Logs](https://www.fastapi.cool/usage-logs/task).

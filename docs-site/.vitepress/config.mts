@@ -13,6 +13,7 @@ const zhTheme: DefaultTheme.Config = {
   siteTitle: 'Fast API 文档',
   nav: [
     { text: '快速开始', link: '/guide/getting-started' },
+    { text: '控制台流程', link: '/guide/console' },
     { text: 'API 调用', link: '/guide/api' },
     { text: '控制台', link: 'https://www.fastapi.cool/dashboard' },
     { text: '模型广场', link: 'https://www.fastapi.cool/pricing' },
@@ -23,6 +24,7 @@ const zhTheme: DefaultTheme.Config = {
       items: [
         { text: '文档首页', link: '/' },
         { text: '快速开始', link: '/guide/getting-started' },
+        { text: '新版控制台流程', link: '/guide/console' },
         { text: 'API 调用', link: '/guide/api' },
         { text: '客户端配置', link: '/guide/clients' },
       ],
@@ -60,6 +62,7 @@ const enTheme: DefaultTheme.Config = {
   siteTitle: 'Fast API Docs',
   nav: [
     { text: 'Quick Start', link: '/en/guide/getting-started' },
+    { text: 'Console Workflow', link: '/en/guide/console' },
     { text: 'API Usage', link: '/en/guide/api' },
     { text: 'Console', link: 'https://www.fastapi.cool/dashboard' },
     { text: 'Models', link: 'https://www.fastapi.cool/pricing' },
@@ -70,6 +73,7 @@ const enTheme: DefaultTheme.Config = {
       items: [
         { text: 'Documentation', link: '/en/' },
         { text: 'Quick Start', link: '/en/guide/getting-started' },
+        { text: 'New Console Workflow', link: '/en/guide/console' },
         { text: 'API Usage', link: '/en/guide/api' },
         { text: 'Client Setup', link: '/en/guide/clients' },
       ],

@@ -1,6 +1,6 @@
 # Client Setup
 
-Most clients require only an API key, endpoint, and model name. Create an API key in the console first, then copy an available model name from the model catalog.
+Most clients require only an API key, endpoint, and model name. Follow the [New Console Workflow](/en/guide/console) to create and copy a key, then copy an available model name from the model catalog.
 
 | Setting | Value |
 | --- | --- |
@@ -227,5 +227,5 @@ Create `opencode.json` in the project root, or edit the user configuration at `~
 Set `FAST_API_KEY`, restart OpenCode, and select `fast-api/YOUR_MODEL` from the model list.
 
 ::: tip Troubleshooting
-For a 401 error, check the API key. For a 404 error, make sure the URL does not contain `/v1/v1`. For a model-not-found error, copy the model name from the model catalog again.
+For a 401 error, check the API key. For a 404 error, make sure the URL does not contain `/v1/v1` and that the model supports the selected protocol. For a model-not-found error, copy the model name from the model catalog again. If the request reached the platform, review its details in [Usage Logs](https://www.fastapi.cool/usage-logs/common).
 :::

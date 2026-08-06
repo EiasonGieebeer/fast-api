@@ -15,6 +15,8 @@ The new homepage and model gateway support several compatible protocols. Check t
 Not every model supports all four protocols. A correct model name used with an incompatible endpoint may return a 404 or protocol-conversion error.
 :::
 
+The updated protocol conversion layer improves interoperability among OpenAI Chat, Responses, Claude, and Gemini, and adds DeepSeek Responses support. Availability still depends on the selected model and backend channel configuration; do not infer protocol support from the provider name alone.
+
 ## OpenAI SDK
 
 ### Python
@@ -118,6 +120,8 @@ For models that support OpenAI-compatible streaming, add:
   "stream": true
 }
 ```
+
+After the request, [Usage Logs](https://www.fastapi.cool/usage-logs/common) show its stream status. If the client disconnects early, the upstream stream does not finish normally, or the request fails, the stream status and error details help identify where it stopped.
 
 ## Authentication
 

@@ -10,7 +10,7 @@ Authorization: Bearer YOUR_API_KEY
 
 ## 403: Permission denied
 
-The key may not be allowed to use the selected model, or your account group may not include it. Check the key's model restrictions and account permissions.
+The key may not have access to the model, or no available channel in its fixed group or Auto-group order may support it. Check the key's model restrictions, group settings, and account permissions.
 
 ## 404: Endpoint not found
 
@@ -26,7 +26,11 @@ This usually means an upstream model or network is temporarily unavailable. Retr
 
 ## Why does the same model have different costs?
 
-Cost can vary with input length, output length, caching, image count, audio duration, and account-group multipliers.
+Cost can vary with input length, output length, caching, image count, audio duration, the group that actually handled the request, and tool-call surcharges. If a tool icon appears next to the charge, open the log details to review the tool fee.
+
+## What is the difference between Auto and fixed groups?
+
+A fixed group uses only the selected group. Auto tries groups in the global order or a key-specific custom order. With cross-group retry enabled, it continues to later groups when the current group is unavailable, so the final multiplier can depend on the group that eventually handles the request.
 
 ## What should I do if a key is exposed?
 

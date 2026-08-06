@@ -7,7 +7,7 @@ The new website replaces the old monolithic console with focused pages. After si
 1. Check account balance, keys, and recent usage on [Overview](https://www.fastapi.cool/dashboard/overview).
 2. Confirm the model name, capabilities, protocol, and price in the [model catalog](https://www.fastapi.cool/pricing).
 3. Add balance or purchase a plan through [Wallet](https://www.fastapi.cool/wallet) when necessary.
-4. Create a credential on [API Keys](https://www.fastapi.cool/keys), with optional group, quota, expiration, model, and IP restrictions.
+4. Create a credential on [API Keys](https://www.fastapi.cool/keys), choose a fixed or Auto group, and optionally configure quota, expiration, model, and IP restrictions.
 5. Test inside [Playground](https://www.fastapi.cool/playground), or configure an SDK using [API Usage](/en/guide/api).
 6. Review completed requests in [Usage Logs](https://www.fastapi.cool/usage-logs/common) or asynchronous jobs in [Task Logs](https://www.fastapi.cool/usage-logs/task).
 
@@ -32,6 +32,13 @@ Administrators can hide modules based on account permissions or system configura
 
 The create drawer contains name, group, expiration, quantity, and quota settings. Advanced settings can restrict models and IP/CIDR ranges.
 
+When the administrator enables **Auto groups**, a key can try multiple groups in priority order:
+
+- **Inherit global Auto** follows the latest group order maintained by the administrator;
+- a custom order lets you add, remove, and reorder groups for this key only;
+- **Cross-group retry** continues with the next group when channels in the current group are unavailable;
+- Usage Logs show the group that actually handled the request and the final charge.
+
 After creation:
 
 - use the copy button to copy the complete key;
@@ -44,6 +51,10 @@ After creation:
 Wallet combines balance, top-ups, subscriptions, redemption codes, referral rewards, and billing history. The exact cards shown depend on the payment and plan features enabled by the administrator.
 
 The final charge recorded in [Usage Logs](https://www.fastapi.cool/usage-logs/common) is based on the model, input and output usage, account-group multiplier, and other applicable billing factors.
+
+## New information in Usage Logs
+
+Usage Logs now distinguish standard and streaming requests more clearly and record whether a stream completed normally. A tool icon next to the charge means the request includes a surcharge for Web Search, File Search, image generation, or another billable tool. Open the log details for the complete billing information.
 
 ## Migrating old links
 

@@ -2,11 +2,13 @@
 
 ## How usage is charged
 
-Each request is charged according to the model price, input and output usage, and the multiplier for your account group. The final charge shown in the console usage log is authoritative.
+Each request is charged according to the model price, input and output usage, the group that actually handled the request, and any applicable tool-call surcharge. The final charge shown in the console usage log is authoritative.
 
 ## View pricing
 
 The [model catalog](https://www.fastapi.cool/pricing) lists available models, capabilities, protocols, and prices. Models may be billed by tokens, requests, images, audio duration, or dynamic rules.
+
+For token-priced models, tools such as Web Search, File Search, and image generation can add a fee based on actual calls. Per-request models normally do not receive an additional tool fee. Administrators can change tool prices, so use the current Usage Log as the source of truth.
 
 ## Wallet, top-ups, and subscriptions
 
@@ -38,4 +40,4 @@ If you notice unexpected usage, disable or delete the affected key immediately a
 
 ## Verify a charge
 
-The final charge in [Usage Logs](https://www.fastapi.cool/usage-logs/common) is authoritative. Logs include model, request time, input and output usage, latency, quota consumption, and errors. For image, video, and other asynchronous jobs, also review [Task Logs](https://www.fastapi.cool/usage-logs/task).
+The final charge in [Usage Logs](https://www.fastapi.cool/usage-logs/common) is authoritative. Logs include model, request time, input and output usage, the selected group, stream status, latency, quota consumption, and errors. A tool icon next to the amount marks a tool-call surcharge. For image, video, and other asynchronous jobs, also review [Task Logs](https://www.fastapi.cool/usage-logs/task).

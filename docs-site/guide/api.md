@@ -15,6 +15,8 @@
 并非每个模型都同时支持四种协议。模型名称正确但接口不兼容时，可能返回 404 或协议转换错误。
 :::
 
+新版协议转换层已增强 OpenAI Chat、Responses、Claude 和 Gemini 之间的兼容处理，并补充 DeepSeek Responses 支持。是否能够使用某种协议仍取决于具体模型与后台渠道配置，不能仅根据模型厂商名称判断。
+
 ## OpenAI SDK
 
 ### Python
@@ -118,6 +120,8 @@ curl "https://www.fastapi.cool/v1beta/models/MODEL_ID:generateContent" \
   "stream": true
 }
 ```
+
+请求结束后可在 [使用日志](https://www.fastapi.cool/usage-logs/common) 查看流式状态。如果客户端提前断开、上游流未正常结束或请求失败，日志中的流状态和错误信息可用于区分问题发生位置。
 
 ## 认证格式
 

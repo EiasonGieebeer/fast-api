@@ -69,3 +69,13 @@ Old console URLs may still redirect, but bookmarks and client instructions shoul
 | `/console/topup` | `/wallet` |
 
 Administrative features now live on separate Channels, Models, Users, Subscriptions, System Info, and System Settings pages. Standard users do not see those entries.
+
+## Administrative channel and redemption workflows
+
+After an administrator fetches upstream models for a channel, new and existing models are grouped by provider for searching, bulk selection, and review. Qwen TTS models are classified under Qwen. Review model names and mappings before saving; unrecognized names remain in the `Other` group.
+
+Channel connectivity tests now use the protocol selected for the channel. Claude and Gemini tests send their native request formats, and Gemini streaming tests use the `:streamGenerateContent` path. A successful test therefore confirms that channel's matching native endpoint; it does not imply that the same model supports every other protocol.
+
+When editing a redemption code, the drawer loads the latest server record and prevents submission until loading finishes. If you change only the name or expiration and leave quota untouched, the original internal quota is preserved so display-currency conversion and decimal precision do not alter it. The quota input step follows the active currency or token display settings.
+
+Rotating the personal access token from Profile is a protected operation subject to the critical endpoint rate limit. Avoid repeated generation, and update clients that still use the old token immediately after a rotation.

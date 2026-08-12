@@ -129,7 +129,10 @@ describe('wallet recharge form', () => {
       storeLinks[0]?.textContent ?? '',
       /Buy codes at Liandong Store/
     )
-    assert.match(storeLinks[0]?.textContent ?? '', /Pay there, then redeem below/)
+    assert.match(
+      storeLinks[0]?.textContent ?? '',
+      /Pay there, then redeem below/
+    )
 
     const alipayButton = [...container.querySelectorAll('button')].find(
       (button) => button.textContent?.includes('Alipay')

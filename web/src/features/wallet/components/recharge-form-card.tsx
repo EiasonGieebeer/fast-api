@@ -326,8 +326,31 @@ export function RechargeFormCard({
                 <Label className='text-muted-foreground text-xs font-medium tracking-wider uppercase'>
                   {t('Payment Method')}
                 </Label>
-                {hasStandardPaymentMethods ? (
+                {topupLink || hasStandardPaymentMethods ? (
                   <div className='grid grid-cols-2 gap-1.5 sm:gap-3 lg:grid-cols-3'>
+                    {topupLink && (
+                      <Button
+                        variant='outline'
+                        className='min-h-14 min-w-0 justify-start gap-2 rounded-lg px-3 py-2 text-left'
+                        render={
+                          <a
+                            href={topupLink}
+                            target='_blank'
+                            rel='noopener noreferrer'
+                          />
+                        }
+                      >
+                        <ExternalLink className='h-4 w-4' />
+                        <span className='flex min-w-0 flex-col items-start gap-0.5'>
+                          <span className='max-w-full truncate'>
+                            {t('Buy codes at Liandong Store (Recommended)')}
+                          </span>
+                          <span className='text-muted-foreground max-w-full truncate text-[11px] leading-4 font-normal'>
+                            {t('Pay there, then redeem below')}
+                          </span>
+                        </span>
+                      </Button>
+                    )}
                     {topupInfo?.pay_methods?.map((method) => {
                       const minTopup = Math.max(
                         method.min_topup || 0,
@@ -393,15 +416,17 @@ export function RechargeFormCard({
                     })}
                   </div>
                 ) : null}
-                {!hasStandardPaymentMethods && !hasWaffoPaymentMethods && (
-                  <Alert>
-                    <AlertDescription>
-                      {t(
-                        'No payment methods available. Please contact administrator.'
-                      )}
-                    </AlertDescription>
-                  </Alert>
-                )}
+                {!topupLink &&
+                  !hasStandardPaymentMethods &&
+                  !hasWaffoPaymentMethods && (
+                    <Alert>
+                      <AlertDescription>
+                        {t(
+                          'No payment methods available. Please contact administrator.'
+                        )}
+                      </AlertDescription>
+                    </Alert>
+                  )}
               </div>
 
               {enableWaffoTopup &&

@@ -50,11 +50,13 @@ After creation:
 
 Wallet combines balance, top-ups, subscriptions, redemption codes, referral rewards, and billing history. The exact cards shown depend on the payment and plan features enabled by the administrator.
 
+Before opening checkout, the platform validates both the requested amount and the resulting wallet quota. An amount that cannot be credited safely is rejected before payment is created. Payment callbacks update the order and quota transactionally, so duplicate callbacks do not credit the wallet twice.
+
 The final charge recorded in [Usage Logs](https://www.fastapi.cool/usage-logs/common) is based on the model, input and output usage, account-group multiplier, and other applicable billing factors.
 
 ## New information in Usage Logs
 
-Usage Logs now distinguish standard and streaming requests more clearly and record whether a stream completed normally. A tool icon next to the charge means the request includes a surcharge for Web Search, File Search, image generation, or another billable tool. Open the log details for the complete billing information.
+Usage Logs now distinguish standard and streaming requests more clearly and record whether a stream completed normally. Details show the recorded reasoning effort; for dynamic pricing, Conditional Multipliers identify the conditions and multipliers that actually matched this request. A tool icon next to the charge means the request includes a surcharge for Web Search, File Search, image generation, or another billable tool. Open the log details for the complete billing information.
 
 ## Migrating old links
 
@@ -76,6 +78,12 @@ After an administrator fetches upstream models for a channel, new and existing m
 
 Channel connectivity tests now use the protocol selected for the channel. Claude and Gemini tests send their native request formats, and Gemini streaming tests use the `:streamGenerateContent` path. A successful test therefore confirms that channel's matching native endpoint; it does not imply that the same model supports every other protocol.
 
+Under **System Settings → Models and Channels → Routing Reliability**, scheduled channel testing has three scopes: all channels except manually disabled ones, only channels with auto-disable enabled, or only auto-disabled channels awaiting recovery. The narrower modes avoid unnecessary probes of healthy channels; the separate re-enable setting still controls whether a successful check restores a channel.
+
+Compatible and gateway channel types—including OpenAI, Anthropic, Codex, Advanced Custom, Sub2API, and New API—show protocol-appropriate **Field passthrough controls**. Enable only fields supported by the upstream: `service_tier`, `inference_geo`, `speed`, `store`, and obfuscation controls are not available on every protocol. Parameter override rules can also read `user_id`, `user_group`, `token_group`, and the currently selected `using_group` to tailor upstream parameters by user or group.
+
+When configuring a custom OAuth provider, **Access Policy** offers ready-to-fill “level and active” and “organization or role” templates with nested `and` / `or` conditions. Denial messages can use variables such as `provider`, `field`, `op`, `required`, `current`, and `current.roles`. Leaving the policy empty adds no extra user restriction.
+
 When editing a redemption code, the drawer loads the latest server record and prevents submission until loading finishes. If you change only the name or expiration and leave quota untouched, the original internal quota is preserved so display-currency conversion and decimal precision do not alter it. The quota input step follows the active currency or token display settings.
 
-Rotating the personal access token from Profile is a protected operation subject to the critical endpoint rate limit. Avoid repeated generation, and update clients that still use the old token immediately after a rotation.
+Profile does not reveal an existing personal access token, and regeneration requires confirmation. The new token is shown once and cleared from the page when the dialog closes, while the previous token becomes invalid immediately. Store the new value securely before closing, then update every client that used the old token. This protected operation is also subject to the critical endpoint rate limit, so avoid repeated regeneration.

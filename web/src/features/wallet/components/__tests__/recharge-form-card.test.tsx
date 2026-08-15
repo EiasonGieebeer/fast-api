@@ -16,41 +16,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import assert from 'node:assert/strict'
-import { after, describe, test } from 'node:test'
+import { render, screen } from '@testing-library/react'
+import { describe, expect, test } from 'vitest'
 
-import { Window } from 'happy-dom'
-
-const domWindow = new Window()
-const domGlobals = [
-  'window',
-  'document',
-  'navigator',
-  'HTMLElement',
-  'HTMLInputElement',
-  'HTMLButtonElement',
-  'HTMLAnchorElement',
-  'SVGElement',
-  'Node',
-  'Element',
-  'Event',
-  'CustomEvent',
-  'MutationObserver',
-  'ResizeObserver',
-  'requestAnimationFrame',
-  'cancelAnimationFrame',
-  'getComputedStyle',
-] as const
-
-for (const key of domGlobals) {
-  Object.defineProperty(globalThis, key, {
-    configurable: true,
-    value: domWindow[key],
-  })
-}
-
-const { act } = await import('react')
-const { createRoot } = await import('react-dom/client')
 const { createInstance } = await import('i18next')
 const { I18nextProvider, initReactI18next } = await import('react-i18next')
 const { RechargeFormCard } = await import('../recharge-form-card')
@@ -70,81 +38,55 @@ await i18n.use(initReactI18next).init({
   },
 })
 
-const reactTestGlobals = globalThis as typeof globalThis & {
-  IS_REACT_ACT_ENVIRONMENT?: boolean
-}
-reactTestGlobals.IS_REACT_ACT_ENVIRONMENT = true
-
 describe('wallet recharge form', () => {
-  after(() => {
-    domWindow.close()
-  })
-
-  test('shows the configured redemption store before Alipay and keeps the lower link', async () => {
-    const container = document.createElement('div')
-    document.body.append(container)
-    const root = createRoot(container)
+  test('shows the configured redemption store before Alipay and keeps the lower link', () => {
     const topupLink = 'https://pay.ldxp.cn/shop/fastapi'
 
-    await act(async () => {
-      root.render(
-        <I18nextProvider i18n={i18n}>
-          <RechargeFormCard
-            topupInfo={{
-              enable_online_topup: true,
-              enable_stripe_topup: false,
-              pay_methods: [{ name: 'Alipay', type: 'alipay' }],
-              min_topup: 1,
-              stripe_min_topup: 1,
-              amount_options: [10],
-              discount: {},
-              enable_redemption: true,
-            }}
-            presetAmounts={[{ value: 10 }]}
-            selectedPreset={10}
-            onSelectPreset={() => {}}
-            topupAmount={10}
-            onTopupAmountChange={() => {}}
-            paymentAmount={10}
-            calculating={false}
-            onPaymentMethodSelect={() => {}}
-            paymentLoading={null}
-            redemptionCode=''
-            onRedemptionCodeChange={() => {}}
-            onRedeem={() => {}}
-            redeeming={false}
-            topupLink={topupLink}
-          />
-        </I18nextProvider>
-      )
-    })
+    const { container } = render(
+      <I18nextProvider i18n={i18n}>
+        <RechargeFormCard
+          topupInfo={{
+            enable_online_topup: true,
+            enable_stripe_topup: false,
+            pay_methods: [{ name: 'Alipay', type: 'alipay' }],
+            min_topup: 1,
+            stripe_min_topup: 1,
+            amount_options: [10],
+            discount: {},
+            enable_redemption: true,
+          }}
+          presetAmounts={[{ value: 10 }]}
+          selectedPreset={10}
+          onSelectPreset={() => {}}
+          topupAmount={10}
+          onTopupAmountChange={() => {}}
+          paymentAmount={10}
+          calculating={false}
+          onPaymentMethodSelect={() => {}}
+          paymentLoading={null}
+          redemptionCode=''
+          onRedemptionCodeChange={() => {}}
+          onRedeem={() => {}}
+          redeeming={false}
+          topupLink={topupLink}
+        />
+      </I18nextProvider>
+    )
 
     const storeLinks = container.querySelectorAll<HTMLAnchorElement>(
       `a[href="${topupLink}"]`
     )
-    assert.equal(storeLinks.length, 2)
-    assert.equal(storeLinks[0]?.target, '_blank')
-    assert.equal(storeLinks[0]?.rel, 'noopener noreferrer')
-    assert.match(
-      storeLinks[0]?.textContent ?? '',
-      /Buy codes at Liandong Store/
-    )
-    assert.match(
-      storeLinks[0]?.textContent ?? '',
-      /Pay there, then redeem below/
-    )
+    expect(storeLinks).toHaveLength(2)
+    expect(storeLinks[0]).toHaveAttribute('target', '_blank')
+    expect(storeLinks[0]).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(storeLinks[0]).toHaveTextContent('Buy codes at Liandong Store')
+    expect(storeLinks[0]).toHaveTextContent('Pay there, then redeem below')
 
-    const alipayButton = [...container.querySelectorAll('button')].find(
-      (button) => button.textContent?.includes('Alipay')
-    )
-    assert.ok(alipayButton)
-    assert.ok(
+    const alipayButton = screen.getByRole('button', { name: /Alipay/ })
+    expect(
       (storeLinks[0]?.compareDocumentPosition(alipayButton) ?? 0) &
         Node.DOCUMENT_POSITION_FOLLOWING
-    )
-    assert.match(storeLinks[1]?.textContent ?? '', /Get one here/)
-
-    await act(async () => root.unmount())
-    container.remove()
+    ).not.toBe(0)
+    expect(storeLinks[1]).toHaveTextContent('Get one here')
   })
 })

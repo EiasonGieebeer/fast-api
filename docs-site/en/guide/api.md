@@ -15,7 +15,7 @@ The new homepage and model gateway support several compatible protocols. Check t
 Not every model supports all four protocols. A correct model name used with an incompatible endpoint may return a 404 or protocol-conversion error.
 :::
 
-The updated protocol conversion layer improves interoperability among OpenAI Chat, Responses, Claude, and Gemini, and adds DeepSeek Responses support. Availability still depends on the selected model and backend channel configuration; do not infer protocol support from the provider name alone.
+The updated protocol conversion layer improves interoperability among OpenAI Chat, Responses, Claude, and Gemini, and adds DeepSeek Responses support. Chat/Responses conversion preserves explicit `frequency_penalty` and `presence_penalty` values (including `0`) plus `prompt_cache_key`; an upstream may still reject unsupported fields, and Codex channels remove penalties that their backend does not accept. Claude conversion no longer sends an empty `tools` array. Availability still depends on the selected model and backend channel configuration; do not infer protocol support from the provider name alone.
 
 ## OpenAI SDK
 
@@ -102,6 +102,7 @@ curl "https://www.fastapi.cool/v1beta/models/MODEL_ID:generateContent" \
 | --- | --- |
 | OpenAI Chat Completions | `/v1/chat/completions` |
 | OpenAI Responses | `/v1/responses` |
+| Model list | `/v1/models` |
 | Claude Messages | `/v1/messages` |
 | Embeddings | `/v1/embeddings` |
 | Image generation | `/v1/images/generations` |
@@ -110,6 +111,8 @@ curl "https://www.fastapi.cool/v1beta/models/MODEL_ID:generateContent" \
 | Gemini | `/v1beta/models/{model}:generateContent` |
 
 Supported endpoints and parameters vary by model. Refer to the model catalog and the official API specification for that model. Test a model in [Playground](https://www.fastapi.cool/playground), then review the request in [Usage Logs](https://www.fastapi.cool/usage-logs/common).
+
+`GET /v1/models` returns a protocol-shaped list based on authentication: a Bearer token receives the OpenAI-style `data` response, while an `x-goog-api-key` header or `?key=` query parameter receives the Gemini-style `models` response.
 
 ## Streaming
 

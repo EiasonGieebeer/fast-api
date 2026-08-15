@@ -15,7 +15,7 @@
 并非每个模型都同时支持四种协议。模型名称正确但接口不兼容时，可能返回 404 或协议转换错误。
 :::
 
-新版协议转换层已增强 OpenAI Chat、Responses、Claude 和 Gemini 之间的兼容处理，并补充 DeepSeek Responses 支持。是否能够使用某种协议仍取决于具体模型与后台渠道配置，不能仅根据模型厂商名称判断。
+新版协议转换层已增强 OpenAI Chat、Responses、Claude 和 Gemini 之间的兼容处理，并补充 DeepSeek Responses 支持。Chat 与 Responses 互转时会保留显式的 `frequency_penalty`、`presence_penalty`（包括 `0`）和 `prompt_cache_key`；但具体上游仍可拒绝不支持的字段，Codex 渠道会主动移除其不接受的 penalty。Claude 转换不会再发送空的 `tools` 数组。是否能够使用某种协议仍取决于具体模型与后台渠道配置，不能仅根据模型厂商名称判断。
 
 ## OpenAI SDK
 
@@ -102,6 +102,7 @@ curl "https://www.fastapi.cool/v1beta/models/MODEL_ID:generateContent" \
 | --- | --- |
 | OpenAI Chat Completions | `/v1/chat/completions` |
 | OpenAI Responses | `/v1/responses` |
+| 模型列表 | `/v1/models` |
 | Claude Messages | `/v1/messages` |
 | Embeddings | `/v1/embeddings` |
 | 图片生成 | `/v1/images/generations` |
@@ -110,6 +111,8 @@ curl "https://www.fastapi.cool/v1beta/models/MODEL_ID:generateContent" \
 | Gemini | `/v1beta/models/{model}:generateContent` |
 
 不同模型支持的接口和参数可能不同，请以模型广场及对应模型官方 API 规范为准。首次接入可先在 [游乐场](https://www.fastapi.cool/playground) 测试，再到 [使用日志](https://www.fastapi.cool/usage-logs/common) 核对请求。
+
+`GET /v1/models` 会根据认证格式返回对应协议的模型列表：Bearer Token 返回 OpenAI 风格的 `data`，`x-goog-api-key` 请求头或 `?key=` 查询参数返回 Gemini 风格的 `models`。
 
 ## 流式响应
 

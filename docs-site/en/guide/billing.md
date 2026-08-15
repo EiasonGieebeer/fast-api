@@ -23,6 +23,8 @@ The new console combines related features in [Wallet](https://www.fastapi.cool/w
 
 Some cards may be hidden by site configuration. A subscription can have an expiration date, model restrictions, or a separate quota; the Wallet page shows the applicable terms.
 
+Before creating a payment, the platform rejects amounts that cannot convert to valid quota, exceed the per-payment range, or would push the wallet past its safe limit. After payment succeeds, the order state and quota are updated atomically, and duplicate callbacks do not credit the wallet twice.
+
 ## Quota display
 
 The frontend may display quota as USD, CNY, or tokens depending on site settings. Internally, the platform uses smaller quota units for precise settlement, so users normally do not need to convert them manually.
@@ -40,4 +42,4 @@ If you notice unexpected usage, disable or delete the affected key immediately a
 
 ## Verify a charge
 
-The final charge in [Usage Logs](https://www.fastapi.cool/usage-logs/common) is authoritative. Logs include model, request time, input and output usage, the selected group, stream status, latency, quota consumption, and errors. A tool icon next to the amount marks a tool-call surcharge. For image, video, and other asynchronous jobs, also review [Task Logs](https://www.fastapi.cool/usage-logs/task).
+The final charge in [Usage Logs](https://www.fastapi.cool/usage-logs/common) is authoritative. Logs include model, request time, input and output usage, selected group, reasoning effort, stream status, latency, quota consumption, and errors. Dynamic-pricing details highlight the conditional multipliers that actually matched; a tool icon next to the amount marks a tool-call surcharge. For image, video, and other asynchronous jobs, also review [Task Logs](https://www.fastapi.cool/usage-logs/task); a failed-task refund also reverses the recorded user and channel usage.

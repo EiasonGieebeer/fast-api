@@ -15,7 +15,7 @@
 并非每个模型都同时支持四种协议。模型名称正确但接口不兼容时，可能返回 404 或协议转换错误。
 :::
 
-新版协议转换层已增强 OpenAI Chat、Responses、Claude 和 Gemini 之间的兼容处理，并补充 DeepSeek Responses 支持。Chat 与 Responses 互转时会保留显式的 `frequency_penalty`、`presence_penalty`（包括 `0`）和 `prompt_cache_key`；但具体上游仍可拒绝不支持的字段，Codex 渠道会主动移除其不接受的 penalty。Claude 转换不会再发送空的 `tools` 数组。是否能够使用某种协议仍取决于具体模型与后台渠道配置，不能仅根据模型厂商名称判断。
+新版协议转换层已增强 OpenAI Chat、Responses、Claude 和 Gemini 之间的兼容处理，并补充 DeepSeek Responses 支持。Chat 与 Responses 互转时会保留显式的 `frequency_penalty`、`presence_penalty`（包括 `0`）和 `prompt_cache_key`；但具体上游仍可拒绝不支持的字段，Codex 渠道会主动移除其不接受的 penalty。未传工具时，Claude 转换不会发送空的 `tools` 数组；工具存在但没有参数定义时，则会保留该工具，并补成有效的空对象输入结构，避免函数被静默丢弃。是否能够使用某种协议仍取决于具体模型与后台渠道配置，不能仅根据模型厂商名称判断。
 
 ## OpenAI SDK
 

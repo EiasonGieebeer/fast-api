@@ -42,4 +42,4 @@
 
 ## 核对扣费
 
-最终扣费以 [使用日志](https://www.fastapi.cool/usage-logs/common) 为准。日志会显示模型、请求时间、输入输出用量、实际分组、reasoning effort、流式状态、耗时、消费额度和错误信息。动态计费详情会高亮本次实际命中的条件乘数；金额旁的工具图标表示包含工具调用附加费。图片、视频等异步任务请同时检查 [任务日志](https://www.fastapi.cool/usage-logs/task)；任务失败退款会同步回减已统计的用户与渠道用量。
+最终扣费以 [使用日志](https://www.fastapi.cool/usage-logs/common) 为准。日志会显示模型、请求时间、输入输出用量、实际分组、reasoning effort、流式状态、耗时、消费额度和错误信息。动态计费详情会高亮本次实际命中的条件乘数；金额旁的工具图标表示包含工具调用附加费。Responses API 返回的缓存输入 Token 会从 `input_tokens_details.cached_tokens` 等兼容字段归一化，并按缓存倍率与未缓存输入分别结算，避免把同一批缓存 Token 再按普通输入重复计费。图片、视频等异步任务请同时检查 [任务日志](https://www.fastapi.cool/usage-logs/task)；任务失败退款会同步回减已统计的用户与渠道用量。

@@ -58,6 +58,10 @@ The final charge recorded in [Usage Logs](https://www.fastapi.cool/usage-logs/co
 
 Usage Logs now distinguish standard and streaming requests more clearly and record whether a stream completed normally. Details show the recorded reasoning effort; for dynamic pricing, Conditional Multipliers identify the conditions and multipliers that actually matched this request. A tool icon next to the charge means the request includes a surcharge for Web Search, File Search, image generation, or another billable tool. Open the log details for the complete billing information.
 
+Group, token-name, and username filters remain normal text filters, but their hidden state now uses an in-page mask with browser autocomplete disabled. This prevents password managers from inserting credentials into log criteria while preserving the show/hide control for reviewing a filter value.
+
+Playground briefly fades in newly streamed prose; inline code, code blocks, and settled content do not replay the animation. When a history message has unsaved edits, cancelling the edit or leaving the page now asks for confirmation before discarding them.
+
 ## Migrating old links
 
 Old console URLs may still redirect, but bookmarks and client instructions should use the new paths:
@@ -78,7 +82,9 @@ After an administrator fetches upstream models for a channel, new and existing m
 
 Channel connectivity tests now use the protocol selected for the channel. Claude and Gemini tests send their native request formats, and Gemini streaming tests use the `:streamGenerateContent` path. A successful test therefore confirms that channel's matching native endpoint; it does not imply that the same model supports every other protocol.
 
-Under **System Settings → Models and Channels → Routing Reliability**, scheduled channel testing has three scopes: all channels except manually disabled ones, only channels with auto-disable enabled, or only auto-disabled channels awaiting recovery. The narrower modes avoid unnecessary probes of healthy channels; the separate re-enable setting still controls whether a successful check restores a channel.
+Under **System Settings → Models and Channels → Routing Reliability**, scheduled channel testing has three scopes: all channels except manually disabled ones, only channels with auto-disable enabled, or only auto-disabled channels awaiting recovery. The narrower modes avoid unnecessary probes of healthy channels; the separate re-enable setting still controls whether a successful check restores a channel. Administrators can also set test concurrency from 1 to 32; the task runs up to that many checks in parallel while preserving progress reporting and cancellation.
+
+Advanced Custom channels now have a visual route editor. Start from All protocols, OpenAI only, Claude only, or Gemini only, then keep only the routes the upstream supports. Each forwarding route can define its incoming path, upstream path, converter, authentication, and exact model scope; routes may share an incoming path when their model scopes do not overlap, with at most one final catch-all. Model-list and balance-query routes are separate management routes and remain in place when a forwarding template is replaced. If a balance response is valid JSON but not OpenAI `credit_summary`, the raw upstream JSON is shown without incorrectly updating the stored channel balance.
 
 Compatible and gateway channel types—including OpenAI, Anthropic, Codex, Advanced Custom, Sub2API, and New API—show protocol-appropriate **Field passthrough controls**. Enable only fields supported by the upstream: `service_tier`, `inference_geo`, `speed`, `store`, and obfuscation controls are not available on every protocol. Parameter override rules can also read `user_id`, `user_group`, `token_group`, and the currently selected `using_group` to tailor upstream parameters by user or group.
 

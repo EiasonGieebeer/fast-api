@@ -15,7 +15,7 @@ The new homepage and model gateway support several compatible protocols. Check t
 Not every model supports all four protocols. A correct model name used with an incompatible endpoint may return a 404 or protocol-conversion error.
 :::
 
-The updated protocol conversion layer improves interoperability among OpenAI Chat, Responses, Claude, and Gemini, and adds DeepSeek Responses support. Chat/Responses conversion preserves explicit `frequency_penalty` and `presence_penalty` values (including `0`) plus `prompt_cache_key`; an upstream may still reject unsupported fields, and Codex channels remove penalties that their backend does not accept. Claude conversion no longer sends an empty `tools` array. Availability still depends on the selected model and backend channel configuration; do not infer protocol support from the provider name alone.
+The updated protocol conversion layer improves interoperability among OpenAI Chat, Responses, Claude, and Gemini, and adds DeepSeek Responses support. Chat/Responses conversion preserves explicit `frequency_penalty` and `presence_penalty` values (including `0`) plus `prompt_cache_key`; an upstream may still reject unsupported fields, and Codex channels remove penalties that their backend does not accept. Claude conversion omits `tools` when no tool was supplied; when a tool exists without a parameter definition, it preserves the tool and supplies a valid empty-object input schema instead of silently dropping it. Availability still depends on the selected model and backend channel configuration; do not infer protocol support from the provider name alone.
 
 ## OpenAI SDK
 

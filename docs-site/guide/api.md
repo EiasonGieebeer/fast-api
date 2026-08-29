@@ -15,7 +15,7 @@
 并非每个模型都同时支持四种协议。模型名称正确但接口不兼容时，可能返回 404 或协议转换错误。
 :::
 
-新版协议转换层已增强 OpenAI Chat、Responses、Claude 和 Gemini 之间的兼容处理，并补充 DeepSeek Responses 支持。Chat 与 Responses 互转时会保留显式的 `frequency_penalty`、`presence_penalty`（包括 `0`）和 `prompt_cache_key`；但具体上游仍可拒绝不支持的字段，Codex 渠道会主动移除其不接受的 penalty。未传工具时，Claude 转换不会发送空的 `tools` 数组；工具存在但没有参数定义时，则会保留该工具，并补成有效的空对象输入结构，避免函数被静默丢弃。是否能够使用某种协议仍取决于具体模型与后台渠道配置，不能仅根据模型厂商名称判断。
+新版协议转换层已增强 OpenAI Chat、Responses、Claude 和 Gemini 之间的兼容处理，并补充 DeepSeek 与 GLM 渠道的 Responses 支持。Ollama 渠道可将 Claude Messages 透传到上游 `/v1/messages`，并透传 OpenAI Responses 与 Responses Compact；vLLM 兼容请求会保留 `thinking_token_budget`。Chat 与 Responses 互转时会保留显式的 `frequency_penalty`、`presence_penalty`（包括 `0`）和 `prompt_cache_key`；但具体上游仍可拒绝不支持的字段，Codex 渠道会主动移除其不接受的 penalty。未传工具时，Claude 转换不会发送空的 `tools` 数组；工具存在但没有参数定义时，则会保留该工具，并补成有效的空对象输入结构，避免函数被静默丢弃。是否能够使用某种协议仍取决于具体模型与后台渠道配置，不能仅根据模型厂商名称判断。
 
 ## OpenAI SDK
 
@@ -106,6 +106,11 @@ curl "https://www.fastapi.cool/v1beta/models/MODEL_ID:generateContent" \
 | Claude Messages | `/v1/messages` |
 | Embeddings | `/v1/embeddings` |
 | 图片生成 | `/v1/images/generations` |
+| OpenAI Video 创建 | `/v1/videos` |
+| OpenAI Video 查询 | `/v1/videos/{task_id}` |
+| 通用插件任务创建 | `/v1/tasks/{plugin_key}` |
+| 通用插件任务查询 | `/v1/tasks/{task_id}` |
+| 任务产物清单 | `/v1/tasks/{task_id}/artifacts` |
 | 语音合成 | `/v1/audio/speech` |
 | 语音转文字 | `/v1/audio/transcriptions` |
 | Gemini | `/v1beta/models/{model}:generateContent` |
@@ -113,6 +118,8 @@ curl "https://www.fastapi.cool/v1beta/models/MODEL_ID:generateContent" \
 不同模型支持的接口和参数可能不同，请以模型广场及对应模型官方 API 规范为准。首次接入可先在 [游乐场](https://www.fastapi.cool/playground) 测试，再到 [使用日志](https://www.fastapi.cool/usage-logs/common) 核对请求。
 
 `GET /v1/models` 会根据认证格式返回对应协议的模型列表：Bearer Token 返回 OpenAI 风格的 `data`，`x-goog-api-key` 请求头或 `?key=` 查询参数返回 Gemini 风格的 `models`。
+
+任务插件可声明厂商原生路由、OpenAI Responses（流式、同步或后台模式）和 OpenAI Video 协议。只有当前已启用插件明确声明并绑定到所选模型的协议才会接管对应请求；通用 `/v1/tasks/{plugin_key}` 创建接口返回公开任务 ID，之后可通过任务查询与产物接口读取状态和输出。请求参数校验失败会返回 HTTP 400，不应当按服务端故障重试。
 
 ## 流式响应
 

@@ -10,6 +10,8 @@ The [model catalog](https://www.fastapi.cool/pricing) lists available models, ca
 
 For token-priced models, tools such as Web Search, File Search, and image generation can add a fee based on actual calls. Per-request models normally do not receive an additional tool fee. Administrators can change tool prices, so use the current Usage Log as the source of truth.
 
+A task plugin can declare billing usage fields and examples such as `seconds`, resolution, or product tier, which administrators use to configure dynamic task expressions. The time-rule editor builds same-day ranges (for example, 09:00–12:00) with both bounds required and overnight ranges (for example, 21:00–06:00) across midnight. Equal bounds do not become an all-day match, and invalid hour, minute, or weekday values are rejected.
+
 ## Wallet, top-ups, and subscriptions
 
 The new console combines related features in [Wallet](https://www.fastapi.cool/wallet):
@@ -42,4 +44,4 @@ If you notice unexpected usage, disable or delete the affected key immediately a
 
 ## Verify a charge
 
-The final charge in [Usage Logs](https://www.fastapi.cool/usage-logs/common) is authoritative. Logs include model, request time, input and output usage, selected group, reasoning effort, stream status, latency, quota consumption, and errors. Dynamic-pricing details highlight the conditional multipliers that actually matched; a tool icon next to the amount marks a tool-call surcharge. Responses API cached input is normalized from compatible fields such as `input_tokens_details.cached_tokens` and settled separately at the cache ratio, preventing the same cached tokens from also being charged as ordinary input. For image, video, and other asynchronous jobs, also review [Task Logs](https://www.fastapi.cool/usage-logs/task); a failed-task refund also reverses the recorded user and channel usage.
+The final charge in [Usage Logs](https://www.fastapi.cool/usage-logs/common) is authoritative. Logs include model, request time, input and output usage, selected group, reasoning effort, stream status, latency, quota consumption, and errors. Dynamic-pricing details highlight the conditional multipliers that actually matched; a tool icon next to the amount marks a tool-call surcharge. Responses API cached input is normalized from compatible fields such as `input_tokens_details.cached_tokens` and settled separately at the cache ratio, preventing the same cached tokens from also being charged as ordinary input. For image, video, and other asynchronous jobs, also review [Task Logs](https://www.fastapi.cool/usage-logs/task); plugin task details list the actual billing facts and available artifacts, and a failed-task refund also reverses the recorded user and channel usage.

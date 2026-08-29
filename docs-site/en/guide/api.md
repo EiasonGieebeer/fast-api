@@ -15,7 +15,7 @@ The new homepage and model gateway support several compatible protocols. Check t
 Not every model supports all four protocols. A correct model name used with an incompatible endpoint may return a 404 or protocol-conversion error.
 :::
 
-The updated protocol conversion layer improves interoperability among OpenAI Chat, Responses, Claude, and Gemini, and adds DeepSeek Responses support. Chat/Responses conversion preserves explicit `frequency_penalty` and `presence_penalty` values (including `0`) plus `prompt_cache_key`; an upstream may still reject unsupported fields, and Codex channels remove penalties that their backend does not accept. Claude conversion omits `tools` when no tool was supplied; when a tool exists without a parameter definition, it preserves the tool and supplies a valid empty-object input schema instead of silently dropping it. Availability still depends on the selected model and backend channel configuration; do not infer protocol support from the provider name alone.
+The updated protocol conversion layer improves interoperability among OpenAI Chat, Responses, Claude, and Gemini, and adds Responses support for DeepSeek and GLM channels. Ollama channels can pass Claude Messages to upstream `/v1/messages` and pass OpenAI Responses and Responses Compact through unchanged; vLLM-compatible requests preserve `thinking_token_budget`. Chat/Responses conversion preserves explicit `frequency_penalty` and `presence_penalty` values (including `0`) plus `prompt_cache_key`; an upstream may still reject unsupported fields, and Codex channels remove penalties that their backend does not accept. Claude conversion omits `tools` when no tool was supplied; when a tool exists without a parameter definition, it preserves the tool and supplies a valid empty-object input schema instead of silently dropping it. Availability still depends on the selected model and backend channel configuration; do not infer protocol support from the provider name alone.
 
 ## OpenAI SDK
 
@@ -106,6 +106,11 @@ curl "https://www.fastapi.cool/v1beta/models/MODEL_ID:generateContent" \
 | Claude Messages | `/v1/messages` |
 | Embeddings | `/v1/embeddings` |
 | Image generation | `/v1/images/generations` |
+| OpenAI Video create | `/v1/videos` |
+| OpenAI Video retrieve | `/v1/videos/{task_id}` |
+| Generic plugin task create | `/v1/tasks/{plugin_key}` |
+| Generic plugin task retrieve | `/v1/tasks/{task_id}` |
+| Task artifact list | `/v1/tasks/{task_id}/artifacts` |
 | Text to speech | `/v1/audio/speech` |
 | Speech to text | `/v1/audio/transcriptions` |
 | Gemini | `/v1beta/models/{model}:generateContent` |
@@ -113,6 +118,8 @@ curl "https://www.fastapi.cool/v1beta/models/MODEL_ID:generateContent" \
 Supported endpoints and parameters vary by model. Refer to the model catalog and the official API specification for that model. Test a model in [Playground](https://www.fastapi.cool/playground), then review the request in [Usage Logs](https://www.fastapi.cool/usage-logs/common).
 
 `GET /v1/models` returns a protocol-shaped list based on authentication: a Bearer token receives the OpenAI-style `data` response, while an `x-goog-api-key` header or `?key=` query parameter receives the Gemini-style `models` response.
+
+A task plugin can claim provider-native routes, OpenAI Responses (stream, synchronous, or background modes), and OpenAI Video. A request is handled only when the currently enabled plugin explicitly claims the protocol and is bound to the selected model. The generic `/v1/tasks/{plugin_key}` create endpoint returns a public task ID, which can then be used with the task and artifact endpoints. Request validation failures return HTTP 400 and should not be retried as server faults.
 
 ## Streaming
 

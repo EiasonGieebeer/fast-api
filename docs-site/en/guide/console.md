@@ -23,6 +23,7 @@ The new website replaces the old monolithic console with focused pages. After si
 | Wallet | `/wallet` | Balance, top-ups, subscriptions, redemption, and billing |
 | Profile | `/profile` | Profile, password, sessions, passkeys, and two-factor authentication |
 | Playground | `/playground` | Test models and request parameters in the browser |
+| Task Plugins (super administrator) | `/task-plugins` | Manage built-in and custom asynchronous task platforms |
 
 ::: info
 Administrators can hide modules based on account permissions or system configuration. A missing menu item does not necessarily indicate an error.
@@ -62,6 +63,8 @@ Group, token-name, and username filters remain normal text filters, but their hi
 
 Playground briefly fades in newly streamed prose; inline code, code blocks, and settled content do not replay the animation. When a history message has unsaved edits, cancelling the edit or leaving the page now asks for confirmation before discarding them.
 
+Task Logs now present unified task details, billing usage facts, and available artifacts for plugin-backed jobs. Video, image, and other artifacts open through access URLs bound to the exact task and artifact key. Standard users do not receive channel keys, upstream task IDs, or other private fields, while diagnostic details are separated by administrator and super-administrator role.
+
 ## Migrating old links
 
 Old console URLs may still redirect, but bookmarks and client instructions should use the new paths:
@@ -78,6 +81,10 @@ Administrative features now live on separate Channels, Models, Users, Subscripti
 
 ## Administrative channel and redemption workflows
 
+Asynchronous image, video, and similar platforms now run through sandboxed JavaScript task plugins. Super administrators can review factory plugins, install from the marketplace, or upload custom plugins on **Task Plugins**. A custom version with the same key overrides the factory version; disabling or deleting the override restores the factory version. Disabling the master switch stops both factory and custom plugins and affects in-flight work, so review the listed channel and in-flight task counts first.
+
+A task-plugin channel must select a registered plugin and provide a Base URL, and the administrator needs the `task_plugin.bind` permission. The plugin's models, public routes, OpenAI Responses / Video protocol claims, and billing usage fields determine the exposed API and pricing editor. Marketplace installation does not force past plugin or public-route conflicts. **Task Public Address** in system settings is used to build artifact URLs and falls back to the server address only when it is empty.
+
 After an administrator fetches upstream models for a channel, new and existing models are grouped by provider for searching, bulk selection, and review. Qwen TTS models are classified under Qwen. Review model names and mappings before saving; unrecognized names remain in the `Other` group.
 
 Channel connectivity tests now use the protocol selected for the channel. Claude and Gemini tests send their native request formats, and Gemini streaming tests use the `:streamGenerateContent` path. A successful test therefore confirms that channel's matching native endpoint; it does not imply that the same model supports every other protocol.
@@ -89,6 +96,8 @@ Advanced Custom channels now have a visual route editor. Start from All protocol
 Compatible and gateway channel types—including OpenAI, Anthropic, Codex, Advanced Custom, Sub2API, and New API—show protocol-appropriate **Field passthrough controls**. Enable only fields supported by the upstream: `service_tier`, `inference_geo`, `speed`, `store`, and obfuscation controls are not available on every protocol. Parameter override rules can also read `user_id`, `user_group`, `token_group`, and the currently selected `using_group` to tailor upstream parameters by user or group.
 
 When configuring a custom OAuth provider, **Access Policy** offers ready-to-fill “level and active” and “organization or role” templates with nested `and` / `or` conditions. Denial messages can use variables such as `provider`, `field`, `op`, `required`, `current`, and `current.roles`. Leaving the policy empty adds no extra user restriction.
+
+Administrators can unbind built-in email, GitHub, Discord, WeChat, OIDC, Telegram, and LinuxDO identities from the user binding dialog. When the server sets `PASSWORD_LOGIN_ENCRYPTION_ENABLED=true`, the sign-in page fetches a temporary public key and submits an encrypted password field. This option is disabled by default; when disabled, the existing login request format remains in use.
 
 When editing a redemption code, the drawer loads the latest server record and prevents submission until loading finishes. If you change only the name or expiration and leave quota untouched, the original internal quota is preserved so display-currency conversion and decimal precision do not alter it. The quota input step follows the active currency or token display settings.
 

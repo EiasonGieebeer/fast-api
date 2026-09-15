@@ -17,6 +17,14 @@
 
 新版协议转换层已增强 OpenAI Chat、Responses、Claude 和 Gemini 之间的兼容处理，并补充 DeepSeek 与 GLM 渠道的 Responses 支持。Ollama 渠道可将 Claude Messages 透传到上游 `/v1/messages`，并透传 OpenAI Responses 与 Responses Compact；vLLM 兼容请求会保留 `thinking_token_budget`。Chat 与 Responses 互转时会保留显式的 `frequency_penalty`、`presence_penalty`（包括 `0`）和 `prompt_cache_key`；但具体上游仍可拒绝不支持的字段，Codex 渠道会主动移除其不接受的 penalty。未传工具时，Claude 转换不会发送空的 `tools` 数组；工具存在但没有参数定义时，则会保留该工具，并补成有效的空对象输入结构，避免函数被静默丢弃。是否能够使用某种协议仍取决于具体模型与后台渠道配置，不能仅根据模型厂商名称判断。
 
+新转换层还会在协议跨越 OpenAI Chat、Responses、Claude 与 Gemini 时保留 hosted tools、引用、Gemini grounding 元数据和上游计费用量；无法无损表达的内容会记入转换诊断，而不是静默伪装为完整转换。实际支持范围仍以模型和渠道配置为准。
+
+## 模型名修饰符
+
+支持在模型名末尾使用显式 `@key:value` 语法调整思考与采样参数，可用键为 `thinking`、`effort`、`temperature` 和 `topp`。例如 `MODEL_ID@effort:high` 或 `MODEL_ID@thinking:on@temperature:0.2`。修饰符会覆盖请求体中对应字段；重复键以最右侧为准并记录诊断，未知键或无效值返回 HTTP 400。
+
+旧的 `-thinking`、`-nothinking` 和 effort 后缀只对明确匹配的 GPT/o-series、Claude 和 Gemini 家族解析，避免修改真实模型 ID。OpenRouter 不再对任意 `*-thinking` 名称做隐式改写；需要旧公开名称时，请在渠道模型映射中将它指向显式修饰名，例如 `some-model-thinking` → `some-model@thinking:on`。完全透传的渠道不解析这些修饰符。
+
 ## OpenAI SDK
 
 ### Python
@@ -119,7 +127,7 @@ curl "https://www.fastapi.cool/v1beta/models/MODEL_ID:generateContent" \
 
 `GET /v1/models` 会根据认证格式返回对应协议的模型列表：Bearer Token 返回 OpenAI 风格的 `data`，`x-goog-api-key` 请求头或 `?key=` 查询参数返回 Gemini 风格的 `models`。
 
-任务插件可声明厂商原生路由、OpenAI Responses（流式、同步或后台模式）和 OpenAI Video 协议。只有当前已启用插件明确声明并绑定到所选模型的协议才会接管对应请求；通用 `/v1/tasks/{plugin_key}` 创建接口返回公开任务 ID，之后可通过任务查询与产物接口读取状态和输出。请求参数校验失败会返回 HTTP 400，不应当按服务端故障重试。
+任务插件可声明厂商原生路由、OpenAI Responses（流式、同步或后台模式）和 OpenAI Video 协议。只有当前已启用插件明确声明并绑定到所选模型的协议才会接管对应请求；渠道 `model_mapping` 中指向插件模型的别名和大小写变体也可用于路由，但计费身份仍保留用户请求的原始名称。通用 `/v1/tasks/{plugin_key}` 创建接口返回公开任务 ID，之后可通过任务查询与产物接口读取状态和输出。Hailuo 插件已支持 MiniMax-H3 `/v2/video_generation`，并在提交前校验时长、分辨率、宽高比与输入媒体数量。请求参数校验失败会返回 HTTP 400，不应当按服务端故障重试。
 
 ## 流式响应
 

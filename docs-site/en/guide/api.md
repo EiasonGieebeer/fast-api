@@ -17,6 +17,14 @@ Not every model supports all four protocols. A correct model name used with an i
 
 The updated protocol conversion layer improves interoperability among OpenAI Chat, Responses, Claude, and Gemini, and adds Responses support for DeepSeek and GLM channels. Ollama channels can pass Claude Messages to upstream `/v1/messages` and pass OpenAI Responses and Responses Compact through unchanged; vLLM-compatible requests preserve `thinking_token_budget`. Chat/Responses conversion preserves explicit `frequency_penalty` and `presence_penalty` values (including `0`) plus `prompt_cache_key`; an upstream may still reject unsupported fields, and Codex channels remove penalties that their backend does not accept. Claude conversion omits `tools` when no tool was supplied; when a tool exists without a parameter definition, it preserves the tool and supplies a valid empty-object input schema instead of silently dropping it. Availability still depends on the selected model and backend channel configuration; do not infer protocol support from the provider name alone.
 
+The new conversion layer also preserves hosted tools, citations, Gemini grounding metadata, and authoritative upstream billing usage when requests cross OpenAI Chat, Responses, Claude, and Gemini protocols. Content that cannot be represented losslessly is recorded in conversion diagnostics instead of being silently presented as a complete conversion. Actual support still depends on the model and channel configuration.
+
+## Model-name modifiers
+
+You can append explicit `@key:value` modifiers to a model name to control reasoning and sampling. Supported keys are `thinking`, `effort`, `temperature`, and `topp`, for example `MODEL_ID@effort:high` or `MODEL_ID@thinking:on@temperature:0.2`. Modifiers override the corresponding request-body fields. For duplicate keys, the rightmost value wins and a diagnostic is recorded; unknown keys or invalid values return HTTP 400.
+
+Legacy `-thinking`, `-nothinking`, and effort suffixes are now parsed only for positively matched GPT/o-series, Claude, and Gemini families so real model IDs are not rewritten accidentally. OpenRouter no longer implicitly rewrites arbitrary `*-thinking` names. To preserve an old public alias, map it explicitly at the channel, for example `some-model-thinking` → `some-model@thinking:on`. Fully pass-through channels do not parse these modifiers.
+
 ## OpenAI SDK
 
 ### Python
@@ -119,7 +127,7 @@ Supported endpoints and parameters vary by model. Refer to the model catalog and
 
 `GET /v1/models` returns a protocol-shaped list based on authentication: a Bearer token receives the OpenAI-style `data` response, while an `x-goog-api-key` header or `?key=` query parameter receives the Gemini-style `models` response.
 
-A task plugin can claim provider-native routes, OpenAI Responses (stream, synchronous, or background modes), and OpenAI Video. A request is handled only when the currently enabled plugin explicitly claims the protocol and is bound to the selected model. The generic `/v1/tasks/{plugin_key}` create endpoint returns a public task ID, which can then be used with the task and artifact endpoints. Request validation failures return HTTP 400 and should not be retried as server faults.
+A task plugin can claim provider-native routes, OpenAI Responses (stream, synchronous, or background modes), and OpenAI Video. A request is handled only when the currently enabled plugin explicitly claims the protocol and is bound to the selected model. Aliases and case variants in channel `model_mapping` that point to a plugin model also participate in routing, while billing identity retains the original requested name. The generic `/v1/tasks/{plugin_key}` create endpoint returns a public task ID, which can then be used with the task and artifact endpoints. The Hailuo plugin supports MiniMax-H3 `/v2/video_generation` and validates duration, resolution, aspect ratio, and input-media counts before submission. Request validation failures return HTTP 400 and should not be retried as server faults.
 
 ## Streaming
 

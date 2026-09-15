@@ -51,6 +51,8 @@ After creation:
 
 Wallet combines balance, top-ups, subscriptions, redemption codes, referral rewards, and billing history. The exact cards shown depend on the payment and plan features enabled by the administrator.
 
+The saved subscription billing preference is always shown as-is. With no active subscription, **Subscription First** falls back to the wallet, while **Subscription Only** rejects requests. The page explains the applicable behavior instead of displaying either saved setting as **Wallet First**.
+
 Before opening checkout, the platform validates both the requested amount and the resulting wallet quota. An amount that cannot be credited safely is rejected before payment is created. Payment callbacks update the order and quota transactionally, so duplicate callbacks do not credit the wallet twice.
 
 The final charge recorded in [Usage Logs](https://www.fastapi.cool/usage-logs/common) is based on the model, input and output usage, account-group multiplier, and other applicable billing factors.
@@ -58,6 +60,8 @@ The final charge recorded in [Usage Logs](https://www.fastapi.cool/usage-logs/co
 ## New information in Usage Logs
 
 Usage Logs now distinguish standard and streaming requests more clearly and record whether a stream completed normally. Details show the recorded reasoning effort; for dynamic pricing, Conditional Multipliers identify the conditions and multipliers that actually matched this request. A tool icon next to the charge means the request includes a surcharge for Web Search, File Search, image generation, or another billable tool. Open the log details for the complete billing information.
+
+Protocol-conversion warnings, rejection reasons, channel chains, quota saturation, and task-plugin diagnostics are grouped under the log's administrator information. Ordinary users receive only public fields; administrators can inspect privileged metadata such as rejection reasons in the details view.
 
 Group, token-name, and username filters remain normal text filters, but their hidden state now uses an in-page mask with browser autocomplete disabled. This prevents password managers from inserting credentials into log criteria while preserving the show/hide control for reviewing a filter value.
 
@@ -82,6 +86,14 @@ Administrative features now live on separate Channels, Models, Users, Subscripti
 ## Administrative channel and redemption workflows
 
 Asynchronous image, video, and similar platforms now run through sandboxed JavaScript task plugins. Super administrators can review factory plugins, install from the marketplace, or upload custom plugins on **Task Plugins**. A custom version with the same key overrides the factory version; disabling or deleting the override restores the factory version. Disabling the master switch stops both factory and custom plugins and affects in-flight work, so review the listed channel and in-flight task counts first.
+
+A directly served factory plugin updates only with a system release, so its marketplace card shows **Updates with the system** instead of an install action. Existing custom overrides and third-party plugins can still be installed or upgraded. When an override differs from the current built-in version, the table explains which built-in version will be restored if the custom copy is deleted.
+
+Task-plugin models can use aliases from channel `model_mapping`, including case variants of the same declared name. If a requested model is claimed by a plugin but the current group has no enabled channel for it, the 503 response identifies the owning plugin; enable the correct channel or intentionally disable/override that factory plugin.
+
+Task polling distinguishes terminal 404/410 responses from authentication failures, 429/5xx responses, transport errors, and unrecognized bodies. The latter categories increment a consecutive-failure counter that resets after a valid non-terminal 2xx response. At `TASK_POLL_MAX_FAILURES` (default 20), the task fails and enters the existing settlement/refund path; `TASK_TIMEOUT_MINUTES` (default 1440) remains the outer timeout.
+
+The relay HTTP client waits up to 1,800 seconds for upstream response headers by default; streaming after headers arrive is unaffected. Administrators can tune `RELAY_RESPONSE_HEADER_TIMEOUT`, or set it to `0` for no limit. Non-streaming providers may not send headers until generation finishes, so avoid an unrealistically short value.
 
 A task-plugin channel must select a registered plugin and provide a Base URL, and the administrator needs the `task_plugin.bind` permission. The plugin's models, public routes, OpenAI Responses / Video protocol claims, and billing usage fields determine the exposed API and pricing editor. Marketplace installation does not force past plugin or public-route conflicts. **Task Public Address** in system settings is used to build artifact URLs and falls back to the server address only when it is empty.
 

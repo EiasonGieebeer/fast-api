@@ -41,6 +41,15 @@ export const modelFormSchema = z.object({
   sync_official: z.boolean().default(true),
   enable_groups: z.array(z.string()).default([]),
   quota_types: z.array(z.number()).default([]),
+  context_length: z.string().default(''),
+  max_output_tokens: z.string().default(''),
+  parameter_count: z.string().default(''),
+  knowledge_cutoff: z.string().default(''),
+  release_date: z.string().default(''),
+  input_modalities: z.string().default(''),
+  output_modalities: z.string().default(''),
+  capabilities: z.string().default(''),
+  show_signals: z.boolean().default(false),
 })
 
 export type ModelFormValues = z.infer<typeof modelFormSchema>
@@ -83,6 +92,15 @@ export function transformModelToFormDefaults(model: Model): ModelFormValues {
     sync_official: model.sync_official === 1,
     enable_groups: model.enable_groups || [],
     quota_types: model.quota_types || [],
+    context_length: model.context_length ?? '',
+    max_output_tokens: model.max_output_tokens ?? '',
+    parameter_count: model.parameter_count ?? '',
+    knowledge_cutoff: model.knowledge_cutoff ?? '',
+    release_date: model.release_date ?? '',
+    input_modalities: model.input_modalities ?? '',
+    output_modalities: model.output_modalities ?? '',
+    capabilities: model.capabilities ?? '',
+    show_signals: model.show_signals === 1,
   }
 }
 
@@ -105,6 +123,15 @@ export function transformFormDataToModelPayload(
     sync_official: formData.sync_official ? 1 : 0,
     enable_groups: formData.enable_groups,
     quota_types: formData.quota_types,
+    context_length: formData.context_length,
+    max_output_tokens: formData.max_output_tokens,
+    parameter_count: formData.parameter_count,
+    knowledge_cutoff: formData.knowledge_cutoff,
+    release_date: formData.release_date,
+    input_modalities: formData.input_modalities,
+    output_modalities: formData.output_modalities,
+    capabilities: formData.capabilities,
+    show_signals: formData.show_signals ? 1 : 0,
   }
 }
 

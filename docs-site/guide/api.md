@@ -129,6 +129,8 @@ curl "https://www.fastapi.cool/v1beta/models/MODEL_ID:generateContent" \
 
 任务插件可声明厂商原生路由、OpenAI Responses（流式、同步或后台模式）和 OpenAI Video 协议。只有当前已启用插件明确声明并绑定到所选模型的协议才会接管对应请求；渠道 `model_mapping` 中指向插件模型的别名和大小写变体也可用于路由，但计费身份仍保留用户请求的原始名称。通用 `/v1/tasks/{plugin_key}` 创建接口返回公开任务 ID，之后可通过任务查询与产物接口读取状态和输出。Hailuo 插件已支持 MiniMax-H3 `/v2/video_generation`，并在提交前校验时长、分辨率、宽高比与输入媒体数量。请求参数校验失败会返回 HTTP 400，不应当按服务端故障重试。
 
+协议转换会保留 Responses 工具输出中的图片、同一流分片里的推理与答案文本，以及发往 Gemini 的工具 JSON Schema 约束；发送到 Chat 上游的 Responses 图片 URL 会保持对象结构。WebSocket Responses 会在会话结束时发送关闭帧，客户端应按正常关闭处理，不要把它误判为网络中断。
+
 ## 流式响应
 
 兼容 OpenAI 流式输出的模型可在请求中加入：

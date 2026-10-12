@@ -88,8 +88,8 @@ export function getEndpointTypeLabels(
 ): Record<EndpointTypeOption, string> {
   return {
     [ENDPOINT_TYPES.ALL]: t('All Types'),
-    [ENDPOINT_TYPES.OPENAI]: 'OpenAI',
-    [ENDPOINT_TYPES.OPENAI_RESPONSE]: 'OpenAI Response',
+    [ENDPOINT_TYPES.OPENAI]: 'Chat',
+    [ENDPOINT_TYPES.OPENAI_RESPONSE]: 'Response',
     [ENDPOINT_TYPES.ANTHROPIC]: 'Anthropic',
     [ENDPOINT_TYPES.GEMINI]: 'Gemini',
     [ENDPOINT_TYPES.JINA_RERANK]: 'Rerank',
@@ -107,8 +107,8 @@ export function getEndpointTypeLabels(
 export function getEndpointLabel(value: string, t: TFunction): string {
   const known: Record<string, string> = {
     [ENDPOINT_TYPES.ALL]: t('All Types'),
-    [ENDPOINT_TYPES.OPENAI]: 'OpenAI',
-    [ENDPOINT_TYPES.OPENAI_RESPONSE]: 'OpenAI Response',
+    [ENDPOINT_TYPES.OPENAI]: 'Chat',
+    [ENDPOINT_TYPES.OPENAI_RESPONSE]: 'Response',
     [ENDPOINT_TYPES.ANTHROPIC]: 'Anthropic',
     [ENDPOINT_TYPES.GEMINI]: 'Gemini',
     [ENDPOINT_TYPES.JINA_RERANK]: 'Rerank',

@@ -358,7 +358,6 @@ func main() {
 	common.InitEnv()
 	ratio_setting.InitRatioSettings()
 	service.InitHttpClient()
-	service.InitTokenEncoders()
 
 	err := model.InitDB()
 	if err != nil {

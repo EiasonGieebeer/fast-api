@@ -129,6 +129,8 @@ Supported endpoints and parameters vary by model. Refer to the model catalog and
 
 A task plugin can claim provider-native routes, OpenAI Responses (stream, synchronous, or background modes), and OpenAI Video. A request is handled only when the currently enabled plugin explicitly claims the protocol and is bound to the selected model. Aliases and case variants in channel `model_mapping` that point to a plugin model also participate in routing, while billing identity retains the original requested name. The generic `/v1/tasks/{plugin_key}` create endpoint returns a public task ID, which can then be used with the task and artifact endpoints. The Hailuo plugin supports MiniMax-H3 `/v2/video_generation` and validates duration, resolution, aspect ratio, and input-media counts before submission. Request validation failures return HTTP 400 and should not be retried as server faults.
 
+Protocol conversion preserves images in Responses tool outputs, reasoning and answer text that share one stream chunk, and tool JSON Schema constraints sent to Gemini. Responses image URLs converted for Chat upstreams remain structured objects. Responses WebSocket sessions send a close frame when the session ends, which clients should treat as a normal close rather than a transport interruption.
+
 ## Streaming
 
 For models that support OpenAI-compatible streaming, add:

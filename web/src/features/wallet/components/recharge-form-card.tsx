@@ -18,7 +18,7 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import { Gift, ExternalLink, Loader2, Receipt, WalletCards } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
+import { Trans, useTranslation } from 'react-i18next'
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -39,6 +39,7 @@ import { cn } from '@/lib/utils'
 
 import {
   formatCurrency,
+  getDiscountLabel,
   getPaymentIcon,
   getMinTopupAmount,
   calculatePresetPricing,
@@ -111,7 +112,7 @@ export function RechargeFormCard({
   onWaffoMethodSelect,
   enableWaffoPancakeTopup,
 }: RechargeFormCardProps) {
-  const { t, i18n } = useTranslation()
+  const { t } = useTranslation()
   const [localAmount, setLocalAmount] = useState(topupAmount.toString())
 
   useEffect(() => {
@@ -256,31 +257,31 @@ export function RechargeFormCard({
                         >
                           <div className='flex w-full items-center justify-between'>
                             <div className='text-base font-semibold sm:text-lg'>
-                              $ {formatNumber(displayValue)}
+                              {formatNumber(displayValue)}
                             </div>
                             {hasDiscount && (
                               <div className='text-xs font-medium text-green-600'>
-                                {i18n.language === 'zh'
-                                  ? (() => {
-                                      const zheNum = Math.round(discount * 100)
-                                      const zhe =
-                                        zheNum % 10 === 0 ? zheNum / 10 : zheNum
-                                      return `${zhe}${t('% off')}`
-                                    })()
-                                  : `${Math.round((1 - discount) * 100)}${t('% off')}`}
+                                {getDiscountLabel(discount, t)}
                               </div>
                             )}
                           </div>
                           <div className='text-muted-foreground mt-1.5 w-full text-xs sm:mt-2'>
-                            {t('Pay')} {formatCurrency(actualPrice)}{' '}
-                            {t('currency_unit')}
-                            {hasDiscount && savedAmount > 0 && (
-                              <span className='text-green-600'>
-                                {' '}
-                                • {t('save_money')}{' '}
-                                {formatCurrency(savedAmount)}{' '}
-                                {t('currency_unit')}
-                              </span>
+                            {hasDiscount && savedAmount > 0 ? (
+                              <Trans
+                                t={t}
+                                i18nKey='Pay {{amount}} <savings>• Save {{saved}}</savings>'
+                                values={{
+                                  amount: formatCurrency(actualPrice),
+                                  saved: formatCurrency(savedAmount),
+                                }}
+                                components={{
+                                  savings: <span className='text-green-600' />,
+                                }}
+                              />
+                            ) : (
+                              t('Pay {{amount}}', {
+                                amount: formatCurrency(actualPrice),
+                              })
                             )}
                           </div>
                         </Button>
@@ -304,7 +305,7 @@ export function RechargeFormCard({
                     value={localAmount}
                     onChange={(e) => handleAmountChange(e.target.value)}
                     min={minTopup}
-                    placeholder={`Minimum ${minTopup}`}
+                    placeholder={t('Minimum {{amount}}', { amount: minTopup })}
                     className='h-9 text-base sm:h-10 sm:text-lg'
                   />
                   <div className='bg-muted/30 flex min-h-9 items-center justify-between gap-2 rounded-md border px-3 lg:min-w-52'>

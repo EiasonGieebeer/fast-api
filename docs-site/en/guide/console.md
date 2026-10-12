@@ -97,9 +97,13 @@ The relay HTTP client waits up to 1,800 seconds for upstream response headers by
 
 A task-plugin channel must select a registered plugin and provide a Base URL, and the administrator needs the `task_plugin.bind` permission. The plugin's models, public routes, OpenAI Responses / Video protocol claims, and billing usage fields determine the exposed API and pricing editor. Marketplace installation does not force past plugin or public-route conflicts. **Task Public Address** in system settings is used to build artifact URLs and falls back to the server address only when it is empty.
 
+The upload review now shows the request domains declared by a task plugin so administrators can inspect its external access before installation. Driver hooks can read upstream data through the controlled `utils.fetch` API, and plugins that depend on JSON member order can declare `json-order@1`. Alibaba Bailian and Doubao image models now use task plugins for the OpenAI Images protocol; use a model name declared by the plugin or align an alias through the channel model mapping.
+
 After an administrator fetches upstream models for a channel, new and existing models are grouped by provider for searching, bulk selection, and review. Qwen TTS models are classified under Qwen. Review model names and mappings before saving; unrecognized names remain in the `Other` group.
 
 Channel connectivity tests now use the protocol selected for the channel. Claude and Gemini tests send their native request formats, and Gemini streaming tests use the `:streamGenerateContent` path. A successful test therefore confirms that channel's matching native endpoint; it does not imply that the same model supports every other protocol.
+
+Advanced channel settings include a per-channel **Skip upstream TLS certificate verification** switch. It applies only to that channel's HTTP transport and weakens connection security, so reserve it for controlled self-signed or internal-network deployments rather than treating it as a general fix for public certificate errors.
 
 Under **System Settings → Models and Channels → Routing Reliability**, scheduled channel testing has three scopes: all channels except manually disabled ones, only channels with auto-disable enabled, or only auto-disabled channels awaiting recovery. The narrower modes avoid unnecessary probes of healthy channels; the separate re-enable setting still controls whether a successful check restores a channel. Administrators can also set test concurrency from 1 to 32; the task runs up to that many checks in parallel while preserving progress reporting and cancellation.
 
@@ -114,3 +118,5 @@ Administrators can unbind built-in email, GitHub, Discord, WeChat, OIDC, Telegra
 When editing a redemption code, the drawer loads the latest server record and prevents submission until loading finishes. If you change only the name or expiration and leave quota untouched, the original internal quota is preserved so display-currency conversion and decimal precision do not alter it. The quota input step follows the active currency or token display settings.
 
 Profile does not reveal an existing personal access token, and regeneration requires confirmation. The new token is shown once and cleared from the page when the dialog closes, while the previous token becomes invalid immediately. Store the new value securely before closing, then update every client that used the old token. This protected operation is also subject to the critical endpoint rate limit, so avoid repeated regeneration.
+
+The former dashboard token is now a named access token with editable permissions. Super-administrator user-management operations also require step-up verification; ordinary administrators cannot create non-standard roles and do not see system settings reserved for the root role.

@@ -10,6 +10,8 @@ The [model catalog](https://www.fastapi.cool/pricing) lists available models, ca
 
 For token-priced models, tools such as Web Search, File Search, and image generation can add a fee based on actual calls. Per-request models normally do not receive an additional tool fee. Administrators can change tool prices, so use the current Usage Log as the source of truth.
 
+Google Search grounding can be billed per query or per prompt that was actually grounded. Other Web Search channels can likewise use channel-specific encoding and vendor-reported search usage. Video edits and extensions may settle against the final output resolution; the vendor usage and billing details in Usage Logs remain authoritative.
+
 A task plugin can declare billing usage fields and examples such as `seconds`, resolution, or product tier, which administrators use to configure dynamic task expressions. The time-rule editor builds same-day ranges (for example, 09:00–12:00) with both bounds required and overnight ranges (for example, 21:00–06:00) across midnight. Equal bounds do not become an all-day match, and invalid hour, minute, or weekday values are rejected.
 
 Explicit model modifiers do not arbitrarily change billing identity. The platform first looks for a price configured for the complete requested name, then normalized `@effort` / `@thinking` billing names, and finally the base model. `@temperature` and `@topp` do not participate in price matching. Task-plugin aliases from channel mappings likewise retain the original requested name for billing and fall back to the mapped target expression only when the alias has no expression.

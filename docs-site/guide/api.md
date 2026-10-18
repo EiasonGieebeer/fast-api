@@ -23,7 +23,7 @@
 
 支持在模型名末尾使用显式 `@key:value` 语法调整思考与采样参数，可用键为 `thinking`、`effort`、`temperature` 和 `topp`。例如 `MODEL_ID@effort:high` 或 `MODEL_ID@thinking:on@temperature:0.2`。修饰符会覆盖请求体中对应字段；重复键以最右侧为准并记录诊断，未知键或无效值返回 HTTP 400。
 
-旧的 `-thinking`、`-nothinking` 和 effort 后缀只对明确匹配的 GPT/o-series、Claude 和 Gemini 家族解析，避免修改真实模型 ID。OpenRouter 不再对任意 `*-thinking` 名称做隐式改写；需要旧公开名称时，请在渠道模型映射中将它指向显式修饰名，例如 `some-model-thinking` → `some-model@thinking:on`。完全透传的渠道不解析这些修饰符。
+旧的 `-thinking`、`-nothinking` 和 effort 后缀只对明确匹配的 GPT/o-series、Claude、Gemini 和 DeepSeek 家族解析，避免修改真实模型 ID。DeepSeek V4.1 的 `deepseek-flash` 与 `deepseek-v4-pro` 支持 `-none`、`-low`、`-max` 变体；显式 `@thinking` / `@effort` 优先于这些后缀，并会映射到 Chat、Claude 或 Responses 请求中对应的 DeepSeek 字段。OpenRouter 不再对任意 `*-thinking` 名称做隐式改写；需要旧公开名称时，请在渠道模型映射中将它指向显式修饰名，例如 `some-model-thinking` → `some-model@thinking:on`。完全透传的渠道不解析这些修饰符。
 
 ## OpenAI SDK
 
@@ -121,6 +121,8 @@ curl "https://www.fastapi.cool/v1beta/models/MODEL_ID:generateContent" \
 | 任务产物清单 | `/v1/tasks/{task_id}/artifacts` |
 | 语音合成 | `/v1/audio/speech` |
 | 语音转文字 | `/v1/audio/transcriptions` |
+| DeepSeek 搜索 | `/v1/tools/search` |
+| DeepSeek 网页抓取 | `/v1/tools/fetch` |
 | Gemini | `/v1beta/models/{model}:generateContent` |
 
 不同模型支持的接口和参数可能不同，请以模型广场及对应模型官方 API 规范为准。首次接入可先在 [游乐场](https://www.fastapi.cool/playground) 测试，再到 [使用日志](https://www.fastapi.cool/usage-logs/common) 核对请求。
@@ -129,7 +131,11 @@ curl "https://www.fastapi.cool/v1beta/models/MODEL_ID:generateContent" \
 
 任务插件可声明厂商原生路由、OpenAI Responses（流式、同步或后台模式）和 OpenAI Video 协议。只有当前已启用插件明确声明并绑定到所选模型的协议才会接管对应请求；渠道 `model_mapping` 中指向插件模型的别名和大小写变体也可用于路由，但计费身份仍保留用户请求的原始名称。通用 `/v1/tasks/{plugin_key}` 创建接口返回公开任务 ID，之后可通过任务查询与产物接口读取状态和输出。Hailuo 插件已支持 MiniMax-H3 `/v2/video_generation`，并在提交前校验时长、分辨率、宽高比与输入媒体数量。请求参数校验失败会返回 HTTP 400，不应当按服务端故障重试。
 
-协议转换会保留 Responses 工具输出中的图片、同一流分片里的推理与答案文本，以及发往 Gemini 的工具 JSON Schema 约束；发送到 Chat 上游的 Responses 图片 URL 会保持对象结构。WebSocket Responses 会在会话结束时发送关闭帧，客户端应按正常关闭处理，不要把它误判为网络中断。
+协议转换会保留 Responses 工具输出中的图片、同一流分片里的推理与答案文本，以及发往 Gemini 的工具 JSON Schema 约束；发送到 Chat 上游的 Responses 图片 URL 会保持对象结构。Chat 或 Claude 转 Responses 时会保留 `input_image.detail`（包括 `original`），带工具调用的 assistant 文本不会丢失，流式 reasoning item 即使暂时没有摘要也会发出协议要求的空 `summary`。Claude 的 `thinking.block_binding`、尚未建模的 thinking 字段以及全部 `anthropic-beta` 值也会继续转发。WebSocket Responses 会在会话结束时发送关闭帧，客户端应按正常关闭处理，不要把它误判为网络中断。
+
+`/v1/tools/search` 与 `/v1/tools/fetch` 转发 DeepSeek Search/Fetch 请求，分别使用固定路由计费身份 `deepseek-search` 与 `deepseek-fetch`；只有上游返回搜索结果或页面内容时才计费。DeepSeek 为 Claude Code 或 Codex 执行并在 usage 中报告的服务端搜索/抓取也按对应工具计费。
+
+请求体读取或 JSON 解析失败时，响应会保留真实原因。超过 `MAX_REQUEST_BODY_MB` 的请求在 Chat、Responses、Images、Video、音频、任务插件等相关入口返回 HTTP 413；缩小请求后再试，不应把它当作可重试的上游 5xx。
 
 ## 流式响应
 
@@ -152,3 +158,5 @@ Authorization: Bearer YOUR_API_KEY
 ```
 
 Claude 与 Gemini 原生兼容接口分别使用 `x-api-key` 和 `x-goog-api-key`，如上方示例所示。
+
+在密钥高级设置中开启「允许查询用户额度」后，同一 Bearer 密钥可调用 `GET /api/usage/token/`，响应除密钥自身的 `total_usage`、`total_granted`、`total_available` 外还包含 `user_quota` 的剩余与已用额度。旧密钥默认不开放该字段；IP 白名单同样约束此查询和密钥日志查询。

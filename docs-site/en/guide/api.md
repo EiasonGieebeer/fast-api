@@ -23,7 +23,7 @@ The new conversion layer also preserves hosted tools, citations, Gemini groundin
 
 You can append explicit `@key:value` modifiers to a model name to control reasoning and sampling. Supported keys are `thinking`, `effort`, `temperature`, and `topp`, for example `MODEL_ID@effort:high` or `MODEL_ID@thinking:on@temperature:0.2`. Modifiers override the corresponding request-body fields. For duplicate keys, the rightmost value wins and a diagnostic is recorded; unknown keys or invalid values return HTTP 400.
 
-Legacy `-thinking`, `-nothinking`, and effort suffixes are now parsed only for positively matched GPT/o-series, Claude, and Gemini families so real model IDs are not rewritten accidentally. OpenRouter no longer implicitly rewrites arbitrary `*-thinking` names. To preserve an old public alias, map it explicitly at the channel, for example `some-model-thinking` → `some-model@thinking:on`. Fully pass-through channels do not parse these modifiers.
+Legacy `-thinking`, `-nothinking`, and effort suffixes are now parsed only for positively matched GPT/o-series, Claude, Gemini, and DeepSeek families so real model IDs are not rewritten accidentally. DeepSeek V4.1 models `deepseek-flash` and `deepseek-v4-pro` support `-none`, `-low`, and `-max` variants. Explicit `@thinking` / `@effort` modifiers take precedence over those suffixes and map to the corresponding DeepSeek field in Chat, Claude, or Responses requests. OpenRouter no longer implicitly rewrites arbitrary `*-thinking` names. To preserve an old public alias, map it explicitly at the channel, for example `some-model-thinking` → `some-model@thinking:on`. Fully pass-through channels do not parse these modifiers.
 
 ## OpenAI SDK
 
@@ -121,6 +121,8 @@ curl "https://www.fastapi.cool/v1beta/models/MODEL_ID:generateContent" \
 | Task artifact list | `/v1/tasks/{task_id}/artifacts` |
 | Text to speech | `/v1/audio/speech` |
 | Speech to text | `/v1/audio/transcriptions` |
+| DeepSeek search | `/v1/tools/search` |
+| DeepSeek page fetch | `/v1/tools/fetch` |
 | Gemini | `/v1beta/models/{model}:generateContent` |
 
 Supported endpoints and parameters vary by model. Refer to the model catalog and the official API specification for that model. Test a model in [Playground](https://www.fastapi.cool/playground), then review the request in [Usage Logs](https://www.fastapi.cool/usage-logs/common).
@@ -129,7 +131,11 @@ Supported endpoints and parameters vary by model. Refer to the model catalog and
 
 A task plugin can claim provider-native routes, OpenAI Responses (stream, synchronous, or background modes), and OpenAI Video. A request is handled only when the currently enabled plugin explicitly claims the protocol and is bound to the selected model. Aliases and case variants in channel `model_mapping` that point to a plugin model also participate in routing, while billing identity retains the original requested name. The generic `/v1/tasks/{plugin_key}` create endpoint returns a public task ID, which can then be used with the task and artifact endpoints. The Hailuo plugin supports MiniMax-H3 `/v2/video_generation` and validates duration, resolution, aspect ratio, and input-media counts before submission. Request validation failures return HTTP 400 and should not be retried as server faults.
 
-Protocol conversion preserves images in Responses tool outputs, reasoning and answer text that share one stream chunk, and tool JSON Schema constraints sent to Gemini. Responses image URLs converted for Chat upstreams remain structured objects. Responses WebSocket sessions send a close frame when the session ends, which clients should treat as a normal close rather than a transport interruption.
+Protocol conversion preserves images in Responses tool outputs, reasoning and answer text that share one stream chunk, and tool JSON Schema constraints sent to Gemini. Responses image URLs converted for Chat upstreams remain structured objects. Chat/Claude-to-Responses conversion preserves `input_image.detail`, including `original`; assistant text is retained alongside tool calls; and a streamed reasoning item announced before its text still includes the protocol-required empty `summary`. Claude `thinking.block_binding`, not-yet-modeled thinking fields, and every `anthropic-beta` value are forwarded as well. Responses WebSocket sessions send a close frame when the session ends, which clients should treat as a normal close rather than a transport interruption.
+
+`/v1/tools/search` and `/v1/tools/fetch` relay the DeepSeek Search and Fetch APIs under the fixed billing identities `deepseek-search` and `deepseek-fetch`. A call is charged only when the upstream returns search results or page content. DeepSeek server-side searches and fetches reported in usage for Claude Code or Codex are charged under the corresponding tool as well.
+
+Body-read and JSON-parse failures retain their actual cause. A body larger than `MAX_REQUEST_BODY_MB` returns HTTP 413 across the relevant Chat, Responses, Images, Video, audio, and task-plugin entry points; reduce the request instead of retrying it as an upstream 5xx.
 
 ## Streaming
 
@@ -152,3 +158,5 @@ Authorization: Bearer YOUR_API_KEY
 ```
 
 The native Claude and Gemini compatible endpoints use `x-api-key` and `x-goog-api-key`, respectively, as shown above.
+
+When **Allow querying user quota** is enabled in a key's advanced settings, the same Bearer key can call `GET /api/usage/token/`. In addition to the key's `total_usage`, `total_granted`, and `total_available`, the response includes remaining and used account quota under `user_quota`. Existing keys default this permission off, and the key's IP allowlist also applies to this endpoint and key-log queries.

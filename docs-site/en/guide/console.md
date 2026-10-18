@@ -31,7 +31,7 @@ Administrators can hide modules based on account permissions or system configura
 
 ## API key workflow
 
-The create drawer contains name, group, expiration, quantity, and quota settings. Advanced settings can restrict models and IP/CIDR ranges.
+The create drawer contains name, group, expiration, quantity, and quota settings. Advanced settings can restrict models and IP/CIDR ranges and decide whether the key may query its owner's remaining and used account quota. New keys allow account-quota queries by default; keys created before this upgrade remain off until explicitly enabled. When enabled, `GET /api/usage/token/` returns both key usage and account quota. Key-usage, quota, and key-log queries all enforce the key's IP allowlist.
 
 When the administrator enables **Auto groups**, a key can try multiple groups in priority order:
 
@@ -61,6 +61,8 @@ The final charge recorded in [Usage Logs](https://www.fastapi.cool/usage-logs/co
 
 Usage Logs now distinguish standard and streaming requests more clearly and record whether a stream completed normally. Details show the recorded reasoning effort; for dynamic pricing, Conditional Multipliers identify the conditions and multipliers that actually matched this request. A tool icon next to the charge means the request includes a surcharge for Web Search, File Search, image generation, or another billable tool. Open the log details for the complete billing information.
 
+The common Usage Logs page can now export a selected time range as CSV while retaining the view's other filters; column names use the current interface language. Users export only their own logs, while administrators in the all-users view export every user's logs. One export may run per account at a time. The administrator's **Longest log time range** also bounds regular-user log searches, personal dashboard charts, and every export; its default is 365 days. Administrators can disable user exports under **System Settings → Log Settings → Log search and export**, but administrator exports remain available.
+
 Protocol-conversion warnings, rejection reasons, channel chains, quota saturation, and task-plugin diagnostics are grouped under the log's administrator information. Ordinary users receive only public fields; administrators can inspect privileged metadata such as rejection reasons in the details view.
 
 Group, token-name, and username filters remain normal text filters, but their hidden state now uses an in-page mask with browser autocomplete disabled. This prevents password managers from inserting credentials into log criteria while preserving the show/hide control for reviewing a filter value.
@@ -68,6 +70,8 @@ Group, token-name, and username filters remain normal text filters, but their hi
 Playground briefly fades in newly streamed prose; inline code, code blocks, and settled content do not replay the animation. When a history message has unsaved edits, cancelling the edit or leaving the page now asks for confirmation before discarding them.
 
 Task Logs now present unified task details, billing usage facts, and available artifacts for plugin-backed jobs. Video, image, and other artifacts open through access URLs bound to the exact task and artifact key. Standard users do not receive channel keys, upstream task IDs, or other private fields, while diagnostic details are separated by administrator and super-administrator role.
+
+The **Notifications** profile tab independently controls low-balance reminders, channel notifications, and upstream-model update notices. Low-balance reminders default on and use the user's threshold or the site default; another reminder is armed only after a top-up raises the balance above the threshold. Channel and upstream-model notices go only to administrators who enable them, except that the root user receives channel notices until explicitly disabling them. Verification codes, password resets, email binding, and account-security mail depend on SMTP alone and ignore these notification switches.
 
 ## Migrating old links
 
@@ -84,6 +88,8 @@ Old console URLs may still redirect, but bookmarks and client instructions shoul
 Administrative features now live on separate Channels, Models, Users, Subscriptions, System Info, and System Settings pages. Standard users do not see those entries.
 
 ## Administrative channel and redemption workflows
+
+The channel list now has an optional drag-ordering mode in both table and card views. A channel can be placed at the same priority, before a tier, or after it, with a live preview of the priorities to be written. Drag mode is off by default and includes a pausable, replayable first-use guide. Concurrent edits are detected instead of overwritten, and a successful move can be undone.
 
 Asynchronous image, video, and similar platforms now run through sandboxed JavaScript task plugins. Super administrators can review factory plugins, install from the marketplace, or upload custom plugins on **Task Plugins**. A custom version with the same key overrides the factory version; disabling or deleting the override restores the factory version. Disabling the master switch stops both factory and custom plugins and affects in-flight work, so review the listed channel and in-flight task counts first.
 
@@ -105,6 +111,8 @@ Channel connectivity tests now use the protocol selected for the channel. Claude
 
 Advanced channel settings include a per-channel **Skip upstream TLS certificate verification** switch. It applies only to that channel's HTTP transport and weakens connection security, so reserve it for controlled self-signed or internal-network deployments rather than treating it as a general fix for public certificate errors.
 
+AWS channels can explicitly select the Mantle Messages API; existing unconfigured channels continue to use InvokeModel. Mantle supports native Claude responses, API-key or SigV4 authentication, and top-level `cache_control`. Vertex API-key mode has an optional Project ID: when present, request URLs include the project and region, including the `global`, `us`, and `eu` multi-region hosts; when absent, Express/legacy URL behavior is preserved.
+
 Under **System Settings → Models and Channels → Routing Reliability**, scheduled channel testing has three scopes: all channels except manually disabled ones, only channels with auto-disable enabled, or only auto-disabled channels awaiting recovery. The narrower modes avoid unnecessary probes of healthy channels; the separate re-enable setting still controls whether a successful check restores a channel. Administrators can also set test concurrency from 1 to 32; the task runs up to that many checks in parallel while preserving progress reporting and cancellation.
 
 Advanced Custom channels now have a visual route editor. Start from All protocols, OpenAI only, Claude only, or Gemini only, then keep only the routes the upstream supports. Each forwarding route can define its incoming path, upstream path, converter, authentication, and exact model scope; routes may share an incoming path when their model scopes do not overlap, with at most one final catch-all. Model-list and balance-query routes are separate management routes and remain in place when a forwarding template is replaced. If a balance response is valid JSON but not OpenAI `credit_summary`, the raw upstream JSON is shown without incorrectly updating the stored channel balance.
@@ -114,6 +122,8 @@ Compatible and gateway channel types—including OpenAI, Anthropic, Codex, Advan
 When configuring a custom OAuth provider, **Access Policy** offers ready-to-fill “level and active” and “organization or role” templates with nested `and` / `or` conditions. Denial messages can use variables such as `provider`, `field`, `op`, `required`, `current`, and `current.roles`. Leaving the policy empty adds no extra user restriction.
 
 Administrators can unbind built-in email, GitHub, Discord, WeChat, OIDC, Telegram, and LinuxDO identities from the user binding dialog. When the server sets `PASSWORD_LOGIN_ENCRYPTION_ENABLED=true`, the sign-in page fetches a temporary public key and submits an encrypted password field. This option is disabled by default; when disabled, the existing login request format remains in use.
+
+The password sign-in page shows the site's privacy-policy and terms-of-service consent notice. This notice explains the legal effect of signing in; it does not replace server-side authentication or session validation.
 
 When editing a redemption code, the drawer loads the latest server record and prevents submission until loading finishes. If you change only the name or expiration and leave quota untouched, the original internal quota is preserved so display-currency conversion and decimal precision do not alter it. The quota input step follows the active currency or token display settings.
 

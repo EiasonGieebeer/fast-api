@@ -37,6 +37,7 @@ func TestFetchLatestUpstreamReleaseRetriesWithNextClientAfterForbidden(t *testin
 			Body: io.NopCloser(strings.NewReader(`{
 				"tag_name":"v1.0.0-rc.21",
 				"name":"v1.0.0-rc.21",
+				"prerelease":true,
 				"html_url":"https://github.com/QuantumNous/new-api/releases/tag/v1.0.0-rc.21",
 				"published_at":"2026-07-11T15:01:26Z"
 			}`)),
@@ -55,6 +56,7 @@ func TestFetchLatestUpstreamReleaseRetriesWithNextClientAfterForbidden(t *testin
 
 	require.NoError(t, err)
 	assert.Equal(t, "v1.0.0-rc.21", release.TagName)
+	assert.True(t, release.Prerelease)
 	assert.Equal(t, 1, firstCalls)
 	assert.Equal(t, 1, secondCalls)
 }
@@ -97,6 +99,7 @@ func TestFetchLatestUpstreamReleaseFallsBackToAtomFeed(t *testing.T) {
 	assert.Equal(t, "v1.0.0-rc.21", release.Name)
 	assert.Equal(t, "2026-07-11T15:01:26Z", release.PublishedAt)
 	assert.Equal(t, "https://github.com/QuantumNous/new-api/releases/tag/v1.0.0-rc.21", release.HTMLURL)
+	assert.True(t, release.Prerelease)
 }
 
 func TestFetchLatestUpstreamReleaseSendsConfiguredGitHubToken(t *testing.T) {

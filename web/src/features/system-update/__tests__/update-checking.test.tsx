@@ -63,13 +63,18 @@ function Wrapper(props: { children: ReactNode }) {
   )
 }
 
-function respondWithRelease(tag = release.tag_name): void {
-  fetchMock.mockImplementation(
-    async () =>
-      new Response(JSON.stringify([{ ...release, tag_name: tag }]), {
-        headers: { 'Content-Type': 'application/json' },
-      })
+function createReleaseResponse(tag = release.tag_name): Response {
+  return new Response(
+    JSON.stringify({
+      success: true,
+      data: { ...release, tag_name: tag },
+    }),
+    { headers: { 'Content-Type': 'application/json' } }
   )
+}
+
+function respondWithRelease(tag = release.tag_name): void {
+  fetchMock.mockImplementation(async () => createReleaseResponse(tag))
 }
 
 beforeEach(() => {
@@ -136,13 +141,9 @@ describe('administrator update entry', () => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
       expect(fetchMock).toHaveBeenCalledTimes(1)
       const [url, options] = fetchMock.mock.calls[0]
-      expect(String(url)).toBe(
-        'https://api.github.com/repos/QuantumNous/new-api/releases?per_page=100'
-      )
-      expect(options?.credentials).toBe('omit')
-      expect(options?.headers).toEqual({
-        Accept: 'application/vnd.github+json',
-      })
+      expect(String(url)).toBe('/api/system-info/releases/latest')
+      expect(options?.credentials).toBe('same-origin')
+      expect(options?.headers).toEqual({ Accept: 'application/json' })
     }
   )
 
@@ -389,7 +390,7 @@ describe('version label presentation', () => {
       within(trigger).queryByText('Check for updates')
     ).not.toBeInTheDocument()
     await act(async () => {
-      finishRequest?.(new Response(JSON.stringify([release])))
+      finishRequest?.(createReleaseResponse())
     })
     await waitFor(() => expect(trigger).toHaveAttribute('aria-busy', 'false'))
     expect(within(trigger).getByText(release.tag_name)).toBeInTheDocument()
@@ -606,11 +607,36 @@ describe('version notification preferences', () => {
 })
 
 describe('update cache and scheduling', () => {
+  test('does not restore a legacy browser-direct rate-limit failure', async () => {
+    expect(useSystemUpdateStore.persist.getOptions().name).toBe(
+      'system-update:v2'
+    )
+    localStorage.setItem(
+      'system-update:v1',
+      JSON.stringify({
+        state: {
+          snapshot: {
+            release: null,
+            lastCheckedAt: 0,
+            lastAttemptAt: Date.now(),
+            error: 'rate-limit',
+          },
+        },
+        version: 0,
+      })
+    )
+    useSystemUpdateStore.setState({ snapshot: null })
+    await useSystemUpdateStore.persist.rehydrate()
+
+    const hook = renderHook(useSystemUpdate, { wrapper: Wrapper })
+
+    await waitFor(() => expect(hook.result.current.hasUpdate).toBe(true))
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
   test('refreshes the server version during a later automatic check and clears an installed update', async () => {
     vi.useFakeTimers()
-    fetchMock.mockImplementation(
-      async () => new Response(JSON.stringify([release]))
-    )
+    fetchMock.mockImplementation(async () => createReleaseResponse())
     const hook = renderHook(useSystemUpdate, { wrapper: Wrapper })
     await act(async () => {
       await vi.advanceTimersByTimeAsync(1)
@@ -631,10 +657,10 @@ describe('update cache and scheduling', () => {
     await waitFor(() => expect(first.result.current.hasUpdate).toBe(true))
     first.unmount()
     client.clear()
-    const saved = localStorage.getItem('system-update:v1')
+    const saved = localStorage.getItem('system-update:v2')
     expect(saved).not.toBeNull()
     useSystemUpdateStore.setState({ snapshot: null })
-    localStorage.setItem('system-update:v1', String(saved))
+    localStorage.setItem('system-update:v2', String(saved))
     await useSystemUpdateStore.persist.rehydrate()
     client = createAppQueryClient()
     client.setQueryData(STATUS_QUERY_KEY, { version: 'v1.0.0-rc.35' })
@@ -647,11 +673,11 @@ describe('update cache and scheduling', () => {
     'keeps checking when persisted storage is %s',
     async (state) => {
       if (state === 'corrupt') {
-        localStorage.setItem('system-update:v1', '{bad json')
+        localStorage.setItem('system-update:v2', '{bad json')
         await useSystemUpdateStore.persist.rehydrate()
       } else if (state === 'future') {
         localStorage.setItem(
-          'system-update:v1',
+          'system-update:v2',
           JSON.stringify({
             state: {
               snapshot: {
@@ -681,9 +707,7 @@ describe('update cache and scheduling', () => {
 
   test('waits one hour across multiple consumers and stops polling after logout', async () => {
     vi.useFakeTimers()
-    fetchMock.mockImplementation(
-      async () => new Response(JSON.stringify([release]))
-    )
+    fetchMock.mockImplementation(async () => createReleaseResponse())
     const first = renderHook(useSystemUpdate, { wrapper: Wrapper })
     await act(async () => {
       await vi.advanceTimersByTimeAsync(1)
@@ -711,9 +735,7 @@ describe('update cache and scheduling', () => {
 
   test('waits while hidden or offline and checks stale results after visibility or connectivity returns', async () => {
     vi.useFakeTimers()
-    fetchMock.mockImplementation(
-      async () => new Response(JSON.stringify([release]))
-    )
+    fetchMock.mockImplementation(async () => createReleaseResponse())
     focusManager.setFocused(false)
     renderHook(useSystemUpdate, { wrapper: Wrapper })
     await act(async () => {
@@ -795,7 +817,8 @@ describe('update cache and scheduling', () => {
   })
 
   test.each([
-    [403, '[]', 'rate-limit'],
+    [403, '[]', 'network'],
+    [429, '[]', 'rate-limit'],
     [500, '[]', 'network'],
     [200, '{}', 'payload'],
     [200, '[{"tag_name":42}]', 'payload'],

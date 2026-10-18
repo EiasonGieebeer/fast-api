@@ -78,7 +78,7 @@ export const useSystemUpdateStore = create<SystemUpdateStore>()(
       setSnapshot: (snapshot) => set({ snapshot }),
     }),
     {
-      name: 'system-update:v1',
+      name: 'system-update:v2',
       storage: createJSONStorage(() => updateStorage),
       partialize: (state) => ({ snapshot: state.snapshot }),
       merge: (persisted, current) => {

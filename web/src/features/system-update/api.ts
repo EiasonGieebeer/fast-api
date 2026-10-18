@@ -16,7 +16,14 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
-import { selectLatestRelease, type SystemRelease } from './releases'
+import { z } from 'zod'
+
+import { systemReleaseSchema, type SystemRelease } from './releases'
+
+const latestSystemReleaseResponseSchema = z.object({
+  success: z.literal(true),
+  data: systemReleaseSchema,
+})
 
 export type UpdateCheckErrorCode =
   | 'network'
@@ -41,21 +48,18 @@ export async function fetchLatestSystemRelease(
   const timeout = setTimeout(cancel, 10_000)
 
   try {
-    const response = await fetch(
-      'https://api.github.com/repos/QuantumNous/new-api/releases?per_page=100',
-      {
-        credentials: 'omit',
-        headers: { Accept: 'application/vnd.github+json' },
-        signal: controller.signal,
-      }
-    )
-    if (response.status === 403 || response.status === 429) {
+    const response = await fetch('/api/system-info/releases/latest', {
+      credentials: 'same-origin',
+      headers: { Accept: 'application/json' },
+      signal: controller.signal,
+    })
+    if (response.status === 429) {
       throw new UpdateCheckError('rate-limit')
     }
     if (!response.ok) throw new UpdateCheckError('network')
 
     try {
-      return selectLatestRelease(await response.json())
+      return latestSystemReleaseResponseSchema.parse(await response.json()).data
     } catch (error) {
       if (controller.signal.aborted) throw error
       throw new UpdateCheckError('payload')

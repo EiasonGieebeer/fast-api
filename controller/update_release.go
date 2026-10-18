@@ -27,6 +27,7 @@ type upstreamRelease struct {
 	Body        string `json:"body"`
 	HTMLURL     string `json:"html_url"`
 	PublishedAt string `json:"published_at"`
+	Prerelease  bool   `json:"prerelease"`
 }
 
 type upstreamReleaseFeed struct {
@@ -201,6 +202,7 @@ func fetchLatestUpstreamReleaseFromFeed(
 		TagName:     strings.TrimSpace(entry.Title),
 		Name:        strings.TrimSpace(entry.Title),
 		PublishedAt: strings.TrimSpace(entry.Updated),
+		Prerelease:  isUpstreamPrerelease(entry.Title),
 	}
 	for _, link := range entry.Links {
 		if link.Rel == "" || link.Rel == "alternate" {
@@ -211,4 +213,11 @@ func fetchLatestUpstreamReleaseFromFeed(
 		}
 	}
 	return release, nil
+}
+
+func isUpstreamPrerelease(tag string) bool {
+	normalized := strings.ToLower(strings.TrimSpace(tag))
+	return strings.Contains(normalized, "-alpha") ||
+		strings.Contains(normalized, "-beta") ||
+		strings.Contains(normalized, "-rc")
 }

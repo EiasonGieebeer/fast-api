@@ -16,7 +16,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 For commercial licensing, please contact support@quantumnous.com
 */
+import axios from 'axios'
 import { z } from 'zod'
+
+import { api } from '@/lib/api'
 
 import { systemReleaseSchema, type SystemRelease } from './releases'
 
@@ -48,18 +51,16 @@ export async function fetchLatestSystemRelease(
   const timeout = setTimeout(cancel, 10_000)
 
   try {
-    const response = await fetch('/api/system-info/releases/latest', {
-      credentials: 'same-origin',
+    const response = await api.request({
+      method: 'GET',
+      url: '/api/system-info/releases/latest',
       headers: { Accept: 'application/json' },
       signal: controller.signal,
+      skipErrorHandler: true,
     })
-    if (response.status === 429) {
-      throw new UpdateCheckError('rate-limit')
-    }
-    if (!response.ok) throw new UpdateCheckError('network')
 
     try {
-      return latestSystemReleaseResponseSchema.parse(await response.json()).data
+      return latestSystemReleaseResponseSchema.parse(response.data).data
     } catch (error) {
       if (controller.signal.aborted) throw error
       throw new UpdateCheckError('payload')
@@ -68,6 +69,9 @@ export async function fetchLatestSystemRelease(
     if (signal.aborted) throw error
     if (controller.signal.aborted) throw new UpdateCheckError('timeout')
     if (error instanceof UpdateCheckError) throw error
+    if (axios.isAxiosError(error) && error.response?.status === 429) {
+      throw new UpdateCheckError('rate-limit')
+    }
     throw new UpdateCheckError('network')
   } finally {
     clearTimeout(timeout)

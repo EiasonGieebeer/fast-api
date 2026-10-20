@@ -94,6 +94,26 @@ beforeEach(() => {
   vi.spyOn(api, 'get').mockResolvedValue({
     data: { success: true, data: { version: 'v1.0.0-rc.35' } },
   })
+  vi.spyOn(api, 'request').mockImplementation(async (config) => {
+    const response = await fetchMock(String(config.url), {
+      headers: config.headers as HeadersInit,
+      signal: config.signal as AbortSignal | undefined,
+    })
+    const text = await response.text()
+    let data: unknown = text
+    try {
+      data = JSON.parse(text)
+    } catch {
+      // Axios leaves invalid JSON as text for callers to validate.
+    }
+    if (!response.ok) {
+      throw {
+        isAxiosError: true,
+        response: { status: response.status, data },
+      }
+    }
+    return { data } as Awaited<ReturnType<typeof api.request>>
+  })
 })
 
 afterEach(() => {
@@ -140,10 +160,15 @@ describe('administrator update entry', () => {
       expect(button).toHaveAttribute('aria-haspopup', 'dialog')
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
       expect(fetchMock).toHaveBeenCalledTimes(1)
-      const [url, options] = fetchMock.mock.calls[0]
-      expect(String(url)).toBe('/api/system-info/releases/latest')
-      expect(options?.credentials).toBe('same-origin')
-      expect(options?.headers).toEqual({ Accept: 'application/json' })
+      expect(api.request).toHaveBeenCalledWith(
+        expect.objectContaining({
+          headers: { Accept: 'application/json' },
+          method: 'GET',
+          signal: expect.any(AbortSignal),
+          url: '/api/system-info/releases/latest',
+          skipErrorHandler: true,
+        })
+      )
     }
   )
 
